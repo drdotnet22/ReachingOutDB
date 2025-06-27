@@ -2,11 +2,36 @@
 @inject OrderServices orderService
 @rendermode InteractiveServer
 
-<h3>Enter the shipment cost</h3>
-
-<FluentNumberField @bind-Value="ThisOrder.UpsCost" Label="UPS Cost">
-</FluentNumberField>
+<SfNumericTextBox @ref="@idField" @bind-Value="customerIdSearch" />
+<SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" />
+<SfNumericTextBox @bind-Value="order.UpsCost" />
+<SfButton Content="Save" OnClick="SaveOrderUpdates"/>
+<SfButton Content="Cancel" OnClick="CancelOrderUpdates" />
 
 @code {
-    [Parameter] public Order ThisOrder { get; set; }
+    [Parameter] public IEnumerable<Order> orders { get; set; }
+
+    public Order order { get; set; }
+    public int? customerIdSearch { get; set; }
+    public SfNumericTextBox<int?> idField { get; set; }
+
+    private async Task FindOrderAsync()
+    {
+        order = orders.FirstOrDefault(o => o.CustomerId == customerIdSearch);
+    }
+
+    private async Task SaveOrderUpdates()
+    {
+        orderService.UpdateOrderAsync(order);
+        order = null;
+        customerIdSearch = null;
+        idField.FocusAsync();
+    }
+
+    private async Task CancelOrderUpdates()
+    {
+        order = null;
+        customerIdSearch = null;
+        idField.FocusAsync();
+    }
 }

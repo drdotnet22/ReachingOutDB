@@ -4,14 +4,14 @@
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @rendermode InteractiveServer
-
+<UpsCostInput orders="upsOrders" />
 <SfGrid @ref="Grid" DataSource="upsOrders" >
     <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
-    <GridEditSettings AllowEditing="true" Mode="EditMode.Dialog">
+    @* <GridEditSettings AllowEditing="true" Mode="EditMode.Dialog">
         <Template>
             <UpsCostInput ThisOrder="(context as Order)" />
         </Template>
-    </GridEditSettings>
+    </GridEditSettings> *@
     <GridColumns>
         <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
         <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" Width="300"/>
