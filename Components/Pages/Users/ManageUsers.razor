@@ -1,0 +1,69 @@
+﻿@page "/users"
+@using ReachingOutDB.Data
+@inject UserServices userService
+@rendermode InteractiveServer
+
+@if (userService.CurrentUser.Role == UserRole.Admin)
+{
+    <h3>Manage Users</h3>
+
+    <SfGrid @ref="Grid" DataSource="userList" Toolbar="@(new List<string>() { "Add", "Edit", "Update", "Cancel", "Delete" })">
+        <GridEvents OnActionBegin="ActionBeginHandler" TValue="UserProfile" />
+        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="EditMode.Normal" />
+        <GridColumns>
+            <GridColumn Field="@nameof(UserProfile.UserProfileId)" HeaderText="ID" AllowEditing="false" />
+            <GridColumn Field="@nameof(UserProfile.Name)" />
+            <GridColumn Field="@nameof(UserProfile.Role)" Type="ColumnType.Number">
+                <EditTemplate>
+                    @{
+                        var user = (context as UserProfile);
+                        <SfDropDownList @ref="profileDropdown" DataSource="@userRoleEnumList" @bind-Value="@((context as UserProfile).Role)" TValue="UserRole" TItem="string">
+                        </SfDropDownList>
+                    }
+                </EditTemplate>
+            </GridColumn>
+            <GridColumn Field="@nameof(UserProfile.Active)" Width="50px" DisplayAsCheckBox="true" EditType="EditType.BooleanEdit" />
+        </GridColumns>
+    </SfGrid>
+} else
+{
+    <p>😢 Your role in the system doesn't allow you to see this page.</p>
+}
+
+@code {
+    public SfGrid<UserProfile> Grid { get; set; }
+    public IEnumerable<UserProfile> userList { get; set; }
+    SfDropDownList<UserRole, string> profileDropdown;
+    public List<string> userRoleEnumList = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        userList = await userService.GetUserListAsync();
+
+        foreach (string item in UserRole.GetNames(typeof(UserRole)))
+        {
+            userRoleEnumList.Add(item);
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ActionBeginHandler(ActionEventArgs<UserProfile> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                await userService.AddUserAsync(args.Data);
+            }
+            else if (args.Action == "Edit")
+            {
+                await userService.UpdateUserAsync(args.Data);
+                StateHasChanged();
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            //
+        }
+    }
+}

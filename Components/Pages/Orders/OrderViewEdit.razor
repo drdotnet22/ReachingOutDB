@@ -1,0 +1,119 @@
+﻿@using ReachingOutDB.Data
+@using Syncfusion.Blazor.MultiColumnComboBox
+@rendermode InteractiveServer
+
+<div class="flexcolumn">
+    <div class="flexrow">
+        <SfNumericTextBox @bind-Value="ThisOrder.Year" Readonly="!Editable" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Auto" Format="####" ShowSpinButton="false" />
+        <SfDropDownList TItem="string" TValue="Quarter" 
+            @bind-Value="ThisOrder.Quarter"
+            DataSource="@quarterValues"
+            Readonly="!Editable"
+            Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+        </SfDropDownList>
+        @if (ThisOrder.OrderId != Guid.Empty)
+        {
+            <SfNumericTextBox @bind-Value="ThisOrder.Qty" Readonly="!Editable" Placeholder="Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" />
+            <SfDropDownList TItem="string" TValue="JobStatus"
+                            @bind-Value="ThisOrder.JobStatus"
+                            DataSource="jobStatusValues"
+                            Readonly="!Editable"
+                            Placeholder="Job Status" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+            </SfDropDownList>
+        }
+    </div>
+
+    <SfMultiColumnComboBox TItem="Customer" TValue="Customer" AllowFiltering="true" 
+                FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
+                @bind-Value="ThisOrder.Customer"
+                DataSource="CustomerList"
+                ValueField="CustomerId"
+                TextField="CustomerName"
+                ReadOnly="!Editable"
+                Width="400px"
+                Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+        <MultiColumnComboboxColumns>
+            <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
+            <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
+        </MultiColumnComboboxColumns>
+    </SfMultiColumnComboBox>
+
+    @if (ThisOrder.OrderId != Guid.Empty)
+    {
+        <div class="flexrow">
+            <SfTextArea @bind-Value="ThisOrder.SpecialNotes" Placeholder="Special Notes" Readonly="!Editable" RowCount="1" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            <SfTextArea @bind-Value="ThisOrder.NotesForInvoicing" Placeholder="Notes for invoicing" Readonly="!Editable" RowCount="1" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            @if (ThisOrder.JobStatus == JobStatus.OnHold)
+            {
+                <SfTextArea @bind-Value="ThisOrder.HoldNote" Placeholder="Hold Note" Readonly="!Editable" RowCount="1" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            }
+        </div>
+        <SfCheckBox @bind-Checked="ThisOrder.YearlyBilling" Label="Yearly Billing" Disabled="!Editable" />
+        <SfCheckBox @bind-Checked="ThisOrder.BpUpdate" Label="Backpage Update" Disabled="!Editable" />
+        <div class="flexrow">
+            <SfCard>
+                <CardHeader Title="Direct Mail Details" />
+                <CardContent>
+                    <SfNumericTextBox @bind-Value="ThisOrder.DmQty" Readonly="!Editable" Placeholder="Direct Mail Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="UPS Details" />
+                <CardContent>
+                    <SfNumericTextBox @bind-Value="ThisOrder.UpsQty" Readonly="!Editable" Placeholder="UPS Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="Postal Package Details" />
+                <CardContent>
+                    <SfNumericTextBox @bind-Value="ThisOrder.PostalQty" Readonly="!Editable" Placeholder="Postal Package Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="LTL Details" />
+                <CardContent>
+                    <SfNumericTextBox @bind-Value="ThisOrder.LtlQty" Readonly="!Editable" Placeholder="LTL Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="INTL Details" />
+                <CardContent>
+                    <SfNumericTextBox @bind-Value="ThisOrder.IntlQty" Readonly="!Editable" Placeholder="INTL Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                </CardContent>
+            </SfCard>
+        </div>
+        <div class="flexrow">
+            <SfNumericTextBox @bind-Value="ThisOrder.PubShipping" Readonly="true" Placeholder="Calculated Shipping Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+            <SfNumericTextBox @bind-Value="ThisOrder.PubUsps" Readonly="true" Placeholder="Calculated Postage Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+        </div>
+        <div class="flexrow">
+            <SfNumericTextBox @bind-Value="ThisOrder.PpOrderNumber" Readonly="!Editable" Placeholder="Printers Plan Order Number" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="#####" ShowSpinButton="false" ShowClearButton="true" Width="200px" />
+        </div>
+        <SfCheckBox @bind-Checked="ThisOrder.Archived" Label="Archived" Disabled="!Editable" />
+    }
+</div>
+
+@code {
+    [Parameter] public Order ThisOrder { get; set; }
+    [Parameter] public bool Editable { get; set; }
+    [Parameter] public IEnumerable<Customer> CustomerList { get; set; }
+
+    public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+    public string[] jobStatusValues = JobStatus.GetNames(typeof(JobStatus));
+}
+
+<style>
+    .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+    }
+
+    .flexcolumn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+</style>

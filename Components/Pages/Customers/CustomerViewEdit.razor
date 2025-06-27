@@ -1,0 +1,136 @@
+﻿@using ReachingOutDB.Data
+@rendermode InteractiveServer
+
+<div class="flexcolumn">
+    <SfCard>
+        <CardContent>
+            <div class="flexrow">
+                <SfNumericTextBox ID="CustomerId" @bind-Value="@ThisCustomer.CustomerId" Placeholder="Number" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Format="####" Enabled="ThisCustomer.CustomerId == 0" Width="250px" />
+                <SfTextBox ID="CustomerName" @bind-Value="@(ThisCustomer.CustomerName)" Placeholder="Customer Name" FloatLabelType="FloatLabelType.Auto" />
+                <SfTextBox ID="CustomerLocation" @bind-Value="@(ThisCustomer.Location)" Placeholder="Customer Location" FloatLabelType="FloatLabelType.Auto" />
+            </div>
+        </CardContent>
+    </SfCard>
+    <SfCard>
+        <CardContent>
+            <div class="flexrow">
+                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ1)" Placeholder="Quantity Q1" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
+                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ1)" Placeholder="Notes for Q1" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            </div>
+            <div class="flexrow">
+                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ2)" Placeholder="Quantity Q2" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
+                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ2)" Placeholder="Notes for Q2" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            </div>
+            <div class="flexrow">
+                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ3)" Placeholder="Quantity Q3" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
+                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ3)" Placeholder="Notes for Q3" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            </div>
+            <div class="flexrow">
+                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ4)" Placeholder="Quantity Q4" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
+                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ4)" Placeholder="Notes for Q4" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCheckBox @bind-Checked="@(ThisCustomer.Active)" Label="Active Customer" />
+    <SfCheckBox @bind-Checked="@(ThisCustomer.VariableQty)" Label="Variable Quantity" />
+    <SfCheckBox @bind-Checked="@(ThisCustomer.CustomBP)" Label="Custom Back Page" />
+    <SfDropDownList TItem="string" TValue="Quarter?"
+                    @bind-Value="@ThisCustomer.YearlyBillingQuarter"
+                    DataSource="@quarterValues"
+                    Placeholder="Billing Quarter" FloatLabelType="FloatLabelType.Always" ShowClearButton="true">
+    </SfDropDownList>
+    @if (ThisCustomer.VariableQty)
+    {
+        <div class="flexrow">
+            <SfCard>
+                <CardHeader Title="Variable Direct Mail Quantity" />
+                <CardContent>
+                    <SfNumericTextBox ID="DmQtyQ1" @bind-Value="@(ThisCustomer.DmQtyQ1)" Placeholder="Q1 Direct Mail Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="DmQtyQ2" @bind-Value="@(ThisCustomer.DmQtyQ2)" Placeholder="Q2 Direct Mail Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="DmQtyQ3" @bind-Value="@(ThisCustomer.DmQtyQ3)" Placeholder="Q3 Direct Mail Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="DmQtyQ4" @bind-Value="@(ThisCustomer.DmQtyQ4)" Placeholder="Q4 Direct Mail Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="Variable UPS Quantity" />
+                <CardContent>
+                    <SfNumericTextBox ID="UpsQtyQ1" @bind-Value="@(ThisCustomer.UpsQtyQ1)" Placeholder="Q1 UPS Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="UpsQtyQ2" @bind-Value="@(ThisCustomer.UpsQtyQ2)" Placeholder="Q2 UPS Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="UpsQtyQ3" @bind-Value="@(ThisCustomer.UpsQtyQ3)" Placeholder="Q3 UPS Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="UpsQtyQ4" @bind-Value="@(ThisCustomer.UpsQtyQ4)" Placeholder="Q4 UPS Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="Variable Postal Quantity" />
+                <CardContent>
+                    <SfNumericTextBox ID="PostalQtyQ1" @bind-Value="@(ThisCustomer.PostalQtyQ1)" Placeholder="Q1 Postal Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="PostalQtyQ2" @bind-Value="@(ThisCustomer.PostalQtyQ2)" Placeholder="Q2 Postal Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="PostalQtyQ3" @bind-Value="@(ThisCustomer.PostalQtyQ3)" Placeholder="Q3 Postal Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="PostalQtyQ4" @bind-Value="@(ThisCustomer.PostalQtyQ4)" Placeholder="Q4 Postal Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="Variable Truck Line Quantity" />
+                <CardContent>
+                    <SfNumericTextBox ID="LtlQtyQ1" @bind-Value="@(ThisCustomer.LtlQtyQ1)" Placeholder="Q1 LTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="LtlQtyQ2" @bind-Value="@(ThisCustomer.LtlQtyQ2)" Placeholder="Q2 LTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="LtlQtyQ3" @bind-Value="@(ThisCustomer.LtlQtyQ3)" Placeholder="Q3 LTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="LtlQtyQ4" @bind-Value="@(ThisCustomer.LtlQtyQ4)" Placeholder="Q4 LTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </CardContent>
+            </SfCard>
+            <SfCard>
+                <CardHeader Title="Variable International Quantity" />
+                <CardContent>
+                    <SfNumericTextBox ID="IntlQtyQ1" @bind-Value="@(ThisCustomer.IntlQtyQ1)" Placeholder="Q1 INTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="IntlQtyQ2" @bind-Value="@(ThisCustomer.IntlQtyQ2)" Placeholder="Q2 INTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="IntlQtyQ3" @bind-Value="@(ThisCustomer.IntlQtyQ3)" Placeholder="Q3 INTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                    <SfNumericTextBox ID="IntlQtyQ4" @bind-Value="@(ThisCustomer.IntlQtyQ4)" Placeholder="Q4 INTL Quantity" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </CardContent>
+            </SfCard>
+        </div>
+    } 
+    else
+    {
+        <SfCard>
+            <CardHeader Title="Quarterly Quantities" />
+            <CardContent>
+                <div class="flexrow">
+                    <SfNumericTextBox ID="DMQty" @bind-Value="@(ThisCustomer.DmQty)" Placeholder="Quantity by direct mail" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </div>
+                <div class="flexrow">
+                    <SfNumericTextBox ID="UpsQty" @bind-Value="@(ThisCustomer.UpsQty)" Placeholder="Quantity by UPS" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </div>
+                <div class="flexrow">
+                    <SfNumericTextBox ID="PostalQty" @bind-Value="@(ThisCustomer.PostalQty)" Placeholder="Quantity by Postal" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </div>
+                <div class="flexrow">
+                    <SfNumericTextBox ID="IntlQty" @bind-Value="@(ThisCustomer.IntlQty)" Placeholder="Quantity by INTL" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
+                </div>
+            </CardContent>
+        </SfCard>
+    }
+   
+</div>
+
+@code {
+    [Parameter] public Customer ThisCustomer { get; set; }
+    [Parameter] public bool Editable { get; set; }
+    public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+}
+
+<style>
+    .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+    }
+
+    .flexcolumn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+</style>

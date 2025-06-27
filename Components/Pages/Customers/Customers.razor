@@ -1,0 +1,169 @@
+﻿@page "/customers"
+@using ReachingOutDB.Data
+@using Microsoft.EntityFrameworkCore
+@inject OrderServices orderService
+@inject CustomerServices customerService
+@rendermode InteractiveServer
+
+<h3>Customers</h3>
+<div>
+    <label style="padding: 10px 10px 10px 0">Show Archived Customers</label>
+    <SfSwitch @bind-Checked="showArchivedCustomers" ValueChange="ChangeCustomerFilter" TChecked="bool" />
+</div>
+<SfGrid @ref="Grid" DataSource="@filteredCustomers" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30" >
+    <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Customer" />
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" >
+        <HeaderTemplate>
+            @{
+                var dialogHeader = GetHeader((context as Customer));
+                <span>@dialogHeader</span>
+            }
+        </HeaderTemplate>
+        <Template>
+            <CustomerViewEdit ThisCustomer="(context as Customer)" Editable="true" />
+         </Template>
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn HeaderText="Customer Number" Field="CustomerId" IsPrimaryKey="true" Type="ColumnType.Integer" Width="100" TextAlign="TextAlign.Right"/>
+        <GridColumn HeaderText="Customer Name" Field="CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
+        <GridColumn HeaderText="Location" Field="Location" Type="ColumnType.String" TextAlign="TextAlign.Left" />
+        <GridColumn HeaderText="Variable Qty" Field="VariableQty" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" Width="70" />
+        <GridColumn>
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() {IconCss="e-icons e-delete", CssClass="e-flat" })"/>
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code {
+    public IEnumerable<Customer> allCustomers { get; set; }
+    public IEnumerable<Customer> filteredCustomers { get; set; }
+    public SfGrid<Customer> Grid { get; set; }
+    public bool showArchivedCustomers = false;
+    private List<Object> ToolbarItems = new List<Object>() { "Add", new ItemModel() { Text = "Generate Orders", TooltipText = "Generate orders for all active customers.", PrefixIcon = "e-duplicate icon", Align = Syncfusion.Blazor.Navigations.ItemAlign.Left }, "Search" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshCustomers();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshCustomers()
+    {
+        allCustomers = await customerService.GetCustomersAsync();
+        await RefreshCustomerFilter();
+    }
+
+    private async Task RefreshCustomerFilter()
+    {
+        if (showArchivedCustomers)
+        {
+            filteredCustomers = allCustomers;
+        }
+        else
+        {
+            filteredCustomers = allCustomers.Where(c => c.Active == true);
+        }
+    }
+
+    private void ChangeCustomerFilter(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> args)
+    {
+        RefreshCustomerFilter();
+    }
+
+    #region Datagrid handlers
+    private async Task ActionBeginHandler(ActionEventArgs<Customer> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                customerService.AddCustomerAsync(args.Data);
+                await RefreshCustomers();
+            }
+            else if (args.Action == "Edit")
+            {
+                customerService.UpdateCustomerAsync(args.Data);
+                await RefreshCustomers();
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            customerService.ArchiveCustomerAsync(args.Data);
+            await RefreshCustomers();
+        }
+    }
+
+    public async void CommandClickedHandler(CommandClickEventArgs<Customer> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        {
+            ActionEventArgs<Customer> actionEventArgs = new ActionEventArgs<Customer>();
+            actionEventArgs.Data = args.RowData;
+            ActionBeginHandler(actionEventArgs);
+        }
+        else if (args.CommandColumn.Type == CommandButtonType.Delete)
+        {
+            await customerService.ArchiveCustomerAsync(args.RowData);
+            await RefreshCustomers();
+        }
+    }
+
+    public string GetHeader(Customer arg)
+    {
+        return arg.CustomerId == 0
+            ? "New Customer"
+            : "Edit Record of " + arg.CustomerName;
+    }
+
+    #endregion
+}
+
+<style>
+    .flexrow {
+        display:flex;
+        flex-direction:row;
+        align-items:flex-end;
+        gap:15px;
+    }
+
+    .flexcolumn {
+        display:flex;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .content-wrapper {
+        margin-top: 47px;
+    }
+
+    .switch-control .heading {
+        text-indent: 15px;
+        padding: 15px 0;
+    }
+
+    .switch-control div {
+        display: flex;
+        align-items: center;
+    }
+
+    .switch-control {
+        margin: 0 auto;
+        width: 275px;
+    }
+
+        .switch-control label {
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        .switch-control .e-disabled {
+            pointer-events: none;
+        }
+</style>

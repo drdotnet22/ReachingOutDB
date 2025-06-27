@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+@using ReachingOutDB.Components.Pages.Users
+
+<FluentLayout>
+    <FluentHeader>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <span>Reaching Out Database</span>
+            <UserSelector />
+        </div>
+    </FluentHeader>
+    <FluentStack Class="main" Orientation="Microsoft.FluentUI.AspNetCore.Components.Orientation.Horizontal" Width="100%">
+        <NavMenu />
+        <FluentBodyContent Class="body-content">
+            <div class="content">
+                @Body
+            </div>
+        </FluentBodyContent>
+    </FluentStack>
+    <FluentFooter>
+        <a href="https://www.fluentui-blazor.net" target="_blank">Documentation and demos</a>
+        <FluentSpacer />
+        <a href="https://learn.microsoft.com/en-us/aspnet/core/blazor" target="_blank">About Blazor</a>
+    </FluentFooter>
+</FluentLayout>
+<FluentDialogProvider />
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

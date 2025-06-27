@@ -1,0 +1,344 @@
+﻿@using ReachingOutDB.Data
+
+@inject OrderServices orderService
+@inject CustomerServices customerService
+@inject UserServices userService
+@rendermode InteractiveServer
+
+<div class="myflexrow">
+    <SfNumericTextBox @bind-Value="selectedYear"
+                      Placeholder="Year"
+                      Format="####"
+                      FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                      Width="200px" />
+    <SfDropDownList TItem="string" TValue="Quarter"
+                    @bind-Value="selectedQuarter"
+                    DataSource="@quarterValues"
+                    Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="200px">
+    </SfDropDownList>
+    <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
+</div>
+<br />
+<SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" Toolbar="@ToolbarItems">
+    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
+    <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" OnToolbarClick="ToolbarClickHandler" TValue="Order" />
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin" AllowEditing="userService.CurrentUser.Role == UserRole.Admin" AllowDeleting="userService.CurrentUser.Role == UserRole.Admin" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" Context="thisOrder">
+        <HeaderTemplate>
+            <span>@GetHeader((thisOrder as Order))</span>
+        </HeaderTemplate>
+        <Template>
+            <OrderViewEdit ThisOrder="(thisOrder as Order)" Editable="true" CustomerList="customers" />
+        </Template>
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+        <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120" >
+            <FilterTemplate>
+                <SfDropDownList ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
+                    <DropDownListEvents TItem="string" TValue="JobStatus" ValueChange="ChangeJobStatusFilter" />
+                    <DropDownListFieldSettings Value="JobStatus" Text="JobStatus" />
+                </SfDropDownList>
+            </FilterTemplate>
+        </GridColumn>
+        @if (userService.CurrentUser.Role == UserRole.Admin)
+        {
+            <GridColumn Width="55">
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
+                </GridCommandColumns>
+            </GridColumn>
+        }
+        <GridColumn HeaderText="Ship Methods"  Width="200" >
+            <Template>
+                
+                @{ var order = (context as Order); 
+                    { 
+                            @if (order.DmQty.HasValue && order.DmQty > 0)
+                            {
+                                <span class="chip-shipping chip-dm">DM</span>
+                            }
+                            if (order.UpsQty.HasValue && order.UpsQty > 0)
+                            {
+                                <span class="chip-shipping chip-ups">UPS</span>
+                            }
+                            if (order.PostalQty.HasValue && order.PostalQty > 0)
+                            {
+                                <span class="chip-shipping chip-usps">USPS</span>
+                            }
+                            if (order.IntlQty.HasValue && order.IntlQty > 0)
+                            {
+                                <span class="chip-shipping chip-intl">INTL</span>
+                            }
+                            if (order.LtlQty.HasValue && order.LtlQty > 0)
+                            {
+                                <span class="chip-shipping chip-ltl">LTL</span>
+                            }
+                    }
+                }
+                   
+            </Template>
+            <FilterTemplate>
+                <SfMultiSelect TValue="string[]" TItem="string" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
+                    <MultiSelectEvents TValue="string[]" TItem="string" ValueChange="@ShipMethodOnChange" />
+                </SfMultiSelect>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" />
+        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
+        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" />
+        <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
+        <GridColumn Width="152">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+                @if (userService.CurrentUser.Role == UserRole.Admin)
+                {
+                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+                }
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="orderViewDialog" Visible="false" ShowCloseIcon="true" Width="50%" Header="@orderViewDialogHeader">
+    <DialogTemplates>
+        <Content>
+            <OrderViewEdit ThisOrder="orderViewDialogRecord" Editable="false" CustomerList="customers" />
+            <OrderLogView ThisOrder="orderViewDialogRecord" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<style>
+    .chip-shipping {
+        display: inline-block;
+        padding: 10px 5px;
+        height:20px;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .chip-ups {
+        background:blue;
+    }
+
+    .chip-dm {
+        background:darkgrey;
+    }
+
+    .chip-usps {
+        background:orange;
+    }
+
+    .chip-ltl {
+        background:lightgreen;
+    }
+
+    .chip-intl {
+        background:red;
+    }
+</style>
+
+@code {
+    public SfGrid<Order> Grid { get; set; }
+    public IEnumerable<Order> orders { get; set; }
+    public IEnumerable<Order> filteredOrders { get; set; }
+    public IEnumerable<Customer> customers { get; set; }
+    public int selectedYear { get; set; }
+    public Quarter selectedQuarter { get; set; }
+    public Order testOrder { get; set; }
+    private List<Object> ToolbarItems = new List<Object>() { "Add", new ItemModel() { Text = "Saddle Stitched", TooltipText="Mark selected rows as saddlestitched.", PrefixIcon = "e-circle-check icon" }, "Search" };
+    public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+    public string[] jobStatValues = JobStatus.GetNames(typeof(JobStatus));
+
+    protected override async Task OnInitializedAsync()
+    {
+        int year = DateTime.Now.Year;
+        int month = DateTime.Now.Month;
+
+        if (month >= 2 && month <= 4)
+        {
+            selectedQuarter = Quarter.Q2;
+        }
+        else if (month >= 5 && month <= 7)
+        {
+            selectedQuarter = Quarter.Q3;
+        }
+        else if (month >= 8 && month <= 10)
+        {
+            selectedQuarter = Quarter.Q4;
+        }
+        else
+        {
+            selectedQuarter = Quarter.Q1;
+            year++;
+        }
+
+        selectedYear = year;
+        await RefreshOrders();
+        customers = await customerService.GetCustomersAsync();
+        testOrder = orders.FirstOrDefault(o => o.CustomerId == 2000);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshOrders()
+    {
+
+        orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
+        filteredOrders = orders;
+        StateHasChanged();
+    }
+
+    private async Task UpdateYearQuarterAsync()
+    {
+        await RefreshOrders();
+    }
+
+
+    #region Custom Shipping methods filter
+    private string[] ShipMethodOptions = new[] { "DM", "UPS", "USPS", "INTL", "LTL" };
+    List<string> SelectedShipMethods = new List<string>();
+    public bool IsFilterValueChange { get; set; }
+
+    public Syncfusion.Blazor.Grids.FilteringEventArgs filteringEvent { get; set; }
+
+    private async Task ShipMethodOnChange(MultiSelectChangeEventArgs<string[]> args)
+    {
+        if (args.Value?.Length > 0)
+        {
+            filteredOrders = orders;
+            if (args.Value.Contains("DM"))
+            {
+                filteredOrders = filteredOrders.Where(o => o.DmQty.HasValue && o.DmQty > 0);
+            }
+            if (args.Value.Contains("UPS"))
+            {
+                filteredOrders = filteredOrders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0);
+            }
+            if (args.Value.Contains("USPS"))
+            {
+                filteredOrders = filteredOrders.Where(o => o.PostalQty.HasValue && o.PostalQty > 0);
+            }
+            if (args.Value.Contains("INTL"))
+            {
+                filteredOrders = filteredOrders.Where(o => o.IntlQty.HasValue && o.IntlQty > 0);
+            }
+            if (args.Value.Contains("LTL"))
+            {
+                filteredOrders = filteredOrders.Where(o => o.LtlQty.HasValue && o.LtlQty > 0);
+            }
+        }
+        else
+        {
+            filteredOrders = orders;
+        }
+    }
+    #endregion
+
+    #region Datagrid Handlers
+    private async Task ActionBeginHandler(ActionEventArgs<Order> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                await orderService.GenerateOrders(args.Data.Customer.CustomerId, args.Data.Year, args.Data.Quarter);
+                RefreshOrders();
+            }
+            else if (args.Action == "Edit")
+            {
+                await orderService.UpdateOrderAsync(args.Data);
+                RefreshOrders();
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            //
+        }
+    }
+
+    private async Task ActionCompleteHandler(ActionEventArgs<Order> args)
+    {
+        await RefreshOrders();
+    }
+
+    public async void CommandClickedHandler(CommandClickEventArgs<Order> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        {
+            ActionEventArgs<Order> actionEventArgs = new ActionEventArgs<Order>();
+            actionEventArgs.Data = args.RowData;
+            ActionBeginHandler(actionEventArgs);
+        }
+        else if (args.CommandColumn.Type == CommandButtonType.Delete)
+        {
+            //delete order
+        }
+        else if (args.CommandColumn.Type == CommandButtonType.None)
+        {
+            if (args.CommandColumn.ID == "view-order")
+            {
+                orderViewDialogRecord = args.RowData;
+                orderViewDialogHeader = "Order details of " + orderViewDialogRecord.Customer.CustomerName;
+                orderViewDialog.ShowAsync();
+            }
+            else if (args.CommandColumn.ID == "advance-status")
+            {
+                args.RowData.JobStatus = (JobStatus)((int)args.RowData.JobStatus + 1);
+                await orderService.UpdateOrderAsync(args.RowData);
+                await RefreshOrders();
+            }
+        }
+    }
+
+    public async Task ChangeJobStatusFilter(ChangeEventArgs<JobStatus, string> args)
+    {
+        if (args.Value == 0)
+        {
+            await this.Grid.ClearFilteringAsync();
+        }
+        else
+        {
+            await this.Grid.FilterByColumnAsync("JobStatus", "contains", args.Value);
+        }
+    }
+
+    public string GetHeader(Order arg)
+    {
+        return arg.OrderId == Guid.Empty
+            ? "Add New Order"
+            : "Edit the " + arg.Year + " " + arg.Quarter + " order of " + arg.Customer.CustomerName;
+    }
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Saddle Stitched")
+        {
+            if (userService.CurrentUser.Role == UserRole.Duplo)
+            {
+                var selectedOrders = await Grid.GetSelectedRecordsAsync();
+                foreach (var order in selectedOrders)
+                {
+                    order.JobStatus = JobStatus.ReadyToShip;
+                    await orderService.UpdateOrderAsync(order);
+                }
+                RefreshOrders();
+            }
+            Grid.ClearRowSelectionAsync();
+        }
+    }
+    #endregion
+
+    #region Dialog handlers
+    private SfDialog orderViewDialog;
+    private string orderViewDialogHeader;
+    private Order orderViewDialogRecord;
+
+    #endregion
+}

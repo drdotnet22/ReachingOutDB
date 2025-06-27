@@ -1,0 +1,25 @@
+﻿@using ReachingOutDB.Data
+@inject OrderAuditLogServices orderAuditLogServices
+@rendermode InteractiveServer
+
+<SfGrid DataSource="@auditLogs" TValue="OrderAuditLog">
+    <GridColumns>
+        <GridColumn Field="@nameof(OrderAuditLog.Timestamp)" />
+        <GridColumn Field="@nameof(OrderAuditLog.UserName)" />
+        <GridColumn Field="@nameof(OrderAuditLog.Action)" />
+        <GridColumn Field="@nameof(OrderAuditLog.PropertyName)" />
+        <GridColumn Field="@nameof(OrderAuditLog.OldValue)" />
+        <GridColumn Field="@nameof(OrderAuditLog.NewValue)" />
+    </GridColumns>
+</SfGrid>
+
+@code {
+    [Parameter] public Order ThisOrder { get; set; }
+    public IEnumerable<OrderAuditLog> auditLogs { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        auditLogs = await orderAuditLogServices.GetLogsOfOrder(ThisOrder);
+        await base.OnInitializedAsync();
+    }
+}

@@ -1,0 +1,22 @@
+﻿@using ReachingOutDB.Data
+@inject OrderServices orderService
+@rendermode InteractiveServer
+
+<SfNumericTextBox @bind-Value="year" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Auto" Format="####" ShowSpinButton="false" />
+<SfDropDownList TItem="string" TValue="Quarter"
+                @bind-Value="quarter"
+                DataSource="@quarterValues"
+                Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+</SfDropDownList>
+<SfButton OnClick="CreateBulkOrders" Content="Generate orders for all active customers" />
+
+@code {
+    public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+    public int year { get; set; }
+    public Quarter quarter { get; set; }
+
+    public async Task CreateBulkOrders()
+    {
+        orderService.GenerateOrders(null, year, quarter);
+    }
+}

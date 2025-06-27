@@ -1,0 +1,16 @@
+﻿@using ReachingOutDB.Data
+@inject OrderServices orderService
+
+@code {
+    [Parameter] public SfGrid<Order> DataGrid { get; set; }
+
+    private async Task MarkSelectedRowsAsReadyToShip()
+    {
+        var selectedOrders = await DataGrid.GetSelectedRecordsAsync();
+        foreach (var order in selectedOrders)
+        {
+            order.JobStatus = JobStatus.ReadyToShip;
+            await orderService.UpdateOrderAsync(order);
+        }
+    }
+}

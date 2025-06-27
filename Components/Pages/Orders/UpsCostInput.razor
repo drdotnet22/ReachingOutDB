@@ -1,0 +1,12 @@
+﻿@using ReachingOutDB.Data
+@inject OrderServices orderService
+@rendermode InteractiveServer
+
+<h3>Enter the shipment cost</h3>
+
+<FluentNumberField @bind-Value="ThisOrder.UpsCost" Label="UPS Cost">
+</FluentNumberField>
+
+@code {
+    [Parameter] public Order ThisOrder { get; set; }
+}

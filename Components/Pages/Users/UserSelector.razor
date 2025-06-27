@@ -1,0 +1,45 @@
+﻿@using ReachingOutDB.Data
+@inject UserServices userService
+@rendermode InteractiveServer
+
+<SfDropDownList TItem="UserProfile" TValue="int" DataSource="@userProfiles" Value="@ActiveUserId" Width="150px">
+    <DropDownListFieldSettings Text="Name" Value="UserProfileId" />
+    <DropDownListEvents TValue="int" TItem="UserProfile" ValueChange="OnUserSelected" />
+</SfDropDownList>
+
+@code {
+    private int ActiveUserId = 0;
+    private List<UserProfile> userProfiles { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        userProfiles = await userService.GetUserListAsync();
+        userService.OnUserChanged += StateHasChanged;
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await userService.InitializeAsync();
+            if (userService.CurrentUser != null)
+            {
+                ActiveUserId = userService.CurrentUser.UserProfileId; //error if user has not been assigned
+            }
+            StateHasChanged();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task OnUserSelected(ChangeEventArgs<int, UserProfile> userId)
+    {
+        ActiveUserId = userId.Value;
+        await userService.SelectUserAsync(userId.Value);
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= StateHasChanged;
+    }
+}

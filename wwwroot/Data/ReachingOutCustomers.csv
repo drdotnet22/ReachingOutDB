@@ -1,0 +1,224 @@
+CustomerId,CustomerName,Location,,QtyQ1,QtyQ2,QtyQ3,QtyQ4,VariableQty,NotesQ1,NotesQ2,NotesQ3,NotesQ4,CustomBP,DmQty,DmQtyQ1,DmQtyQ2,DmQtyQ3,DmQtyQ4,UpsQty,UpsQtyQ1,UpsQtyQ2,UpsQtyQ3,UpsQtyQ4,PostalQty,PostalQtyQ1,PostalQtyQ2,PostalQtyQ3,PostalQtyQ4,LtlQty,LtlQtyQ1,LtlQtyQ2,LtlQtyQ3,LtlQtyQ4,IntlQty,IntlQtyQ1,IntlQtyQ2,IntlQtyQ3,IntlQtyQ4,YearlyBillingQuarter
+2007,BETHANY MENNONITE CHURCH,"BRIARY BRANCH, VA",UPS,1250,600,1250,600,TRUE,VARIABLE QTY: Q1: 1250; Q2: 600; Q3: 1250; Q4: 600,VARIABLE QTY: Q1: 1250; Q2: 600; Q3: 1250; Q4: 601,VARIABLE QTY: Q1: 1250; Q2: 600; Q3: 1250; Q4: 602,VARIABLE QTY: Q1: 1250; Q2: 600; Q3: 1250; Q4: 603,TRUE,,,,,,,1250,600,1250,600,,,,,,,,,,,,,,,,
+2011,BETHESDA FELLOWSHIP* Q2,"PLAIN CITY, OH",USPS,12,12,12,12,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,12,,,,,,,,,,,,,,,Q2
+2012,BOYER HILL MENNONITE CHURCH,"DURBIN, WV",DM,920,920,920,920,FALSE,,,,,TRUE,920,,,,,,,,,,,,,,,,,,,,,,,,,
+2014,BRUSHY RUN MENNONITE CHURCH,"ONEGO, WV",DM,320,320,320,320,FALSE,,,,,TRUE,320,,,,,,,,,,,,,,,,,,,,,,,,,
+2016,CALVARY BIBLE FELLOWSHIP CHURCH,"SOMERSET, OH",UPS,380,380,380,380,FALSE,,,,,TRUE,,,,,,380,,,,,,,,,,,,,,,,,,,,
+2017,"NORTHERN LIGHT MENNONITE CHURCH, AB","TWO HILLS, AB",INTL,1000,1000,1000,1000,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,,,,,,1000,,,,,
+2018,CALVARY FELLOWSHIP MENNONITE CHURCH,"BLACKVILLE, SC",UPS,475,475,475,475,FALSE,,,,,TRUE,,,,,,475,,,,,,,,,,,,,,,,,,,,
+2021,DIAMOND VIEW MENNONITE CHURCH,"STANDISH, CA",DM,2266,2266,2266,2266,FALSE,,,,,TRUE,2266,,,,,,,,,,,,,,,,,,,,,,,,,
+2022,CEDAR GROVE A. M. CHURCH,"WELLESLEY, ON",INTL,105,105,105,105,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,,,,,,,,,,,105,,,,,
+2023,CEDAR SPRINGS AMISH MENNONITE CHURCH,"CLARKSON, KY",LTL,7900,7900,7900,7900,FALSE,Band in 50s,Band in 50s,Band in 50s,Band in 50s,TRUE,,,,,,,,,,,,,,,,7900,,,,,,,,,,
+2029,DUBLIN MENNONITE CHURCH,"DUBLIN, GA",USPS,200,200,200,200,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,200,,,,,,,,,,,,,,,
+2032,FAIRVIEW MENNONITE FELLOWSHIP,"FAIRVIEW, MO",DM + USPS,2464,2464,2464,2464,FALSE,Set 18 aside for customer,Set 18 aside for customer,Set 18 aside for customer,Set 18 aside for customer,TRUE,2446,,,,,,,,,,18,,,,,,,,,,,,,,,
+2034,FAITH MENNONITE FELLOWSHIP,"LOTT, TX",DM,1169,1169,1169,1169,FALSE,,,,,TRUE,1169,,,,,,,,,,,,,,,,,,,,,,,,,
+2038,GRANDE RONDE MENNONITE CHURCH,"COVE, OR",DM + USPS,1323,1323,1323,1323,FALSE,Set 30 aside for customer,Set 30 aside for customer,Set 30 aside for customer,Set 30 aside for customer,TRUE,1293,,,,,,,,,,30,,,,,,,,,,,,,,,
+2039,GRANDVIEW GOSPEL FELLOWSHIP,"GRANDVIEW, TX",UPS,1700,1700,1700,1700,FALSE,,,,,TRUE,,,,,,1700,,,,,,,,,,,,,,,,,,,,
+2042,HARRISBURG MENNONITE CHURCH,"HARRISBURG, OR",UPS,2285,2285,2285,2285,FALSE,,,,,TRUE,,,,,,2285,,,,,,,,,,,,,,,,,,,,
+2043,HEPHZIBAH MENNONITE CHURCH,"HEPHZIBAH, GA",DM + USPS,2972,2972,2972,2972,FALSE,Set 30 aside for customer,Set 30 aside for customer,Set 30 aside for customer,Set 30 aside for customer,TRUE,2942,,,,,,,,,,30,,,,,,,,,,,,,,,
+2046,LAMONTE MENNONITE CHURCH,"LAMONTE, MO",UPS,2000,2000,2000,2000,FALSE,,,,,TRUE,,,,,,2000,,,,,,,,,,,,,,,,,,,,
+2047,TORRINGTON MENNONITE CHURCH,"TORRINGTON, WY",UPS,2200,2200,2200,2200,FALSE,,,,,TRUE,,,,,,2200,,,,,,,,,,,,,,,,,,,,
+2049,LIGHTHOUSE MENNONITE CHURCH,"MONTICELLO, GA",USPS,20,20,20,20,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,20,,,,,,,,,,,,,,,
+2050,LOCUST CREEK MENNONITE CHURCH,"LACLEDE, MO",UPS,877,877,877,877,FALSE,BAND IN 50's,BAND IN 50's,BAND IN 50's,BAND IN 50's,TRUE,,,,,,877,,,,,,,,,,,,,,,,,,,,
+2051,MADISON MENNONITE CHURCH,"MADISON, NY",DM + USPS ,1125,1125,1125,1125,FALSE,Set 130 aside for customer,Set 130 aside for customer,Set 130 aside for customer,Set 130 aside for customer,TRUE,995,,,,,,,,,,130,,,,,,,,,,,,,,,
+2052,MARANATHA MENNONITE CHURCH,"TAYLORSVILLE, MS",DM + USPS,1260,1260,1260,1260,FALSE,Set 16 aside for customer,Set 16 aside for customer,Set 16 aside for customer,Set 16 aside for customer,TRUE,1244,,,,,,,,,,16,,,,,,,,,,,,,,,
+2053,MERCER BIBLE FELLOWSHIP,"HARRODSBURG, KY",UPS,2200,2200,2200,2200,FALSE,,,,,TRUE,,,,,,2200,,,,,,,,,,,,,,,,,,,,
+2054,MONTEZUMA AMISH-MENNONITE CHURCH,"MONTEZUMA, GA",UPS + USPS,4500,4500,4500,4500,FALSE,Set 55 aside for customer,,,,TRUE,,,,,,4445,,,,,55,,,,,,,,,,,,,,,
+2058,NORTH FORK MENNONITE CHURCH,"PETERSBURG, WV",DM + USPS,2072,2072,2072,2072,FALSE,Set 18 extras aside for customer,Set 18 extras aside for customer,Set 18 extras aside for customer,Set 18 extras aside for customer,TRUE,2054,,,,,,,,,,18,,,,,,,,,,,,,,,
+2062,PEAKE MENNONITE CHURCH* Q2,"PEAKE, VA",USPS,50,50,50,50,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,50,,,,,,,,,,,,,,,Q2
+2063,PELKIE MENNONITE CHURCH,"CHASSELL, MI",UPS,550,550,550,550,FALSE,,,,,TRUE,,,,,,550,,,,,,,,,,,,,,,,,,,,
+2065,PIKE MENNONITE CHURCH* Q2,"HARRISONBURG, VA",USPS,25,25,25,25,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,25,,,,,,,,,,,,,,,Q2
+2068,PLEASANT RIDGE AMISH-MENNONITE CHURCH,"ALPHA, KY",DM,4125,4125,4125,4125,FALSE,,,,,TRUE,4125,,,,,,,,,,,,,,,,,,,,,,,,,
+2069,PLEASANT VALLEY A. M. CHURCH,"MUSCODA, WI",UPS,1250,500,0,0,TRUE,ONLY PRINT ON Q1 AND Q2,ONLY PRINT ON Q1 AND Q3,ONLY PRINT ON Q1 AND Q4,ONLY PRINT ON Q1 AND Q5,TRUE,,,,,,,1250,500,,,,,,,,,,,,,,,,,,
+2070,MOUNT NEBO MENNONITE CHURCH,"NEWBERRY, IN",UPS,0,3000,0,0,TRUE,ONLY PRINT ON Q2,ONLY PRINT ON Q2,ONLY PRINT ON Q2,ONLY PRINT ON Q2,TRUE,,,,,,,,3000,,,,,,,,,,,,,,,,,,
+2071,PLEASANTVIEW MENNONITE CHURCH* Q2,"KALEVA, MI",USPS,100,100,100,100,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,100,,,,,,,,,,,,,,,Q2
+2072,PRAIRIE MENNONITE CHURCH,"BLOOMING PRAIRIE, MN",UPS,1215,1215,1215,1215,FALSE,,,,,TRUE,,,,,,1215,,,,,,,,,,,,,,,,,,,,
+2073,PROVIDENCE MENNONITE CHURCH,"AUBURN, KY",UPS,2500,2500,2500,2500,FALSE,,,,,TRUE,,,,,,2500,,,,,,,,,,,,,,,,,,,,
+2078,SALEM MENNONITE FELLOWSHIP,"KEOTA, IA",UPS + USPS,1350,1350,1350,1350,FALSE,Set 12 aside for customer,,,,TRUE,,,,,,1338,,,,,12,,,,,,,,,,,,,,,
+2080,SALEM MENNONITE CHURCH,"NEW PARIS, IN",UPS + USPS,4000,4000,4000,4000,FALSE,Set 32 aside for customer,,,,TRUE,,,,,,3968,,,,,32,,,,,,,,,,,,,,,
+2082,SHADE MOUNTAIN MENNONITE CHURCH,"MT. PLEASANT MILLS, PA",DM + USPS,2732,2732,2732,2732,FALSE,Set 70 aside for customer,Set 70 aside for customer,Set 70 aside for customer,Set 70 aside for customer,TRUE,2662,,,,,,,,,,70,,,,,,,,,,,,,,,
+2084,SHARON BETHEL MENNONITE CHURCH,"KALONA, IA",USPS,25,25,25,25,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,25,,,,,,,,,,,,,,,
+2087,SHIRKSVILLE MENNONITE CHURCH* Q2,"FREDRICKSBURG, PA",USPS,10,10,10,10,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,10,,,,,,,,,,,,,,,Q2
+2088,SONLIGHT CHAPEL,"APPLE CREEK, OH",DM + UPS + USPS,2539,2539,2539,2539,FALSE,"Direct Mail to R1&2 in Apple Creek (44606); ship 1255 to Bayard Printing Group and label boxes with ""Insert for Holmes County Bargin Hunter""; Set 100 aside for customer","Direct Mail to R1&2 in Apple Creek (44606); ship 1255 to Bayard Printing Group and label boxes with ""Insert for Holmes County Bargin Hunter""; Set 100 aside for customer","Direct Mail to R1&2 in Apple Creek (44606); ship 1255 to Bayard Printing Group and label boxes with ""Insert for Holmes County Bargin Hunter""; Set 100 aside for customer","Direct Mail to R1&2 in Apple Creek (44606); ship 1255 to Bayard Printing Group and label boxes with ""Insert for Holmes County Bargin Hunter""; Set 100 aside for customer",TRUE,1184,,,,,1255,,,,,100,,,,,,,,,,,,,,,
+2091,SPARTA MENNONITE FELLOWSHIP,"SPARTA, WI",DM + INTL + USPS,350,350,350,350,FALSE,20 extras to client,21 extras to client,22 extras to client,23 extras to client,TRUE,209,,,,,,,,,,20,,,,,,,,,,76,,,,,
+2096,STAR ENTERPRISES* Q3,"AMELIA, VA",USPS,12,12,12,12,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,12,,,,,,,,,,,,,,,Q3
+2100,SUMMERSVILLE MENNONITE CHURCH,"SUMMERSVILLE, MO",UPS,4950,4950,4950,4950,FALSE,,,,,TRUE,,,,,,4950,,,,,,,,,,,,,,,,,,,,
+2112,SWANTON MENNONITE FELLOWSHIP,"SWANTON, MD",UPS,1230,1230,1230,1230,FALSE,,,,,TRUE,,,,,,1230,,,,,,,,,,,,,,,,,,,,
+2116,SWATARA MENNONITE CHURCH* Q2,"MYERSTOWN, PA",USPS,68,68,68,68,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,68,,,,,,,,,,,,,,,Q2
+2124,WHITEVILLE MENNONITE CHURCH,"WHITEVILLE, TN",UPS,600,600,600,600,FALSE,,,,,TRUE,,,,,,600,,,,,,,,,,,,,,,,,,,,
+2136,SPRING RIVER MENNONITE CHURCH,"LARUSSELL, MO",DM + USPS,6317,6317,6317,6317,FALSE,Set 40 aside for customer,Set 40 aside for customer,Set 40 aside for customer,Set 40 aside for customer,TRUE,6277,,,,,,,,,,40,,,,,,,,,,,,,,,
+2138,WOODLAWN AMISH MENNONITE CHURCH (NO CHURCH NAME),"GOSHEN, IN",USPS,160,160,160,160,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,160,,,,,,,,,,,,,,,
+2140,BETHEL CONSERVATIVE MENNONITE CHURCH* Q1,"MILLBANK, ON",INTL,25,25,25,25,FALSE,Low bulk,Low bulk,Low bulk,Low bulk,FALSE,,,,,,,,,,,,,,,,,,,,,25,,,,,Q1
+2141,KIRKWOOD MENNONITE CHURCH,"KIRKWOOD, PA",DM + USPS,1061,1061,1061,1061,FALSE,Set 25 aside for customer,Set 25 aside for customer,Set 25 aside for customer,Set 25 aside for customer,TRUE,1036,,,,,,,,,,25,,,,,,,,,,,,,,,
+2146,REACHING OUT OF PERRY COUNTY,"LOYSVILLE, PA",LTL,16500,16500,16500,16500,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,16500,,,,,,,,,,
+2148,OZARK MENNONITE CHURCH,"SEYMOUR, MO",DM,2925,2925,2925,2925,FALSE,,,,,TRUE,2925,,,,,,,,,,,,,,,,,,,,,,,,,
+2164,MOUNT CARMEL BIBLE FELLOWSHIP,"WALLINGFORD, KY",UPS + USPS,6825,6825,6825,6825,FALSE,Set 25 aside for customer,,,,TRUE,,,,,,6800,,,,,25,,,,,,,,,,,,,,,
+2165,PILGRIM FELLOWSHIP CHURCH,"COCHRANTON, PA",DM + USPS,1162,1162,1162,1162,FALSE,Set 50 aside for customer,Set 50 aside for customer,Set 50 aside for customer,Set 50 aside for customer,TRUE,1112,,,,,,,,,,50,,,,,,,,,,,,,,,
+2177,MOUNT OLIVE MENNONITE CHURCH,"MONTGOMERY, IN",UPS,0,0,3000,0,TRUE,ONLY PRINT ON Q3,ONLY PRINT ON Q4,ONLY PRINT ON Q5,ONLY PRINT ON Q6,TRUE,,,,,,,0,0,3000,0,,,,,,,,,,,,,,,,
+2178,FRESH START CHAPEL,"WASHINGTON, IN",UPS,0,0,0,3000,TRUE,ONLY PRINT ON Q4,ONLY PRINT ON Q4,ONLY PRINT ON Q4,ONLY PRINT ON Q4,TRUE,,,,,,,,,,3000,,,,,,,,,,,,,,,,
+2179,MOUNT JOY CONSERVATIVE FELLOWSHIP,"RAGLESVILLE, IN",UPS,3000,0,0,0,TRUE,ONLY PRINT ON Q1,ONLY PRINT ON Q1,ONLY PRINT ON Q1,ONLY PRINT ON Q1,TRUE,,,,,,,3000,,,,,,,,,,,,,,,,,,,
+2201,ELM STREET MENNONITE CHURCH,"LEBANON, PA",DM,3360,3360,3360,3360,FALSE,,,,,TRUE,3360,,,,,,,,,,,,,,,,,,,,,,,,,
+2202,PILGRIM MENNONITE CONFERENCE,"RICHLAND, PA",USPS,200,200,200,200,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,200,,,,,,,,,,,,,,,
+2219,WOODLAWN MENNONITE FELLOWSHIP* Q2,"DORKING, ON",INTL,72,72,72,72,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,,,,,,,,,,,72,,,,,Q2
+2226,LONG CREEK MENNONITE CHURCH,"LONG CREEK, OR",DM,618,618,618,618,FALSE,,,,,TRUE,618,,,,,,,,,,,,,,,,,,,,,,,,,
+2229,BANK MENNONITE CHURCH,"DAYTON, VA",UPS,2250,2250,2250,2250,FALSE,,,,,TRUE,,,,,,2250,,,,,,,,,,,,,,,,,,,,
+2231,MOUNT HERMON MENNONITE CHURCH,"ELKTON, VA",USPS,30,30,30,30,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,30,,,,,,,,,,,,,,,
+2232,RAWLEY SPRINGS MENNONITE CHURCH,"RAWLEY SPRINGS, VA",UPS,310,310,310,310,FALSE,,,,,TRUE,,,,,,310,,,,,,,,,,,,,,,,,,,,
+2234,ALLEGHENY VALLEY MENNONITE CHURCH,"MANN'S CHOICE, PA",DM + USPS,832,832,832,832,FALSE,Set 10 aside for customer,Set 10 aside for customer,Set 10 aside for customer,Set 10 aside for customer,TRUE,822,,,,,,,,,,10,,,,,,,,,,,,,,,
+2241,FARMINGTON MENNONITE CHURCH,"FARMINGTON, NM",UPS,2000,2000,2000,2000,FALSE,,,,,TRUE,,,,,,2000,,,,,,,,,,,,,,,,,,,,
+2243,GRANDIN MENNONITE CHURCH* Q2,"DONIPHAN, MO",USPS,40,40,40,40,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,40,,,,,,,,,,,,,,,Q2
+2248,HOPE VALLEY MENNONITE CHURCH* Q2,"FLAT GAP, KY",USPS,50,50,50,50,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,50,,,,,,,,,,,,,,,Q2
+2249,HORNDEAN MENNONITE CHURCH,"HORNDEAN, MB",INTL,665,665,665,665,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,,,,,,665,,,,,
+2251,MCBRIDE MENNONITE CHURCH,"MCBRIDE, BC",INTL,250,250,250,250,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,,,,,,250,,,,,
+2252,MEADOW GREEN MENNONITE CHURCH,"THREE SPRINGS, PA",UPS + USPS,1030,1030,1030,1030,FALSE,Set 30 aside for customer,,,,TRUE,,,,,,1000,,,,,30,,,,,,,,,,,,,,,
+2262,BLACK RIVER MENNONITE CHURCH,"LOMAN, MN",UPS,315,315,315,315,FALSE,,,,,TRUE,,,,,,315,,,,,,,,,,,,,,,,,,,,
+2265,CUBA MENNONITE CHURCH,"HARLAN, IN",USPS,120,120,120,120,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,120,,,,,,,,,,,,,,,
+2276,GARBERS MENNONITE CHURCH,"SPRING GROVE, PA",UPS,500,500,500,500,FALSE,,,,,TRUE,,,,,,500,,,,,,,,,,,,,,,,,,,,
+2278,MUDDY CREEK MENNONITE,"EPHRATA, PA",UPS,2482,2482,2482,2482,FALSE,,,,,TRUE,,,,,,2482,,,,,,,,,,,,,,,,,,,,
+2281,CALVARY MENNONITE CHURCH,"BOYCEVILL, WI",DM,1296,1296,1296,1296,FALSE,,,,,TRUE,1296,,,,,,,,,,,,,,,,,,,,,,,,,
+2282,PINE GROVE MENNONITE CHURCH,"CHEWELAH, WA",UPS,1000,1000,1000,1000,FALSE,,,,,TRUE,,,,,,1000,,,,,,,,,,,,,,,,,,,,
+2284,FAIRFIELD MENNONITE CHURCH* Q2,"FAIRFIELD, MT",USPS,55,55,55,55,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,55,,,,,,,,,,,,,,,Q2
+2285,TOWANDA CREEK MENNONITE CHURCH,"MONROETON, PA",DM + USPS,2290,2290,2290,2290,FALSE,Set 100 aside for customer,Set 100 aside for customer,Set 100 aside for customer,Set 100 aside for customer,TRUE,2190,,,,,,,,,,100,,,,,,,,,,,,,,,
+2291,LAKEVIEW CONSERVATIVE MENNONITE CHURCH,"KIPPEN, ON",UPS,6000,6000,6000,6000,FALSE,Attach invoice to box,Attach invoice to box,Attach invoice to box,Attach invoice to box,TRUE,,,,,,6000,,,,,,,,,,,,,,,,,,,,
+2294,HIDDEN RIVER MENNONITE CHURCH* Q1,"FREDRICKSBURG, PA",USPS,10,10,10,10,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,10,,,,,,,,,,,,,,,Q1
+2299,BLACK HILLS MENNONITE CHURCH,"BELLE FOURCHE, SD",DM + USPS,1039,1039,1039,1039,FALSE,Set 25 aside for customer,Set 25 aside for customer,Set 25 aside for customer,Set 25 aside for customer,TRUE,1014,,,,,,,,,,25,,,,,,,,,,,,,,,
+2301,GOLDEN HILLS MENNONITE CHURCH,"SAN ANDRES, CA",USPS,200,200,200,200,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,200,,,,,,,,,,,,,,,
+2305,LITTLE CREEK MENNONITE CHURCH,"FRANKFORT, OH",DM,2321,2321,2321,2321,FALSE,,,,,TRUE,2321,,,,,,,,,,,,,,,,,,,,,,,,,
+2308,LARRY R. WEBER* Q2,"KEEDYSVILLE, MD",USPS,11,11,11,11,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,11,,,,,,,,,,,,,,,Q2
+2314,STRASBURG MENNONITE CHURCH,"CHAMBERSBURG, PA",USPS,40,40,40,40,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,40,,,,,,,,,,,,,,,
+2316,GAP MILLS CHRISTIAN FELLOWSHIP,"GAP MILLS, WV",UPS,600,600,600,600,FALSE,,,,,TRUE,,,,,,600,,,,,,,,,,,,,,,,,,,,
+2317,MOUNT ZION MENNONITE CHURCH,"DEER LODGE, TN",DM + USPS,8622,8622,8622,8622,FALSE,Set 60 aside for customer,Set 60 aside for customer,Set 60 aside for customer,Set 60 aside for customer,TRUE,8562,,,,,,,,,,60,,,,,,,,,,,,,,,
+2321,HILLSDALE MENNONITE FELLOWSHIP,"HILLSDALE, PA",DM + USPS,6029,6029,6029,6029,FALSE,Set 20 aside for customer,Set 20 aside for customer,Set 20 aside for customer,Set 20 aside for customer,TRUE,6009,,,,,,,,,,20,,,,,,,,,,,,,,,
+2325,WHITE COUNTY MENNONITE CHURCH,"SPARTA, TN",UPS,500,500,500,500,FALSE,,,,,TRUE,,,,,,500,,,,,,,,,,,,,,,,,,,,
+2326,GREENE COUNTY MENNONITE CHURCH,"CHUCKEY, TN",UPS,2500,2500,2500,2500,FALSE,,,,,TRUE,,,,,,2500,,,,,,,,,,,,,,,,,,,,
+2327,SOUTHERN TIER MENNONITE CHURCH,"DELEVAN, NY",DM + USPS,1704,1704,1704,1704,TRUE,VARIABLE QTY: See Mailing Notes; Set 20 aside for customer,,,,TRUE,,1684,1684,1684,1684,,,,,,,20,20,20,20,,,,,,,,,,,
+2332,MILLMONT MENNONITE CHURCH* Q3,"MILLMONT, PA",USPS,100,100,100,100,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,100,,,,,,,,,,,,,,,Q3
+2333,ROY SCHLABACH* Q1,"MILLERSBURG, PA",USPS,11,11,11,11,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,11,,,,,,,,,,,,,,,Q1
+2335,FAIRHAVEN MENNONITE CHURCH* Q3,"MYERSTOWN, PA",USPS,50,50,50,50,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,50,,,,,,,,,,,,,,,Q3
+2339,STRAWBERRY MENNONITE CHURCH,"STRAWBERRY, AR",UPS,730,730,730,730,FALSE,,,,,TRUE,,,,,,730,,,,,,,,,,,,,,,,,,,,
+2388,MOBERLY MENNONITE CHURCH* Q1,"CLARK, MO",USPS,90,90,90,90,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,90,,,,,,,,,,,,,,,Q1
+2399,PROVIDENCE MENNONITE CHURCH - NE,"AUBURN, NE",DM,3778,3778,3778,3778,FALSE,,,,,TRUE,3778,,,,,,,,,,,,,,,,,,,,,,,,,
+2401,FAIRHAVEN AMISH MENNONITE CHURCH,"MILVERTON, ON",INTL,45,45,45,45,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,,,,,,,,,,,45,,,,,
+2405,FRANKLIN MENNONITE CHURCH,"FRANKLIN, KY",UPS,2500,2500,2500,2500,FALSE,,,,,TRUE,,,,,,2500,,,,,,,,,,,,,,,,,,,,
+2412,KEMPSVILLE MENNONITE CHURCH* Q2,"VIRGINIA BEACH, VA",USPS,50,50,50,50,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,50,,,,,,,,,,,,,,,Q2
+2427,HURON VALLEY MENNONITE CHURCH,"WILLARD, OH",DM,6518,6518,6518,6518,FALSE,Set 75 aside for customer,Set 75 aside for customer,Set 75 aside for customer,Set 75 aside for customer,TRUE,,6443,6443,6443,6443,,,,,,,75,75,75,,,,,,,,,,,,
+2429,OAK GROVE MENNONITE CHURCH* Q2,"ARODA, VA",USPS,70,70,70,70,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,70,,,,,,,,,,,,,,,Q2
+2433,PILGRIM CHRISTIAN FELLOWSHIP,"STUARTS DRAFT, VA",DM,649,649,649,649,TRUE,VARIABLE QTY: Check route schedule,VARIABLE QTY: Check route schedule,VARIABLE QTY: Check route schedule,VARIABLE QTY: Check route schedule,TRUE,,649,649,649,649,,,,,,,,,,,,,,,,,,,,,
+2442,MEADOW VIEW MENNONITE CHURCH,"RESACA, GA",DM,834,834,834,834,FALSE,,,,,TRUE,834,,,,,,,,,,,,,,,,,,,,,,,,,
+2447,BITTERROOT VALLEY MENNONITE CHURCH* Q1,"CORVALLIS, MT",USPS,11,11,11,11,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,11,,,,,,,,,,,,,,,Q1
+2450,NORTHERN LIGHT CHRISTIAN FELLOWSHIP* Q2,"HENDERSON, NY",USPS,35,35,35,35,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,35,,,,,,,,,,,,,,,Q2
+2452,ROSEWOOD FELLOWSHIP,"SHIPSHEWANA, IN",UPS,2656,2656,2656,2656,FALSE,,,,,TRUE,,,,,,2656,,,,,,,,,,,,,,,,,,,,
+2453,PLEASANT VALLEY MENNONITE CHURCH,"EPHRATA, PA",UPS,2700,2700,2700,2700,FALSE,,,,,TRUE,,,,,,2700,,,,,,,,,,,,,,,,,,,,
+2454,GRAND VALLEY MENNONITE CHURCH,"FRUITA, CO",UPS + USPS,6150,6150,6150,6150,FALSE,EMAIL TRACKING WHEN SHIPPING TO jcging19@gmail.com! Set 150 aside for customer,,,,TRUE,,,,,,6000,,,,,150,,,,,,,,,,,,,,,
+2460,YARROWSBURG MENNONITE CHURCH,"BROWNSVILLLE, MD",UPS,550,550,550,550,FALSE,,,,,TRUE,,,,,,550,,,,,,,,,,,,,,,,,,,,
+2463,SARASOTA MENNONITE CHURCH* Q2,"SARASOTA, FL",USPS,23,23,23,23,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,23,,,,,,,,,,,,,,,Q2
+2470,MAGNOLIA MENNONITE CHURCH,"MACON, MS",UPS,2000,2000,2000,2000,FALSE,,,,,TRUE,,,,,,2000,,,,,,,,,,,,,,,,,,,,
+2475,PILGRIM MENNONITE CHURCH,"AMELIA, VA",LTL + USPS,10050,10050,10050,10050,FALSE,Set 50 aside for customer,Set 50 aside for customer,Set 50 aside for customer,Set 50 aside for customer,TRUE,,,,,,,,,,,50,,,,,10000,,,,,,,,,,
+2477,PLEASANT VIEW MENNONITE CHURCH - PEACHEY,"BELLEVILLE, PA",UPS,2700,2700,2700,2700,FALSE,,,,,TRUE,,,,,,2700,,,,,,,,,,,,,,,,,,,,
+2483,BETHEL MENNONITE CHURCH,"RICHMOND, MO",LTL,6500,6500,6500,6500,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,6500,,,,,,,,,,
+2485,BEREA MENNONITE FELLOWSHIP CHURCH,"RUTHERFORD, TN",UPS,4800,4800,4800,4800,FALSE,,,,,TRUE,,,,,,4800,,,,,,,,,,,,,,,,,,,,
+2492,FAITH MENNONITE FELLOWSHIP-CUSTOM,"STEVENS, PA",UPS + USPS,3345,3345,3345,3345,FALSE,Set 100 aside for customer,,,,TRUE,,,,,,3245,,,,,100,,,,,,,,,,,,,,,
+2498,SILVER LAKE MENNONITE CHURCH,"PERRY, NY",USPS,15,15,15,15,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,15,,,,,,,,,,,,,,,
+2509,SEVERN MENNONITE CHURCH,"SEVERN, NC",UPS,450,450,450,450,FALSE,,,,,TRUE,,,,,,450,,,,,,,,,,,,,,,,,,,,
+2510,CRAIG MENNONITE CHURCH,"CRAIG, CO",,35,35,35,4710,TRUE,,,,"When shipping 4710 print custom back page and send UPS to 84462 West Hwy 40, Craig, CO 81625 and print poscard!!!",FALSE,,,,,,,,,,4710,,35,35,35,,,,,,,,,,,,
+2520,SHILOH CONSERVATIVE MENNONITE CHURCH,"ST THOMAS, ON",INTL,60,60,60,60,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,,,,,,,,,,,60,,,,,
+2522,MEIGS MENNONITE CHURCH,"MEIGS, GA",DM + USPS,1053,1053,1053,1053,FALSE,Set 15 aside for customer,Set 15 aside for customer,Set 15 aside for customer,Set 15 aside for customer,TRUE,1038,,,,,,,,,,15,,,,,,,,,,,,,,,
+2531,AUGUSTA MENNONITE CHURCH,"AUGUSTA, WI",,3625,3250,3625,3250,TRUE,,,,,TRUE,,,,,,,3625,3250,3625,3250,,,,,,,,,,,,,,,,
+2532,SHILOH MENNONITE CHURCH,"CONRATH, WI",UPS,960,960,960,960,FALSE,,,,,TRUE,,,,,,960,,,,,,,,,,,,,,,,,,,,
+2536,NORTH COAST MENNONITE CHURCH* Q2,"FORTUNA, CA",USPS,100,100,100,100,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,100,,,,,,,,,,,,,,,Q2
+2544,BLUE ROCK MENNONITE CHURCH,"LANCASTER, PA",DM,1198,1198,1198,1198,FALSE,,,,,TRUE,1198,,,,,,,,,,,,,,,,,,,,,,,,,
+2546,BETHESDA MENNONITE CHURCH,"COALDALE, AB",INTL,3000,3000,3000,3000,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,,,,,,3000,,,,,
+2553,NORTHERN UTAH MENNONITE CHURCH,"GARLAND, UT",,2500,2500,2500,2500,TRUE,Variable QTY: Target of 2500 per quarter,Variable QTY: Target of 2500 per quarter,Variable QTY: Target of 2500 per quarter,Variable QTY: Target of 2500 per quarter,TRUE,,2500,2500,2500,2500,,,,,,,,,,,,,,,,,,,,,
+2554,PLEASANT VIEW MENNONITE CHURCH,"BROADHEAD, WI",UPS,500,500,500,500,FALSE,,,,,TRUE,,,,,,500,,,,,,,,,,,,,,,,,,,,
+2561,MAYSVILLE CHRISTIAN FELLOWSHIP,"WEATHERBY, MO",UPS,3150,3150,3150,3150,FALSE,,,,,TRUE,,,,,,3150,,,,,,,,,,,,,,,,,,,,
+2563,GRACE MENNONITE FELLOWSHIP,"BASTROP, TX",USPS,50,50,50,50,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,50,,,,,,,,,,,,,,,
+2587,LAMAR MISHLER* Q2,"MIDDLEBURY, IN",USPS,80,80,80,80,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,80,,,,,,,,,,,,,,,Q2
+2588,LIVING WATER MENNONITE FELLOWSHIP* Q2,"STEVENS, PA",USPS,35,35,35,35,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,35,,,,,,,,,,,,,,,Q2
+2592,PINE CREEK MENNONITE CHURCH,"AUSTIN, MB",INTL,830,830,830,830,FALSE,,,,,TRUE,,,,,,,,,,,,,,,,,,,,,830,,,,,
+2597,SLANESVILLE COMMUNITY MENNONITE CHURCH,"SLANESVILLE, WV",UPS,1000,1000,1000,1000,FALSE,,,,,TRUE,,,,,,1000,,,,,,,,,,,,,,,,,,,,
+2600,ALTURAS MENNONITE CHURCH,"ALTURAS, CA",UPS,1200,1200,1200,1200,FALSE,,,,,TRUE,,,,,,1200,,,,,,,,,,,,,,,,,,,,
+2607,BOKOSHE MENNONITE CHURCH,"KEOTA, OK",USPS,15,15,15,15,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,15,,,,,,,,,,,,,,,
+2610,PIONEER VALLEY MENNONITE FELLOWSHIP* Q2,"RUSSELL, MA",USPS,12,12,12,12,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,12,,,,,,,,,,,,,,,Q2
+2612,SUMMERSVILLE MENNONITE CHURCH,"GREENSBURG, KY",UPS,2000,2000,2000,2000,FALSE,,,,,TRUE,,,,,,2000,,,,,,,,,,,,,,,,,,,,
+2614,MENNONITE BELIEVERS FELLOWSHIP* Q2,"PAYNESVILLE, MN",USPS,30,30,30,30,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,30,,,,,,,,,,,,,,,Q2
+2616,LIBERIA MENNONITE CHURCH (FAITH MENNONITE MISSIONS,"FOR LIBERIA,",UPS,700,700,700,700,FALSE,,,,,TRUE,,,,,,700,,,,,,,,,,,,,,,,,,,,
+2623,HOPE MENNONITE CHURCH,"PANTEGO, NC",DM,2889,2889,2889,2889,FALSE,,,,,TRUE,2889,,,,,,,,,,,,,,,,,,,,,,,,,
+2637,HEGINS VALLEY MENNONITE CHURCH,"HEGINS, PA",USPS,125,125,125,125,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,125,,,,,,,,,,,,,,,
+2642,FOLLOWERS OF CHRIST FELLOWSHIP,"RED BLUFF, CA",UPS,1412,1412,1412,1412,FALSE,,,,,TRUE,,,,,,1412,,,,,,,,,,,,,,,,,,,,
+2645,NORTHERN LIGHT MENNONITE CHURCH,"WASILLA, AK",USPS,1000,1000,1000,1000,FALSE,DUPLO OPERATOR: Box into five USPS Medium Flat Rate Boxes,DUPLO OPERATOR: Box into five USPS Medium Flat Rate Boxes,DUPLO OPERATOR: Box into five USPS Medium Flat Rate Boxes,DUPLO OPERATOR: Box into five USPS Medium Flat Rate Boxes,TRUE,,,,,,,,,,,1000,,,,,,,,,,,,,,,
+2651,NEW HOPE MENNONITE CHURCH* Q2,"WASHINGTON, IA",USPS,30,30,30,30,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,30,,,,,,,,,,,,,,,Q2
+2654,JOHN DAY VALLEY MENNONITE CHURCH* Q2,"JOHN DAY, OR",USPS,20,20,20,20,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,20,,,,,,,,,,,,,,,Q2
+2655,MOUNT MORIAH MENNONITE FELLOWSHIP,"SKIDMORE, MO",UPS,2100,2100,2100,2100,FALSE,,,,,TRUE,,,,,,2100,,,,,,,,,,,,,,,,,,,,
+2657,MCDOWELL MENNONITE CHURCH,"MCDOWELL, VA",UPS,1400,1400,1400,1400,FALSE,,,,,TRUE,,,,,,1400,,,,,,,,,,,,,,,,,,,,
+2660,MARANATHA MENNONITE CHURCH* Q1,"TAYLORSVILLE, MS",USPS,12,12,12,12,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,12,,,,,,,,,,,,,,,Q1
+2661,RAWLINS MENNONITE CHURCH,"RAWLINS, WY",DM,1272,1163,1139,725,TRUE,VARIABLE QTY: Q1: 1272; Q2: 1163; Q3: 1139; Q4: 725,VARIABLE QTY: Q1: 1272; Q2: 1163; Q3: 1139; Q4: 726,VARIABLE QTY: Q1: 1272; Q2: 1163; Q3: 1139; Q4: 727,VARIABLE QTY: Q1: 1272; Q2: 1163; Q3: 1139; Q4: 728,TRUE,,1272,1163,1139,725,,,,,,,,,,,,,,,,,,,,,
+2663,REHRERSBURG MENNONITE CHURCH,"BETHEL, PA",UPS,770,770,770,770,FALSE,,,,,TRUE,,,,,,770,,,,,,,,,,,,,,,,,,,,
+2667,DARBUN MENNONITE CHURCH* Q1,"KOKOMO, MS",USPS,11,11,11,11,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,11,,,,,,,,,,,,,,,Q1
+2670,BLUE ROCK MENNONITE CHURCH,"LANCASTER, PA",UPS,5525,5525,5525,5525,FALSE,,,,,TRUE,,,,,,5525,,,,,,,,,,,,,,,,,,,,
+2675,MOUNT JOY CONSERVATIVE FELLOWSHIP (LOW BULK),"RAGLESVILLE, IN",USPS,50,50,50,50,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,50,,,,,,,,,,,,,,,
+2679,UNIONVILLE CHRISTIAN BROTHERHOOD,"CINCINNATI, IA",DM,1544,1544,1544,1544,FALSE,,,,,TRUE,1544,,,,,,,,,,,,,,,,,,,,,,,,,
+2696,HUDSON VALLEY MENNONITE CHURCH* Q2,"HUDSON, NY",USPS,50,50,50,50,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,50,,,,,,,,,,,,,,,Q2
+2698,SHEKINAH MENNONITE CHURCH,"KIRKSVILLE, MO",UPS,2400,2400,2400,2400,FALSE,,,,,TRUE,,,,,,2400,,,,,,,,,,,,,,,,,,,,
+2704,SALEM CHRISTIAN BROTHERHOOD,"SALEM, MO",UPS,1000,1000,1000,1000,FALSE,,,,,TRUE,,,,,,1000,,,,,,,,,,,,,,,,,,,,
+2707,CEDAR FORK MENNONITE CHURCH,"BEULAVILLE, NC",DM,3908,3908,3908,3908,FALSE,,,,,TRUE,3908,,,,,,,,,,,,,,,,,,,,,,,,,
+2708,GLEASON MENNONITE CHURCH* Q2,"GLEASON, WI",USPS,35,35,35,35,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,35,,,,,,,,,,,,,,,Q2
+2716,NEWBURG MENNONITE CHURCH,"NEWBURG, PA",DM + USPS,1330,1330,1330,1330,FALSE,Set 32 aside for customer,Set 32 aside for customer,Set 32 aside for customer,Set 32 aside for customer,TRUE,1298,,,,,,,,,,32,,,,,,,,,,,,,,,
+2717,SOUTHSIDE MENNONITE CHURCH,"KENBRIDGE, VA",DM + USPS,7991,7991,7991,7991,FALSE,Set 70 aside for customer,Set 70 aside for customer,Set 70 aside for customer,Set 70 aside for customer,TRUE,7921,,,,,,,,,,70,,,,,,,,,,,,,,,
+2721,DANIEL ALLGYER,"BENTON, IL",USPS,11,11,11,11,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,11,,,,,,,,,,,,,,,
+2725,EMMANUEL MENNONITE CHURCH,"HARTSELLE, AL",DM + UPS,2024,2024,2024,2024,FALSE,Set 300 aside for customer,Set 300 aside for customer,Set 300 aside for customer,Set 300 aside for customer,TRUE,1724,,,,,300,,,,,,,,,,,,,,,,,,,,
+2726,FREDONIA MENNONITE CHURCH,"FREDONIA, KY",DM + USPS,831,831,831,831,FALSE,Set 22 aside for customer,Set 22 aside for customer,Set 22 aside for customer,Set 22 aside for customer,TRUE,809,,,,,,,,,,22,,,,,,,,,,,,,,,
+2734,HAW CREEK MENNONITE CHURCH,"Hope, IN",UPS,2519,2519,2519,2519,FALSE,Box like regular for UPS but also include facing slips,Box like regular for UPS but also include facing slips,Box like regular for UPS but also include facing slips,Box like regular for UPS but also include facing slips,TRUE,,,,,,2519,,,,,,,,,,,,,,,,,,,,
+2735,LIBERTY MENNONITE CHURCH,"LIBERTY, PA",DM + USPS,871,871,871,871,FALSE,Set 10 aside for customer,Set 10 aside for customer,Set 10 aside for customer,Set 10 aside for customer,TRUE,861,,,,,,,,,,10,,,,,,,,,,,,,,,
+2737,SALEM COUNTY MENNONITE CHURCH* Q1,"WOODSTOWN, NJ",USPS,25,25,25,25,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,25,,,,,,,,,,,,,,,Q1
+2742,PLEASANT RIDGE DUNKARD BRETHREN CHURCH,"WEST UNITY, OH",UPS,1250,1250,1250,1250,FALSE,,,,,TRUE,,,,,,1250,,,,,,,,,,,,,,,,,,,,
+2743,CROWLEY'S RIDGE MENNONITE CHURCH* Q2,"ADVANCE, MO",USPS,100,100,100,100,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,100,,,,,,,,,,,,,,,Q2
+2744,FARMINGTON MENNONITE CHURCH,"FARMINGTON, MO",DM + USPS,3256,3256,3256,3256,FALSE,Set 50 aside for customer,Set 50 aside for customer,Set 50 aside for customer,Set 50 aside for customer,TRUE,3206,,,,,,,,,,50,,,,,,,,,,,,,,,
+2745,LIVING WATERS MENNONITE CHURCH,"LEXINGTON, IN",UPS,3000,3000,3000,3000,FALSE,,,,,TRUE,,,,,,3000,,,,,,,,,,,,,,,,,,,,
+2746,BRIDGEWATER MENNONITE CHURCH,"WAYNESBORO, VA",UPS,240,240,240,240,FALSE,,,,,TRUE,,,,,,240,,,,,,,,,,,,,,,,,,,,
+2747,DAYSPRING CHRISTIAN FELLOWSHIP,"TAYLORSVILLE, NC",UPS,750,750,750,750,FALSE,,,,,TRUE,,,,,,750,,,,,,,,,,,,,,,,,,,,
+2748,OWENTON AMISH MENNONITE CHURCH,"OWENTON, KY",UPS + USPS,3080,3080,3080,3080,FALSE,Set 80 aside for customer; CALL MICHELLE WHEN SHIPPING; (502) 221-0669; mlira@madisoncourier.com,,,,TRUE,,,,,,3000,,,,,80,,,,,,,,,,,,,,,
+2752,WILLOW GROVE MENNONITE CHURCH,"MONROE, TN",DM,2571,2571,2571,2571,FALSE,,,,,TRUE,2571,,,,,,,,,,,,,,,,,,,,,,,,,
+2754,RIVERTON MENNONITE CHURCH,"RIVERTON, WY",DM + USPS,2733,2733,2733,2733,FALSE,Set 150 aside for customer,Set 150 aside for customer,Set 150 aside for customer,Set 150 aside for customer,TRUE,2583,,,,,,,,,,150,,,,,,,,,,,,,,,
+2755,EBENEZER AMISH MENNONITE CHURCH,"OSKALOOSA, KS",UPS,1230,1230,1230,1230,FALSE,,,,,TRUE,,,,,,1230,,,,,,,,,,,,,,,,,,,,
+2756,MARANATHA MENNONITE FELLOWSHIP,"BANGOR, CA",UPS,625,625,625,625,FALSE,,,,,TRUE,,,,,,625,,,,,,,,,,,,,,,,,,,,
+2757,LYNDON AMISH MENNONITE CHURCH MISSION,"LYNDON, KS",DM,1891,1891,1891,1891,FALSE,,,,,TRUE,1891,,,,,,,,,,,,,,,,,,,,,,,,,
+2759,FARMINGTON MENNONITE CHURCH - FOR PRISON,"FARMINGTON, MO",USPS,100,100,100,100,FALSE,"Low Bulk - Do not staple 70; Mail 2 packages to 
+Farmington Correctional Center
+1012 W. Columbia Street
+Farmington, MO 63640
+Package 1: Notate for side A. Include 70 NO staples and 15 stapled banded separately
+Package 2: Notate for side B. Include 15 stapled.","Low Bulk - Do not staple 70; Mail 2 packages to 
+Farmington Correctional Center
+1012 W. Columbia Street
+Farmington, MO 63640
+Package 1: Notate for side A. Include 70 NO staples and 15 stapled banded separately
+Package 2: Notate for side B. Include 15 stapled.","Low Bulk - Do not staple 70; Mail 2 packages to 
+Farmington Correctional Center
+1012 W. Columbia Street
+Farmington, MO 63640
+Package 1: Notate for side A. Include 70 NO staples and 15 stapled banded separately
+Package 2: Notate for side B. Include 15 stapled.","Low Bulk - Do not staple 70; Mail 2 packages to 
+Farmington Correctional Center
+1012 W. Columbia Street
+Farmington, MO 63640
+Package 1: Notate for side A. Include 70 NO staples and 15 stapled banded separately
+Package 2: Notate for side B. Include 15 stapled.",TRUE,,,,,,,,,,,100,,,,,,,,,,,,,,,
+2760,LINCOLN MENNONITE CHURCH* Q2,"EPHRATA, PA",USPS,45,45,45,45,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,45,,,,,,,,,,,,,,,Q2
+2762,CUBA CHRISTIAN BROTHERHOOD,"CUBA, MO",UPS,2000,2000,2000,2000,FALSE,,,,,TRUE,,,,,,2000,,,,,,,,,,,,,,,,,,,,
+2763,FINCASTLE MENNONITE CHURCH* Q2,"BUCHANAN, VA",USPS,150,150,150,150,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,150,,,,,,,,,,,,,,,Q2
+2766,WHITECHURCH AMISH-MENNONITE CHURCH* Q4,"LUCKNOW, ON",INTL,20,20,20,20,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,,,,,,,,,,,20,,,,,Q4
+2772,BETHEL MENNONITE CHURCH - GA* Q2,"WAYNESBORO, GA",USPS,20,20,20,20,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,20,,,,,,,,,,,,,,,Q2
+2773,GOSPEL LIGHT MENNONITE FELLOWSHIP,"PAINT LICK, KY",DM,1173,7370,1173,1173,TRUE,VARIABLE QTY: Q1: 1173; Q2: 7370; Q3: 1173; Q4: 1173,VARIABLE QTY: Q1: 1173; Q2: 7370; Q3: 1173; Q4: 1174,VARIABLE QTY: Q1: 1173; Q2: 7370; Q3: 1173; Q4: 1175,VARIABLE QTY: Q1: 1173; Q2: 7370; Q3: 1173; Q4: 1176,TRUE,,1173,7370,1173,1173,,,,,,,,,,,,,,,,,,,,,
+2774,LAKE VIEW MENNONITE CHURCH,"NORTH EAST, PA",DM,5400,5400,5400,5400,TRUE,Set 30 aside for customer,Set 30 aside for customer,Set 30 aside for customer,Set 30 aside for customer,TRUE,,5400,5400,5400,5400,,,,,,,,,,,,,,,,,,,,,
+2776,DUNKARD BRETHREN - HART MI,"HART, MI",DM + USPS,5236,5236,5236,5236,FALSE,Set 25 aside for customer,Set 25 aside for customer,Set 25 aside for customer,Set 25 aside for customer,TRUE,5211,,,,,,,,,,25,,,,,,,,,,,,,,,
+2777,STILL WATERS MENNONITE CHURCH,"RIPLEY, NY",DM,1106,1106,1106,1106,FALSE,,,,,TRUE,1106,,,,,,,,,,,,,,,,,,,,,,,,,
+2778,PLAD MENNONITE CHURCH* Q2,"PLAD, MO",USPS,30,30,30,30,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,30,,,,,,,,,,,,,,,Q2
+2779,MILL CREEK MENNONITE CHURCH,"SPRING HOPE, NC",DM + USPS,842,842,842,842,FALSE,Set 200 aside for customer,Set 200 aside for customer,Set 200 aside for customer,Set 200 aside for customer,TRUE,642,,,,,,,,,,200,,,,,,,,,,,,,,,
+2780,DISCIPLES OF CHRIST BROTHERHOOD,"ANSON, TX",USPS,40,40,40,40,TRUE,VARIABLE QTY - Check with Customer each quarter,VARIABLE QTY - Check with Customer each quarter,VARIABLE QTY - Check with Customer each quarter,VARIABLE QTY - Check with Customer each quarter,TRUE,,,,,,,,,,,,40,40,40,40,,,,,,,,,,,
+2781,WEST GREEN HILL MENNONITE CHURCH,"SMITHVILLE, TN",USPS,100,100,100,100,FALSE,Low Bulk,,,,TRUE,,,,,,,,,,,100,,,,,,,,,,,,,,,
+2782,BETHANY MENNONITE CHAPEL,"MARTINDALE, PA",USPS,35,35,35,35,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,35,,,,,,,,,,,,,,,
+2785,MARROWBONE CHRISTIAN BROTHERHOOD,"BURKESVILLE, KY",USPS,200,200,200,200,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,200,,,,,,,,,,,,,,,
+2786,MCKENNEY MENNONITE CHURCH* Q1,"RAWLINGS, VA",USPS,50,50,50,50,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,FALSE,,,,,,,,,,,50,,,,,,,,,,,,,,,Q1
+2787,SHEKINAH MENNONITE CHURCH,"TITUSVILLE, PA",DM + USPS,1705,1705,1705,1705,FALSE,Set 20 aside for customer,Set 20 aside for customer,Set 20 aside for customer,Set 20 aside for customer,TRUE,1685,,,,,,,,,,20,,,,,,,,,,,,,,,
+2788,ANCHOR OF HOPE ANABAPTIST FELLOWSHIP* Q2,"STRATFORD, ON",INTL,11,11,11,11,FALSE,Low Bulk,Low Bulk,Low Bulk,Low Bulk,TRUE,,,,,,,,,,,,,,,,,,,,,11,,,,,Q2
+2789,LEBANON CHRISTIAN BROTHERHOOD,"LEBANON, MO",DM + USPS,1178,1178,1178,1178,FALSE,Set 20 aside for customer,Set 20 aside for customer,Set 20 aside for customer,Set 20 aside for customer,TRUE,1158,,,,,,,,,,20,,,,,,,,,,,,,,,

@@ -1,0 +1,109 @@
+﻿@page "/upsdashboard"
+
+@using ReachingOutDB.Data
+@inject OrderServices orderService
+@inject CustomerServices customerService
+@rendermode InteractiveServer
+
+<SfGrid @ref="Grid" DataSource="upsOrders" >
+    <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
+    <GridEditSettings AllowEditing="true" Mode="EditMode.Dialog">
+        <Template>
+            <UpsCostInput ThisOrder="(context as Order)" />
+        </Template>
+    </GridEditSettings>
+    <GridColumns>
+        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
+        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" Width="300"/>
+        <GridColumn Field="@nameof(Order.Qty)" HeaderText="Total Order Qty" Format="#,###" Width="100"/>
+        <GridColumn Field="@nameof(Order.UpsQty)" HeaderText="UPS Qty" Format="#,###" Width="100"/>
+        <GridColumn Field="@nameof(Order.UpsCost)" HeaderText="UPS Cost" Format="C2" />
+        <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Published Shipping" Format="C2" />
+        <GridColumn>
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })" />
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="upsCostDialog" Visible="false" ShowCloseIcon="true" >
+    <DialogTemplates>
+        <Content>
+            <UpsCostInput ThisOrder="targetOrder" CloseDialog="CloseUPSDialog" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    public SfGrid<Order> Grid { get; set; }
+    public IEnumerable<Order> orders { get; set; }
+    public IEnumerable<Order> upsOrders { get; set; }
+    public IEnumerable<Customer> customers { get; set; }
+    public int selectedYear { get; set; }
+    public Quarter selectedQuarter { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        int year = DateTime.Now.Year;
+        int month = DateTime.Now.Month;
+        if (month >= 2 && month <= 4)
+        {
+            selectedQuarter = Quarter.Q2;
+        }
+        else if (month >= 5 && month <= 7)
+        {
+            selectedQuarter = Quarter.Q3;
+        }
+        else if (month >= 8 && month <= 10)
+        {
+            selectedQuarter = Quarter.Q4;
+        }
+        else
+        {
+            selectedQuarter = Quarter.Q1;
+            year++;
+        }
+        selectedYear = year;
+        customers = await customerService.GetCustomersAsync();
+        await RefreshOrders();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshOrders()
+    {
+        orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
+        upsOrders = orders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0 && (JobStatus)((int)o.JobStatus) <= (JobStatus)((int)JobStatus.Shipped));
+    }
+    //Editing is not working. It calls the update, but for some reason it never gets saved to the database.
+    private async Task ActionBeginHandler(ActionEventArgs<Order> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Edit")
+            {
+                await orderService.UpdateOrderAsync(args.Data);
+                await orderService.CalculatePublishedShippingAsync(args.RowData);
+                RefreshOrders();
+            }
+        }
+    }
+
+    public async void CommandClickedHandler(CommandClickEventArgs<Order> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        {
+            ActionEventArgs<Order> actionEventArgs = new ActionEventArgs<Order>();
+            actionEventArgs.Data = args.RowData;
+            ActionBeginHandler(actionEventArgs);
+        }
+    }
+
+    private SfDialog upsCostDialog;
+    private Order targetOrder;
+
+    public void CloseUPSDialog(string action)
+    {
+        this.upsCostDialog.Visible = false;
+    }
+}
