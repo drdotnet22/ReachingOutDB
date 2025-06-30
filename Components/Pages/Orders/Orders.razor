@@ -14,7 +14,8 @@
     <SfDropDownList TItem="string" TValue="Quarter"
                     @bind-Value="selectedQuarter"
                     DataSource="@quarterValues"
-                    Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="200px">
+                    Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" 
+                    Width="200px">
     </SfDropDownList>
     <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
 </div>
@@ -187,6 +188,18 @@
         await base.OnInitializedAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            if (userService.CurrentUser.Role == UserRole.Duplo)
+            {
+                ToolbarItems = new List<Object>() { new ItemModel() { Text = "Saddle Stitched", TooltipText = "Mark selected rows as saddlestitched.", PrefixIcon = "e-circle-check icon", Align = ItemAlign.Left }, "Search" };
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }  
+
     private async Task RefreshOrders()
     {
 
@@ -248,7 +261,14 @@
         {
             if (args.Action == "Add")
             {
-                await orderService.GenerateOrders(args.Data.Customer.CustomerId, args.Data.Year, args.Data.Quarter);
+                if (args.Data.Customer == null)
+                {
+                    await orderService.GenerateOrders(null, args.Data.Year, args.Data.Quarter);
+                }
+                else
+                {
+                    await orderService.GenerateOrders(args.Data.Customer.CustomerId, args.Data.Year, args.Data.Quarter);
+                }
                 RefreshOrders();
             }
             else if (args.Action == "Edit")

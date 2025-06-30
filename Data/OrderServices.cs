@@ -78,10 +78,26 @@ namespace ReachingOutDB.Data
                     order.Customer = customer;
                     order.Quarter = quarter;
                     order.JobStatus = JobStatus.ReadyToPlate;
-                    if (quarter == Quarter.Q1) { order.Qty = customer.QtyQ1; }
-                    else if (quarter == Quarter.Q2) { order.Qty = customer.QtyQ2; }
-                    else if(quarter == Quarter.Q3) { order.Qty = customer.QtyQ3; }
-                    else if (quarter == Quarter.Q4) { order.Qty = customer.QtyQ4; }
+                    if (quarter == Quarter.Q1)
+                    { 
+                        order.Qty = customer.QtyQ1;
+                        order.SpecialNotes = customer.NotesQ1;
+                    }
+                    else if (quarter == Quarter.Q2)
+                    {
+                        order.Qty = customer.QtyQ2;
+                        order.SpecialNotes = customer.NotesQ2;
+                    }
+                    else if(quarter == Quarter.Q3)
+                    {
+                        order.Qty = customer.QtyQ3;
+                        order.SpecialNotes = customer.NotesQ3;
+                    }
+                    else if (quarter == Quarter.Q4)
+                    {
+                        order.Qty = customer.QtyQ4;
+                        order.SpecialNotes = customer.NotesQ4;
+                    }
                     if (customer.YearlyBillingQuarter != null)
                     {
                         order.YearlyBilling = (customer.YearlyBillingQuarter == quarter);
@@ -127,11 +143,14 @@ namespace ReachingOutDB.Data
                     {
                         order.DmQty = customer.DmQty;
                         order.UpsQty = customer.UpsQty;
-                        order.PostalQty += customer.PostalQty;
-                        order.LtlQty += customer.LtlQty;
-                        order.IntlQty += customer.IntlQty;
+                        order.PostalQty = customer.PostalQty;
+                        order.LtlQty = customer.LtlQty;
+                        order.IntlQty = customer.IntlQty;
                     }
-                    dbContext.Orders.Add(order);
+                    if (order.Qty > 0)
+                    {
+                        dbContext.Orders.Add(order);
+                    }
                 }
                 //await auditLogServices.LogOrderChangesAsync(dbContext);
                 return await dbContext.SaveChangesAsync();
