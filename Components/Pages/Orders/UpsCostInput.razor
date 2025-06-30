@@ -1,37 +1,59 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
 @rendermode InteractiveServer
-
-<SfNumericTextBox @ref="@idField" @bind-Value="customerIdSearch" />
-<SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" />
-<SfNumericTextBox @bind-Value="order.UpsCost" />
-<SfButton Content="Save" OnClick="SaveOrderUpdates"/>
-<SfButton Content="Cancel" OnClick="CancelOrderUpdates" />
-
+<div class="myflexcolumn" style="gap:15px">
+    <div class="myflexrow">
+        <SfNumericTextBox @ref="idField" @bind-Value="customerIdSearch" ShowSpinButton="false" Width="100px" />
+        <SfButton IconCss="e-icons e-search" CssClass="e-round e-flat" OnClick="FindOrderAsync" />
+        @if (order.OrderId != Guid.Empty)
+        {
+            <span>@order.Customer?.CustomerName</span>
+            <span>UPS Qty: @order.UpsQty</span>
+        }
+    </div>
+    <div class="myflexrow">
+        <SfNumericTextBox @bind-Value="order.UpsCost" Readonly="!orderSet" TValue="decimal?" 
+            ShowSpinButton="false" Width="100px" 
+            Placeholder="UPS Cost" FloatLabelType="FloatLabelType.Auto"/>
+        <SfButton Content="Save" OnClick="SaveOrderUpdates" />
+        <SfButton Content="Cancel" OnClick="CancelOrderUpdates" />
+    </div>
+</div>
 @code {
     [Parameter] public IEnumerable<Order> orders { get; set; }
 
     public Order order { get; set; }
     public int? customerIdSearch { get; set; }
+    public bool orderSet = false;
     public SfNumericTextBox<int?> idField { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = new Order();
+        await base.OnInitializedAsync();
+    }
 
     private async Task FindOrderAsync()
     {
         order = orders.FirstOrDefault(o => o.CustomerId == customerIdSearch);
+        orderSet = true;
     }
 
     private async Task SaveOrderUpdates()
     {
         orderService.UpdateOrderAsync(order);
-        order = null;
+        orderService.CalculatePublishedShippingAsync(order);
+        order = new Order();
         customerIdSearch = null;
+        orderSet = false;
         idField.FocusAsync();
     }
 
     private async Task CancelOrderUpdates()
     {
-        order = null;
+        order = new Order();
         customerIdSearch = null;
+        orderSet = false;
         idField.FocusAsync();
     }
 }

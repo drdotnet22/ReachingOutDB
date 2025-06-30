@@ -4,28 +4,26 @@
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @rendermode InteractiveServer
-<UpsCostInput orders="upsOrders" />
-<SfGrid @ref="Grid" DataSource="upsOrders" >
-    <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
-    @* <GridEditSettings AllowEditing="true" Mode="EditMode.Dialog">
-        <Template>
-            <UpsCostInput ThisOrder="(context as Order)" />
-        </Template>
-    </GridEditSettings> *@
-    <GridColumns>
-        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
-        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" Width="300"/>
-        <GridColumn Field="@nameof(Order.Qty)" HeaderText="Total Order Qty" Format="#,###" Width="100"/>
-        <GridColumn Field="@nameof(Order.UpsQty)" HeaderText="UPS Qty" Format="#,###" Width="100"/>
-        <GridColumn Field="@nameof(Order.UpsCost)" HeaderText="UPS Cost" Format="C2" />
-        <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Published Shipping" Format="C2" />
-        <GridColumn>
-            <GridCommandColumns>
-                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })" />
-            </GridCommandColumns>
-        </GridColumn>
-    </GridColumns>
-</SfGrid>
+
+<div class="myflexcolumn">
+    <UpsCostInput orders="upsOrders" />
+    <SfGrid @ref="Grid" DataSource="upsOrders" >
+        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
+        <GridColumns>
+            <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
+            <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" Width="300"/>
+            <GridColumn Field="@nameof(Order.Qty)" HeaderText="Total Order Qty" Format="#,###" Width="100"/>
+            <GridColumn Field="@nameof(Order.UpsQty)" HeaderText="UPS Qty" Format="#,###" Width="100"/>
+            <GridColumn Field="@nameof(Order.UpsCost)" HeaderText="UPS Cost" Format="C2" />
+            <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Published Shipping" Format="C2" />
+            <GridColumn>
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })" />
+                </GridCommandColumns>
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
+</div>
 
 <SfDialog @ref="upsCostDialog" Visible="false" ShowCloseIcon="true" >
     <DialogTemplates>
