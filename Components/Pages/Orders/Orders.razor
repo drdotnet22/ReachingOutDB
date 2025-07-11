@@ -188,18 +188,6 @@
         await base.OnInitializedAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            if (userService.CurrentUser.Role == UserRole.Duplo)
-            {
-                ToolbarItems = new List<Object>() { new ItemModel() { Text = "Saddle Stitched", TooltipText = "Mark selected rows as saddlestitched.", PrefixIcon = "e-circle-check icon", Align = ItemAlign.Left }, "Search" };
-            }
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }  
-
     private async Task RefreshOrders()
     {
 
