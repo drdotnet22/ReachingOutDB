@@ -1,24 +1,39 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
 @rendermode InteractiveServer
-<div class="myflexcolumn" style="gap:15px">
+
+
+<div class="myflexcolumn">
+    
+    @if (order.OrderId != Guid.Empty)
+    {
+        <div class="row" style="display:flex; align-items:center; gap: 8px;">
+            <FluentIcon Value="@(new Icons.Regular.Size20.CheckmarkCircle())" Color="Color.Success"  />
+            <span> @order.Customer?.CustomerName &mdash; UPS Qty: @order.UpsQty</span>
+        </div>
+    }
+    @if (order.OrderId != Guid.Empty && order.Qty != order.UpsQty)
+    {
+        <div class="myflexrow">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Warning())" Color="Color.Warning" />
+            <span style="color:orange; font-size:large"> Please verify quantity being shipped!!</span>
+        </div>
+    }
     <div class="myflexrow">
-        <SfNumericTextBox @ref="idField" @bind-Value="customerIdSearch" ShowSpinButton="false" Width="100px" />
-        <SfButton IconCss="e-icons e-search" CssClass="e-round e-flat" OnClick="FindOrderAsync" />
-        @if (order.OrderId != Guid.Empty)
-        {
-            <span>@order.Customer?.CustomerName</span>
-            <span>UPS Qty: @order.UpsQty</span>
-        }
-    </div>
-    <div class="myflexrow">
-        <SfNumericTextBox @bind-Value="order.UpsCost" Readonly="!orderSet" TValue="decimal?" 
-            ShowSpinButton="false" Width="100px" 
-            Placeholder="UPS Cost" FloatLabelType="FloatLabelType.Auto"/>
+        <SfNumericTextBox @ref="idField" @bind-Value="customerIdSearch" 
+                ShowSpinButton="false" Width="150px" 
+                OnBlur="OnCustomerIdSet" Format="####"
+                Readonly="orderSet"
+                Placeholder="Customer ID" FloatLabelType="FloatLabelType.Always" />
+        <SfNumericTextBox @bind-Value="order.UpsCost" Readonly="!orderSet" TValue="decimal?"
+                            ShowSpinButton="false" Width="100px"
+                            Placeholder="UPS Cost" FloatLabelType="FloatLabelType.Always" />
         <SfButton Content="Save" OnClick="SaveOrderUpdates" />
         <SfButton Content="Cancel" OnClick="CancelOrderUpdates" />
     </div>
+    <div style="height:15px"></div>
 </div>
+
 @code {
     [Parameter] public IEnumerable<Order> orders { get; set; }
 
@@ -33,16 +48,24 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task FindOrderAsync()
+    private async Task OnCustomerIdSet()
     {
-        order = orders.FirstOrDefault(o => o.CustomerId == customerIdSearch);
-        orderSet = true;
+        if (customerIdSearch != null)
+        {
+            order = orders.FirstOrDefault(o => o.CustomerId == customerIdSearch);
+            orderSet = true;
+            if (order == null)
+            {
+                order = new Order();
+                orderSet = false;
+            }
+        }
     }
 
     private async Task SaveOrderUpdates()
     {
-        orderService.UpdateOrderAsync(order);
-        orderService.CalculatePublishedShippingAsync(order);
+        //await orderService.UpdateOrderAsync(order); This is being called and the end of the published shipping calculations.
+        await orderService.CalculatePublishedShippingAsync(order);
         order = new Order();
         customerIdSearch = null;
         orderSet = false;
@@ -56,4 +79,5 @@
         orderSet = false;
         idField.FocusAsync();
     }
+
 }

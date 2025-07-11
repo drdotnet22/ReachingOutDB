@@ -6,29 +6,25 @@
 @rendermode InteractiveServer
 
 <div class="myflexcolumn">
-    <UpsCostInput orders="upsOrders" />
-    <SfGrid @ref="Grid" DataSource="upsOrders" >
-        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
+    @* <UpsCostInput orders="upsOrders" /> *@
+    <SfGrid @ref="Grid" DataSource="upsOrders" RowHeight="25" Width="1200" Toolbar="@ToolbarItems">
+        <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="Order" />
         <GridColumns>
             <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
             <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" Width="300"/>
-            <GridColumn Field="@nameof(Order.Qty)" HeaderText="Total Order Qty" Format="#,###" Width="100"/>
-            <GridColumn Field="@nameof(Order.UpsQty)" HeaderText="UPS Qty" Format="#,###" Width="100"/>
-            <GridColumn Field="@nameof(Order.UpsCost)" HeaderText="UPS Cost" Format="C2" />
-            <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Published Shipping" Format="C2" />
-            <GridColumn>
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })" />
-                </GridCommandColumns>
-            </GridColumn>
+            <GridColumn Field="@nameof(Order.Qty)" HeaderText="Total Order Qty" Format="#,###" Width="150" TextAlign="TextAlign.Right"/>
+            <GridColumn Field="@nameof(Order.UpsQty)" HeaderText="UPS Qty" Format="#,###" Width="150" TextAlign="TextAlign.Right" />
+            <GridColumn Field="@nameof(Order.UpsCost)" HeaderText="UPS Cost" Format="C2" TextAlign="TextAlign.Right" />
+            <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Published Shipping" Format="C2" TextAlign="TextAlign.Right" />
         </GridColumns>
     </SfGrid>
 </div>
 
-<SfDialog @ref="upsCostDialog" Visible="false" ShowCloseIcon="true" >
+<SfDialog @ref="upsCostDialog" Visible="false" Width="700" ShowCloseIcon="true" AllowDragging="true" IsModal="true" >
     <DialogTemplates>
+        <Header>Enter UPS Cost</Header>
         <Content>
-            <UpsCostInput ThisOrder="targetOrder" CloseDialog="CloseUPSDialog" />
+            <UpsCostInput orders="upsOrders" />
         </Content>
     </DialogTemplates>
 </SfDialog>
@@ -40,6 +36,7 @@
     public IEnumerable<Customer> customers { get; set; }
     public int selectedYear { get; set; }
     public Quarter selectedQuarter { get; set; }
+    private List<Object> ToolbarItems = new List<Object>() { new ItemModel() { Text = "Refresh Grid", TooltipText = "Refresh the datagrid.", PrefixIcon = "e-refresh icon" }, new ItemModel() { Text = "Cost Input", TooltipText = "Enter cost of UPS shipment", PrefixIcon = "e-check-box icon" }, "Search" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,32 +70,21 @@
         orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
         upsOrders = orders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0 && (JobStatus)((int)o.JobStatus) <= (JobStatus)((int)JobStatus.Shipped));
     }
-    //Editing is not working. It calls the update, but for some reason it never gets saved to the database.
-    private async Task ActionBeginHandler(ActionEventArgs<Order> args)
-    {
-        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
-        {
-            if (args.Action == "Edit")
-            {
-                await orderService.UpdateOrderAsync(args.Data);
-                await orderService.CalculatePublishedShippingAsync(args.RowData);
-                RefreshOrders();
-            }
-        }
-    }
 
-    public async void CommandClickedHandler(CommandClickEventArgs<Order> args)
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
     {
-        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        if (args.Item.Text == "Refresh Grid")
         {
-            ActionEventArgs<Order> actionEventArgs = new ActionEventArgs<Order>();
-            actionEventArgs.Data = args.RowData;
-            ActionBeginHandler(actionEventArgs);
+            await RefreshOrders();
+            Grid.ClearRowSelectionAsync();
+        }
+        else if (args.Item.Text == "Cost Input")
+        {
+            upsCostDialog.ShowAsync();
         }
     }
 
     private SfDialog upsCostDialog;
-    private Order targetOrder;
 
     public void CloseUPSDialog(string action)
     {
