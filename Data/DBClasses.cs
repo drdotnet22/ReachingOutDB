@@ -32,6 +32,7 @@ namespace ReachingOutDB.Data
         public int? UpsQtyQ2 { get; set; }
         public int? UpsQtyQ3 { get; set; }
         public int? UpsQtyQ4 { get; set; }
+        public bool SpecialNoteUPS { get; set; } = false;
         //USPS
         public int? PostalQty { get; set; }
         public int? PostalQtyQ1 { get; set; }
@@ -120,6 +121,7 @@ namespace ReachingOutDB.Data
         public string City { get; set; }
         public string State { get; set; }
         public string ZipCode { get; set; }
+        public int Qty { get; set; } = 1;
         public string MailClass { get; set; }
         public Guid PackageOptionId { get; set; }
         public PackageOption PackageOption { get; set; }
