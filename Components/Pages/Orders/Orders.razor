@@ -20,7 +20,27 @@
     <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
 </div>
 <br />
-<SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" Toolbar="@ToolbarItems">
+<SfToolbar>
+    <ToolbarEvents Clicked="ToolbarClickHandler" />
+    <ToolbarItems>
+        @if (userService.CurrentUser.Role == UserRole.Admin)
+        {
+            <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-circle-add icon"/>
+            <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
+        }
+        else if (userService.CurrentUser.Role == UserRole.Duplo)
+        {
+            <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
+        }
+        <ToolbarItem Type="ItemType.Spacer" />
+        <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show" >
+            <Template>
+                <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+            </Template>
+        </ToolbarItem>
+    </ToolbarItems>
+</SfToolbar>
+<SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" >
     <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
     <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
     <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" OnToolbarClick="ToolbarClickHandler" TValue="Order" />
@@ -38,7 +58,7 @@
         </Template>
     </GridEditSettings>
     <GridColumns>
-        <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+        <GridColumn Type="ColumnType.CheckBox" Width="50" ></GridColumn>
         <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120" >
             <FilterTemplate>
                 <SfDropDownList ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
@@ -49,13 +69,13 @@
         </GridColumn>
         @if (userService.CurrentUser.Role == UserRole.Admin)
         {
-            <GridColumn Width="55">
+            <GridColumn Width="55" >
                 <GridCommandColumns>
                     <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
                 </GridCommandColumns>
             </GridColumn>
         }
-        <GridColumn HeaderText="Ship Methods"  Width="200" >
+        <GridColumn HeaderText="Ship Methods" Width="200" >
             <Template>
                 
                 @{ var order = (context as Order); 
@@ -94,7 +114,7 @@
         <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
         <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" />
         <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
-        <GridColumn Width="152">
+        <GridColumn Width="152" >
             <GridCommandColumns>
                 <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
                 @if (userService.CurrentUser.Role == UserRole.Admin)
@@ -153,8 +173,6 @@
     public IEnumerable<Customer> customers { get; set; }
     public int selectedYear { get; set; }
     public Quarter selectedQuarter { get; set; }
-    public Order testOrder { get; set; }
-    private List<Object> ToolbarItems = new List<Object>() { "Add", new ItemModel() { Text = "Saddle Stitched", TooltipText="Mark selected rows as saddlestitched.", PrefixIcon = "e-circle-check icon" }, "Search" };
     public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
     public string[] jobStatValues = JobStatus.GetNames(typeof(JobStatus));
 
@@ -184,7 +202,6 @@
         selectedYear = year;
         await RefreshOrders();
         customers = await customerService.GetCustomersAsync();
-        testOrder = orders.FirstOrDefault(o => o.CustomerId == 2000);
         await base.OnInitializedAsync();
     }
 
@@ -323,10 +340,20 @@
             ? "Add New Order"
             : "Edit the " + arg.Year + " " + arg.Quarter + " order of " + arg.Customer.CustomerName;
     }
+    #endregion
 
+    #region Toolbar
     public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
     {
-        if (args.Item.Text == "Saddle Stitched")
+        if (args.Item.Text == "Add")
+        {
+            Grid.AddRecordAsync();
+        }
+        else if (args.Item.Text == "CSV Export")
+        {
+            Grid.ExportToCsvAsync();
+        }
+        else if (args.Item.Text == "Saddle Stitched")
         {
             if (userService.CurrentUser.Role == UserRole.Duplo)
             {
@@ -340,6 +367,12 @@
             }
             Grid.ClearRowSelectionAsync();
         }
+    }
+
+    public SfTextBox ToolbarSearchBox;
+    private async Task SearchGrid()
+    {
+        Grid.SearchAsync(ToolbarSearchBox.Value);
     }
     #endregion
 
