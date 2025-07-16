@@ -7,10 +7,19 @@
     
     @if (order.OrderId != Guid.Empty)
     {
-        <div class="row" style="display:flex; align-items:center; gap: 8px;">
-            <FluentIcon Value="@(new Icons.Regular.Size20.CheckmarkCircle())" Color="Color.Success"  />
-            <span> @order.Customer?.CustomerName &mdash; UPS Qty: @order.UpsQty</span>
-        </div>
+        if (order.UpsQty.HasValue)
+        {
+            <div class="row" style="display:flex; align-items:center; gap: 8px;">
+                <FluentIcon Value="@(new Icons.Regular.Size20.CheckmarkCircle())" Color="Color.Success" />
+                <span> @order.Customer?.CustomerName &mdash; UPS Qty: @order.UpsQty</span>
+            </div>
+        } else
+        {
+            <div class="myflexrow">
+                <FluentIcon Value="@(new Icons.Regular.Size24.Warning())" Color="Color.Error" />
+                <span style="color:orange; font-size:large"> Please verify quantity being shipped!!</span>
+            </div>
+        }
     }
     @if (order.OrderId != Guid.Empty && order.Qty != order.UpsQty)
     {
@@ -19,6 +28,15 @@
             <span style="color:orange; font-size:large"> Please verify quantity being shipped!!</span>
         </div>
     }
+
+    @if (order.OrderId != Guid.Empty && order.Customer.SpecialNoteUPS)
+    {
+        <div class="myflexrow">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Warning())" Color="Color.Warning" />
+            <span style="color:orange; font-size:large">@order.SpecialNotes</span>
+        </div>
+    }
+
     <div class="myflexrow">
         <SfNumericTextBox @ref="idField" @bind-Value="customerIdSearch" 
                 ShowSpinButton="false" Width="150px" 

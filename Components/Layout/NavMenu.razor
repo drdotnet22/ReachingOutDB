@@ -1,4 +1,6 @@
-﻿@rendermode InteractiveServer
+﻿@using ReachingOutDB.Data
+@inject UserServices userService
+@rendermode InteractiveServer
 
 <div class="navmenu">
     <input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
@@ -6,6 +8,7 @@
     <nav class="sitenav" aria-labelledby="main-menu">
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
             <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.ClipboardTaskListLtr())" IconColor="Color.Accent">Orders</FluentNavLink>
+            <FluentNavLink Href="/upsdashboard" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.VehicleTruckCube())" IconColor="Color.Accent" >UPS Dashboard</FluentNavLink>
             <FluentNavLink Href="customers" Icon="@(new Icons.Regular.Size20.HomePerson())" IconColor="Color.Accent">Customers</FluentNavLink>
             <FluentNavLink Href="users" Icon="@(new Icons.Regular.Size20.PeopleSettings())" IconColor="Color.Accent">Manage Users</FluentNavLink>
             <FluentNavLink Href="shippingadmin" Icon="@(new Icons.Regular.Size20.BoxEdit())" IconColor="Color.Accent">Shipping Settings</FluentNavLink>
