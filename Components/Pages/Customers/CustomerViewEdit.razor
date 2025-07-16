@@ -35,6 +35,7 @@
     <SfCheckBox @bind-Checked="@(ThisCustomer.Active)" Label="Active Customer" />
     <SfCheckBox @bind-Checked="@(ThisCustomer.VariableQty)" Label="Variable Quantity" />
     <SfCheckBox @bind-Checked="@(ThisCustomer.CustomBP)" Label="Custom Back Page" />
+    <SfCheckBox @bind-Checked="@(ThisCustomer.SpecialNoteUPS)" Label="Special Notes for UPS shipping" />
     <SfDropDownList TItem="string" TValue="Quarter?"
                     @bind-Value="@ThisCustomer.YearlyBillingQuarter"
                     DataSource="@quarterValues"
