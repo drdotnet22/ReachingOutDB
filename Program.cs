@@ -24,6 +24,7 @@ builder.Services.AddScoped<OrderAuditLogServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<PackageServices>();
 builder.Services.AddScoped<ShippingSettingsServices>();
+builder.Services.AddScoped<MiscSettingsServices>();
 
 var app = builder.Build();
 

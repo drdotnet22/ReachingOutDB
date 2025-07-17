@@ -13,6 +13,7 @@ namespace ReachingOutDB.Data
         public DbSet<Package> Packages { get; set; }
         public DbSet<PackageOption> PackageOptions { get; set; }
         public DbSet<ShippingSetting> ShippingSettings { get; set; }
+        public DbSet<MiscSetting> MiscSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,7 @@ namespace ReachingOutDB.Data
             modelBuilder.Entity<Package>().HasData(GetPackages());
             modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
             modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
+            modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
@@ -39,7 +41,7 @@ namespace ReachingOutDB.Data
 
             modelBuilder.Entity<Package>()
                 .HasOne(p => p.PackageOption)
-                .WithOne(p => p.Package)
+                .WithMany()
                 .IsRequired();
         }
 
@@ -99,6 +101,14 @@ namespace ReachingOutDB.Data
                 new ShippingSetting { Id = 2, Name = "INTL", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 2, MarkupPercentage = 0.3m, PerBoxFee = 1.25m, UpdatedAt = new DateTime(2025, 06, 25) },
                 new ShippingSetting { Id = 3, Name = "LTL", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 25, MarkupPercentage = 0.15m, PerBoxFee = 1.25m, UpdatedAt = new DateTime(2025, 06, 25) },
                 new ShippingSetting { Id = 4, Name = "USPS", QuantityPerBox = 200, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 0, MarkupPercentage = 0.1m, PerBoxFee = 1.5m, UpdatedAt = new DateTime(2025, 06, 25) }
+            };
+        }
+
+        private List<MiscSetting> GetMiscSettings()
+        {
+            return new List<MiscSetting>
+            { 
+                new MiscSetting { Id = 1, MagazineWeight = 0.06m }
             };
         }
     }

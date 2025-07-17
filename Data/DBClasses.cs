@@ -137,7 +137,6 @@ namespace ReachingOutDB.Data
         public decimal? Length { get; set; }
         public decimal? Width { get; set; }
         public decimal? Height { get; set; }
-        public Package Package { get; set; }
     }
 
     public class ShippingSetting
@@ -151,6 +150,12 @@ namespace ReachingOutDB.Data
         public int? BoxDiscountThreshold { get; set; } = 4;
         public decimal? BoxDiscountPercentage { get; set; } = 0.15m;
         public DateTime UpdatedAt { get; set; }
+    }
+
+    public class MiscSetting
+    {
+        public int Id { get; set; }
+        public decimal MagazineWeight { get; set; }
     }
 
     public enum Quarter
