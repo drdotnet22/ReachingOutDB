@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ReachingOutDB.Data
@@ -113,6 +114,7 @@ namespace ReachingOutDB.Data
         public bool Active { get; set; }
     }
 
+    #region Shipping stuff
     public class Package
     {
         public Guid PackageId { get; set; }
@@ -157,7 +159,34 @@ namespace ReachingOutDB.Data
         public int Id { get; set; }
         public decimal MagazineWeight { get; set; }
     }
+    #endregion
+    #region Plates
+    public class Plate
+    {
+        public int PlateId { get; set; }
+        public int Number {  get; set; }
+        public int Year { get; set; }
+        public Quarter Quarter { get; set; }
+        public int Quantity { get; set; }
+        public int BlankQty { get; set; } = 0;
+        public bool HasBlanks => BlankQty > 0;
 
+    }
+
+    public class PlateAssignment
+    {
+        [Key]
+        public int Id { get; set; }
+        public int PlateId { get; set; }
+        public Plate Plate { get; set; }
+        public Guid? OrderId { get; set; }
+        public Order? Order { get; set; }
+        public int Position { get; set; }
+        public bool IsBlank {  get; set; } = false;
+    }
+    #endregion
+
+    #region Enums
     public enum Quarter
     {
         Q1 = 1,
@@ -183,4 +212,5 @@ namespace ReachingOutDB.Data
         Duplo = 2,
         Shipping = 3
     }
+    #endregion
 }

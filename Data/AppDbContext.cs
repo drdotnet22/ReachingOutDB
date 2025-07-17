@@ -14,6 +14,8 @@ namespace ReachingOutDB.Data
         public DbSet<PackageOption> PackageOptions { get; set; }
         public DbSet<ShippingSetting> ShippingSettings { get; set; }
         public DbSet<MiscSetting> MiscSettings { get; set; }
+        public DbSet<Plate> Plates { get; set; }
+        public DbSet<PlateAssignment> PlateAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +45,17 @@ namespace ReachingOutDB.Data
                 .HasOne(p => p.PackageOption)
                 .WithMany()
                 .IsRequired();
+
+            modelBuilder.Entity<PlateAssignment>()
+                .HasOne(pa => pa.Plate)
+                .WithMany()
+                .HasForeignKey(pa => pa.PlateId)
+                .IsRequired();
+
+            modelBuilder.Entity<PlateAssignment>()
+                .HasOne(pa => pa.Order)
+                .WithMany()
+                .HasForeignKey(pa => pa.OrderId);
         }
 
         private List<Customer> GetCustomers()
