@@ -3,6 +3,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject OrderServices orderService
 @inject CustomerServices customerService
+@inject UserServices userService
 @rendermode InteractiveServer
 
 <h3>Customers</h3>
@@ -24,16 +25,20 @@
          </Template>
     </GridEditSettings>
     <GridColumns>
-        <GridColumn HeaderText="Customer Number" Field="CustomerId" IsPrimaryKey="true" Type="ColumnType.Integer" Width="100" TextAlign="TextAlign.Right"/>
+        <GridColumn HeaderText="ID" Field="CustomerId" IsPrimaryKey="true" Type="ColumnType.Integer" Width="100" TextAlign="TextAlign.Right"/>
         <GridColumn HeaderText="Customer Name" Field="CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Location" Field="Location" Type="ColumnType.String" TextAlign="TextAlign.Left" />
-        <GridColumn HeaderText="Variable Qty" Field="VariableQty" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" Width="70" />
-        <GridColumn>
-            <GridCommandColumns>
-                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
-                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() {IconCss="e-icons e-delete", CssClass="e-flat" })"/>
-            </GridCommandColumns>
-        </GridColumn>
+        <GridColumn HeaderText="Variable Qty" Field="VariableQty" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" />
+
+        @if (userService.CurrentUser.Role == UserRole.Admin)
+        {
+            <GridColumn>
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+                </GridCommandColumns>
+            </GridColumn>
+        }
     </GridColumns>
 </SfGrid>
 
@@ -42,7 +47,7 @@
     public IEnumerable<Customer> filteredCustomers { get; set; }
     public SfGrid<Customer> Grid { get; set; }
     public bool showArchivedCustomers = false;
-    private List<Object> ToolbarItems = new List<Object>() { "Add", new ItemModel() { Text = "Generate Orders", TooltipText = "Generate orders for all active customers.", PrefixIcon = "e-duplicate icon", Align = Syncfusion.Blazor.Navigations.ItemAlign.Left }, "Search" };
+    private List<Object> ToolbarItems = new List<Object>() { "Add", "Search" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,7 +122,6 @@
             ? "New Customer"
             : "Edit Record of " + arg.CustomerName;
     }
-
     #endregion
 }
 

@@ -49,12 +49,6 @@ namespace ReachingOutDB.Data
             }
         }
 
-        public async Task<IEnumerable<Order>> GetActiveOrdersAsync()
-        {
-            var dbContext = await contextFactory.CreateDbContextAsync();
-            return await dbContext.Orders.Where(o => o.Archived == false).Include(o => o.Customer).ToListAsync();
-        }
-
         public async Task<int> GenerateOrders(int? customerId, int year, Quarter quarter)
         {
             try
@@ -177,6 +171,28 @@ namespace ReachingOutDB.Data
 
                 await auditLogServices.LogOrderChangesAsync(oringinalOrder, updatedOrder);
                 dbContext.Orders.Update(updatedOrder);
+                dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        public async Task DeleteOrderAsync(Order order)
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            try
+            {
+                var auditLogs = await dbContext.OrderAuditLogs.Where(l => l.Order == order).ToListAsync();
+                if (auditLogs.Any())
+                {
+                    foreach (var log in auditLogs)
+                    {
+                        dbContext.OrderAuditLogs.Remove(log);
+                    }
+                }
+                dbContext.Orders.Remove(order);
                 dbContext.SaveChangesAsync();
             }
             catch (Exception ex)

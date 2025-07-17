@@ -4,7 +4,7 @@
 
 <div class="flexcolumn">
     <div class="flexrow">
-        <SfNumericTextBox @bind-Value="ThisOrder.Year" Readonly="!Editable" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Auto" Format="####" ShowSpinButton="false" />
+        <SfNumericTextBox @bind-Value="ThisOrder.Year" Readonly="!Editable" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="####" ShowSpinButton="false" />
         <SfDropDownList TItem="string" TValue="Quarter" 
             @bind-Value="ThisOrder.Quarter"
             DataSource="@quarterValues"
@@ -22,6 +22,14 @@
             </SfDropDownList>
         }
     </div>
+
+    @if (ThisOrder.OrderId == Guid.Empty)
+    {
+        <div class="myflexrow">
+            <FluentIcon Value="@(new Icons.Regular.Size20.Info())" Color="Color.Neutral" />
+            <span style="color:gray; font-size:small">Leave customer field blank to generate bulk orders.</span>
+        </div>
+    }
 
     <SfMultiColumnComboBox TItem="Customer" TValue="Customer" AllowFiltering="true" 
                 FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"

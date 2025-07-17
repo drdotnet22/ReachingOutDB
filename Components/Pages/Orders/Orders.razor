@@ -25,7 +25,7 @@
     <ToolbarItems>
         @if (userService.CurrentUser.Role == UserRole.Admin)
         {
-            <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-circle-add icon"/>
+            <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
             <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
         }
         else if (userService.CurrentUser.Role == UserRole.Duplo)
@@ -284,7 +284,7 @@
         }
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
-            //
+            await orderService.DeleteOrderAsync(args.Data);
         }
     }
 
