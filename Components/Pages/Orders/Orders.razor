@@ -7,17 +7,6 @@
 @rendermode InteractiveServer
 
 <div class="myflexrow">
-    @* <SfNumericTextBox @bind-Value="selectedYear"
-                      Placeholder="Year"
-                      Format="####"
-                      FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
-                      Width="200px" />
-    <SfDropDownList TItem="string" TValue="Quarter"
-                    @bind-Value="selectedQuarter"
-                    DataSource="@quarterValues"
-                    Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" 
-                    Width="200px">
-    </SfDropDownList> *@
     <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
     <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
 </div>

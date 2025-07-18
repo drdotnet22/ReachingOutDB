@@ -1,12 +1,17 @@
 ﻿@page "/upsdashboard"
 
 @using ReachingOutDB.Data
+@using ReachingOutDB.Components.Shared
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @rendermode InteractiveServer
 
+<div class="myflexrow">
+    <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
+    <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
+</div>
+<br />
 <div class="myflexcolumn">
-    @* <UpsCostInput orders="upsOrders" /> *@
     <SfGrid @ref="Grid" DataSource="upsOrders" RowHeight="25" Width="1200" Toolbar="@ToolbarItems">
         <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="Order" />
         <GridColumns>
@@ -40,35 +45,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        int year = DateTime.Now.Year;
-        int month = DateTime.Now.Month;
-        if (month >= 2 && month <= 4)
-        {
-            selectedQuarter = Quarter.Q2;
-        }
-        else if (month >= 5 && month <= 7)
-        {
-            selectedQuarter = Quarter.Q3;
-        }
-        else if (month >= 8 && month <= 10)
-        {
-            selectedQuarter = Quarter.Q4;
-        }
-        else
-        {
-            selectedQuarter = Quarter.Q1;
-            year++;
-        }
-        selectedYear = year;
         customers = await customerService.GetCustomersAsync();
-        await RefreshOrders();
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshOrders();
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task RefreshOrders()
     {
         orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
         upsOrders = orders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0 && (JobStatus)((int)o.JobStatus) <= (JobStatus)((int)JobStatus.Shipped));
+        StateHasChanged();
     }
 
     public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
