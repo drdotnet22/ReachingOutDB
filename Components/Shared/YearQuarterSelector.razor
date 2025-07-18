@@ -34,7 +34,7 @@
     {
         if (SelectedYear == 0 && SelectedQuarter == 0)
         {
-            int year = DateTime.Now.Year;
+            SelectedYear = DateTime.Now.Year;
             int month = DateTime.Now.Month;
 
             if (month >= 2 && month <= 4)
@@ -52,14 +52,13 @@
             else if (month >= 11)
             {
                 SelectedQuarter = Quarter.Q1;
-                year++;
+                SelectedYear++;
             }
             else
             {
                 SelectedQuarter = Quarter.Q1;
             }
 
-            SelectedYear = year;
             ValuesChanged();
         }
         await base.OnInitializedAsync();
