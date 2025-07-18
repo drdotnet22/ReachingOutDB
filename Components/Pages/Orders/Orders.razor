@@ -1,4 +1,5 @@
 ﻿@using ReachingOutDB.Data
+@using ReachingOutDB.Components.Shared
 
 @inject OrderServices orderService
 @inject CustomerServices customerService
@@ -6,7 +7,7 @@
 @rendermode InteractiveServer
 
 <div class="myflexrow">
-    <SfNumericTextBox @bind-Value="selectedYear"
+    @* <SfNumericTextBox @bind-Value="selectedYear"
                       Placeholder="Year"
                       Format="####"
                       FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
@@ -16,7 +17,8 @@
                     DataSource="@quarterValues"
                     Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" 
                     Width="200px">
-    </SfDropDownList>
+    </SfDropDownList> *@
+    <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
     <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
 </div>
 <br />
@@ -173,36 +175,21 @@
     public IEnumerable<Customer> customers { get; set; }
     public int selectedYear { get; set; }
     public Quarter selectedQuarter { get; set; }
-    public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
     public string[] jobStatValues = JobStatus.GetNames(typeof(JobStatus));
 
     protected override async Task OnInitializedAsync()
     {
-        int year = DateTime.Now.Year;
-        int month = DateTime.Now.Month;
-
-        if (month >= 2 && month <= 4)
-        {
-            selectedQuarter = Quarter.Q2;
-        }
-        else if (month >= 5 && month <= 7)
-        {
-            selectedQuarter = Quarter.Q3;
-        }
-        else if (month >= 8 && month <= 10)
-        {
-            selectedQuarter = Quarter.Q4;
-        }
-        else
-        {
-            selectedQuarter = Quarter.Q1;
-            year++;
-        }
-
-        selectedYear = year;
-        await RefreshOrders();
         customers = await customerService.GetCustomersAsync();
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshOrders();
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task RefreshOrders()
@@ -211,11 +198,6 @@
         orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
         filteredOrders = orders;
         StateHasChanged();
-    }
-
-    private async Task UpdateYearQuarterAsync()
-    {
-        await RefreshOrders();
     }
 
 

@@ -1,0 +1,73 @@
+﻿@using ReachingOutDB.Data
+
+<SfNumericTextBox @bind-Value="SelectedYear"
+        @onchange="ValuesChanged"
+        Placeholder="Year"
+        Format="####"
+        FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+        Width="200px" />
+
+<SfDropDownList TItem="string" TValue="Quarter"
+        @bind-Value="SelectedQuarter"
+        @onchange="ValuesChanged"
+        DataSource="@quarterValues"
+        Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+        Width="200px">
+</SfDropDownList>
+
+@code {
+    [Parameter]
+    public int SelectedYear { get; set; }
+
+    [Parameter]
+    public EventCallback<int> SelectedYearChanged { get; set; }
+
+    [Parameter]
+    public Quarter SelectedQuarter { get; set; }
+
+    [Parameter]
+    public EventCallback<Quarter> SelectedQuarterChanged { get; set; }
+
+    public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (SelectedYear == 0 && SelectedQuarter == 0)
+        {
+            int year = DateTime.Now.Year;
+            int month = DateTime.Now.Month;
+
+            if (month >= 2 && month <= 4)
+            {
+                SelectedQuarter = Quarter.Q2;
+            }
+            else if (month >= 5 && month <= 7)
+            {
+                SelectedQuarter = Quarter.Q3;
+            }
+            else if (month >= 8 && month <= 10)
+            {
+                SelectedQuarter = Quarter.Q4;
+            }
+            else if (month >= 11)
+            {
+                SelectedQuarter = Quarter.Q1;
+                year++;
+            }
+            else
+            {
+                SelectedQuarter = Quarter.Q1;
+            }
+
+            SelectedYear = year;
+            ValuesChanged();
+        }
+        await base.OnInitializedAsync();
+    }
+
+    async Task ValuesChanged()
+    {
+        await SelectedYearChanged.InvokeAsync(SelectedYear);
+        await SelectedQuarterChanged.InvokeAsync(SelectedQuarter);
+    }
+}
