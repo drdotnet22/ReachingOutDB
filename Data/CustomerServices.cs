@@ -87,6 +87,7 @@ namespace ReachingOutDB.Data
                     CustomerId = int.Parse(row["CustomerId"].ToString()),
                     CustomerName = row["CustomerName"].ToString(),
                     Location = row["Location"].ToString(),
+                    Active = true,
                     QtyQ1 = int.Parse(row["QtyQ1"].ToString()),
                     QtyQ2 = int.Parse(row["QtyQ2"].ToString()),
                     QtyQ3 = int.Parse(row["QtyQ3"].ToString()),

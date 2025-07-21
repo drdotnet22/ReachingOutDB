@@ -16,7 +16,7 @@ builder.Services.AddSyncfusionBlazor();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString).EnableSensitiveDataLogging());
 
 builder.Services.AddScoped<CustomerServices>();
 builder.Services.AddScoped<OrderServices>();
