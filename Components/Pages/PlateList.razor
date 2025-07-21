@@ -1,0 +1,80 @@
+﻿@page "/platelist"
+
+@using ReachingOutDB.Data
+@using ReachingOutDB.Components.Shared
+
+@inject PlateServices plateService
+@inject OrderServices orderService
+@rendermode InteractiveServer
+
+<div class="myflexrow">
+    <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
+    <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshPlates"></SfButton>
+</div>
+<br />
+
+@* <span>Blank plates needed: @unplatedOrders.Sum(o => o.Qty)</span>
+ *@
+
+<h3>PlateList</h3>
+@foreach (var plate in filteredPlates)
+{
+    <h6>Plate #: @plate.Number with @plate.Quantity sheets needed.</h6>
+    <table>
+        <tr>
+            <th>Position</th>
+            <th>Customer</th>
+            <th>Quantity Needed</th>
+        </tr>
+        @plate.PlateAssignments.OrderBy(p => p.Position);
+        @foreach (var assignment in plate.PlateAssignments)
+        {
+            <tr>
+                <td>@assignment.Position</td>
+                @if (assignment.Order != null)
+                {
+                    <td>@assignment.Order.Customer.CustomerName</td>
+                    <td>@assignment.Order.Qty</td>
+                }
+                else
+                {
+                    <td>Blank</td>
+                    <td>@plate.Quantity</td>
+                }
+            </tr>
+        }
+    </table>
+}
+@code {
+    public int selectedYear { get; set; }
+    public Quarter selectedQuarter { get; set; }
+    public IEnumerable<Plate> filteredPlates { get; set; }
+    public IEnumerable<Order> platedOrders { get; set; }
+    public IEnumerable<Order> unplatedOrders { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IEnumerable<Order> orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
+        platedOrders = orders.Where(o => o.PlateAssignments.Count > 0);
+        unplatedOrders = orders.Where(o => o.PlateAssignments.Count == 0);
+
+        selectedYear = 2025;
+        selectedQuarter = Quarter.Q3;
+        await RefreshPlates();
+
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshPlates();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task RefreshPlates()
+    {
+        filteredPlates = await plateService.GetFilteredPlatesAsync(selectedYear, selectedQuarter);
+    }
+}

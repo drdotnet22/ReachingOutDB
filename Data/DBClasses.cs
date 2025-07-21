@@ -91,6 +91,7 @@ namespace ReachingOutDB.Data
         public decimal? PubShipping { get; set; }
         public int? PpOrderNumber { get; set; }
         public bool Archived { get; set; }
+        public ICollection<PlateAssignment> PlateAssignments { get; } = new List<PlateAssignment>();
     }
 
     public class OrderAuditLog
@@ -163,21 +164,20 @@ namespace ReachingOutDB.Data
     #region Plates
     public class Plate
     {
-        public int PlateId { get; set; }
+        public Guid PlateId { get; set; }
         public int Number {  get; set; }
         public int Year { get; set; }
         public Quarter Quarter { get; set; }
         public int Quantity { get; set; }
-        public int BlankQty { get; set; } = 0;
-        public bool HasBlanks => BlankQty > 0;
+        public bool HasBlanks { get; set; }
+        public ICollection<PlateAssignment> PlateAssignments { get; } = new List<PlateAssignment>();
 
     }
 
     public class PlateAssignment
     {
-        [Key]
-        public int Id { get; set; }
-        public int PlateId { get; set; }
+        public Guid PlateAssignmentId { get; set; }
+        public Guid PlateId { get; set; }
         public Plate Plate { get; set; }
         public Guid? OrderId { get; set; }
         public Order? Order { get; set; }

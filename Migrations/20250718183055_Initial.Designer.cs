@@ -12,8 +12,8 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250717143751_CreatedMiscSettings")]
-    partial class CreatedMiscSettings
+    [Migration("20250718183055_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -444,6 +444,80 @@ namespace ReachingOutDB.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ReachingOutDB.Data.Plate", b =>
+                {
+                    b.Property<Guid>("PlateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("HasBlanks")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quarter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlateId");
+
+                    b.ToTable("Plates");
+
+                    b.HasData(
+                        new
+                        {
+                            PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"),
+                            HasBlanks = false,
+                            Number = 1,
+                            Quantity = 1,
+                            Quarter = 1,
+                            Year = 1
+                        });
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.PlateAssignment", b =>
+                {
+                    b.Property<Guid>("PlateAssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsBlank")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PlateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlateAssignmentId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PlateId");
+
+                    b.ToTable("PlateAssignments");
+
+                    b.HasData(
+                        new
+                        {
+                            PlateAssignmentId = new Guid("5ad5f77b-d3cc-4454-acbe-a5cbbc7f158e"),
+                            IsBlank = false,
+                            OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"),
+                            PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"),
+                            Position = 1
+                        });
+                });
+
             modelBuilder.Entity("ReachingOutDB.Data.ShippingSetting", b =>
                 {
                     b.Property<int>("Id")
@@ -605,9 +679,36 @@ namespace ReachingOutDB.Migrations
                     b.Navigation("PackageOption");
                 });
 
+            modelBuilder.Entity("ReachingOutDB.Data.PlateAssignment", b =>
+                {
+                    b.HasOne("ReachingOutDB.Data.Order", "Order")
+                        .WithMany("PlateAssignments")
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("ReachingOutDB.Data.Plate", "Plate")
+                        .WithMany("PlateAssignments")
+                        .HasForeignKey("PlateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Plate");
+                });
+
             modelBuilder.Entity("ReachingOutDB.Data.Customer", b =>
                 {
                     b.Navigation("Packages");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.Order", b =>
+                {
+                    b.Navigation("PlateAssignments");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.Plate", b =>
+                {
+                    b.Navigation("PlateAssignments");
                 });
 #pragma warning restore 612, 618
         }

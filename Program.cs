@@ -25,6 +25,7 @@ builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<PackageServices>();
 builder.Services.AddScoped<ShippingSettingsServices>();
 builder.Services.AddScoped<MiscSettingsServices>();
+builder.Services.AddScoped<PlateServices>();
 
 var app = builder.Build();
 

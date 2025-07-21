@@ -41,6 +41,7 @@ namespace ReachingOutDB.Migrations
                     UpsQtyQ2 = table.Column<int>(type: "int", nullable: true),
                     UpsQtyQ3 = table.Column<int>(type: "int", nullable: true),
                     UpsQtyQ4 = table.Column<int>(type: "int", nullable: true),
+                    SpecialNoteUPS = table.Column<bool>(type: "bit", nullable: false),
                     PostalQty = table.Column<int>(type: "int", nullable: true),
                     PostalQtyQ1 = table.Column<int>(type: "int", nullable: true),
                     PostalQtyQ2 = table.Column<int>(type: "int", nullable: true),
@@ -65,6 +66,19 @@ namespace ReachingOutDB.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MiscSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MagazineWeight = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MiscSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PackageOptions",
                 columns: table => new
                 {
@@ -78,6 +92,22 @@ namespace ReachingOutDB.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PackageOptions", x => x.PackageOptionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Plates",
+                columns: table => new
+                {
+                    PlateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Quarter = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    HasBlanks = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plates", x => x.PlateId);
                 });
 
             migrationBuilder.CreateTable(
@@ -166,6 +196,7 @@ namespace ReachingOutDB.Migrations
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Qty = table.Column<int>(type: "int", nullable: false),
                     MailClass = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PackageOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
@@ -211,15 +242,51 @@ namespace ReachingOutDB.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PlateAssignments",
+                columns: table => new
+                {
+                    PlateAssignmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PlateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Position = table.Column<int>(type: "int", nullable: false),
+                    IsBlank = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlateAssignments", x => x.PlateAssignmentId);
+                    table.ForeignKey(
+                        name: "FK_PlateAssignments_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId");
+                    table.ForeignKey(
+                        name: "FK_PlateAssignments_Plates_PlateId",
+                        column: x => x.PlateId,
+                        principalTable: "Plates",
+                        principalColumn: "PlateId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Customers",
-                columns: new[] { "CustomerId", "Active", "CustomBP", "CustomerName", "DmQty", "DmQtyQ1", "DmQtyQ2", "DmQtyQ3", "DmQtyQ4", "IntlQty", "IntlQtyQ1", "IntlQtyQ2", "IntlQtyQ3", "IntlQtyQ4", "Location", "LtlQty", "LtlQtyQ1", "LtlQtyQ2", "LtlQtyQ3", "LtlQtyQ4", "NotesQ1", "NotesQ2", "NotesQ3", "NotesQ4", "PackageId", "PostalQty", "PostalQtyQ1", "PostalQtyQ2", "PostalQtyQ3", "PostalQtyQ4", "QtyQ1", "QtyQ2", "QtyQ3", "QtyQ4", "UpsQty", "UpsQtyQ1", "UpsQtyQ2", "UpsQtyQ3", "UpsQtyQ4", "VariableQty", "YearlyBillingQuarter" },
-                values: new object[] { 2000, true, false, "Mennonite Church", null, null, null, null, null, null, null, null, null, null, "PA", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, null, null, null, null, null, false, null });
+                columns: new[] { "CustomerId", "Active", "CustomBP", "CustomerName", "DmQty", "DmQtyQ1", "DmQtyQ2", "DmQtyQ3", "DmQtyQ4", "IntlQty", "IntlQtyQ1", "IntlQtyQ2", "IntlQtyQ3", "IntlQtyQ4", "Location", "LtlQty", "LtlQtyQ1", "LtlQtyQ2", "LtlQtyQ3", "LtlQtyQ4", "NotesQ1", "NotesQ2", "NotesQ3", "NotesQ4", "PackageId", "PostalQty", "PostalQtyQ1", "PostalQtyQ2", "PostalQtyQ3", "PostalQtyQ4", "QtyQ1", "QtyQ2", "QtyQ3", "QtyQ4", "SpecialNoteUPS", "UpsQty", "UpsQtyQ1", "UpsQtyQ2", "UpsQtyQ3", "UpsQtyQ4", "VariableQty", "YearlyBillingQuarter" },
+                values: new object[] { 2000, true, false, "Mennonite Church", null, null, null, null, null, null, null, null, null, null, "PA", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, false, null, null, null, null, null, false, null });
+
+            migrationBuilder.InsertData(
+                table: "MiscSettings",
+                columns: new[] { "Id", "MagazineWeight" },
+                values: new object[] { 1, 0.06m });
 
             migrationBuilder.InsertData(
                 table: "PackageOptions",
                 columns: new[] { "PackageOptionId", "Height", "Length", "PackageDescription", "PackagingWeight", "Width" },
                 values: new object[] { new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"), null, null, "10x13 plastic sleeve", 0.1m, null });
+
+            migrationBuilder.InsertData(
+                table: "Plates",
+                columns: new[] { "PlateId", "HasBlanks", "Number", "Quantity", "Quarter", "Year" },
+                values: new object[] { new Guid("6447999c-271d-4985-6275-08ddc619be12"), false, 1, 1, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "ShippingSettings",
@@ -244,13 +311,18 @@ namespace ReachingOutDB.Migrations
 
             migrationBuilder.InsertData(
                 table: "Packages",
-                columns: new[] { "PackageId", "Address", "City", "ContactName", "CustomerId", "MailClass", "PackageOptionId", "State", "ZipCode" },
-                values: new object[] { new Guid("07dd94e4-a0c8-43c8-babc-200a8864d02c"), "123 Main", "Ripley", "Contact name", 2000, "FCF", new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"), "NY", "14775" });
+                columns: new[] { "PackageId", "Address", "City", "ContactName", "CustomerId", "MailClass", "PackageOptionId", "Qty", "State", "ZipCode" },
+                values: new object[] { new Guid("07dd94e4-a0c8-43c8-babc-200a8864d02c"), "123 Main", "Ripley", "Contact name", 2000, "FCF", new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"), 1, "NY", "14775" });
 
             migrationBuilder.InsertData(
                 table: "OrderAuditLogs",
                 columns: new[] { "OrderAuditLogId", "Action", "NewValue", "OldValue", "OrderId", "PropertyName", "Timestamp", "UserName" },
                 values: new object[] { new Guid("02bbd91b-1be0-4640-b82f-66b38ba448b9"), "Updated", "New Value", "Old Value", new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), "Some Property", new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Anonymous" });
+
+            migrationBuilder.InsertData(
+                table: "PlateAssignments",
+                columns: new[] { "PlateAssignmentId", "IsBlank", "OrderId", "PlateId", "Position" },
+                values: new object[] { new Guid("5ad5f77b-d3cc-4454-acbe-a5cbbc7f158e"), false, new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), new Guid("6447999c-271d-4985-6275-08ddc619be12"), 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderAuditLogs_OrderId",
@@ -270,18 +342,33 @@ namespace ReachingOutDB.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Packages_PackageOptionId",
                 table: "Packages",
-                column: "PackageOptionId",
-                unique: true);
+                column: "PackageOptionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlateAssignments_OrderId",
+                table: "PlateAssignments",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlateAssignments_PlateId",
+                table: "PlateAssignments",
+                column: "PlateId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "MiscSettings");
+
+            migrationBuilder.DropTable(
                 name: "OrderAuditLogs");
 
             migrationBuilder.DropTable(
                 name: "Packages");
+
+            migrationBuilder.DropTable(
+                name: "PlateAssignments");
 
             migrationBuilder.DropTable(
                 name: "ShippingSettings");
@@ -290,10 +377,13 @@ namespace ReachingOutDB.Migrations
                 name: "UserProfiles");
 
             migrationBuilder.DropTable(
+                name: "PackageOptions");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "PackageOptions");
+                name: "Plates");
 
             migrationBuilder.DropTable(
                 name: "Customers");

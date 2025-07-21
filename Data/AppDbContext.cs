@@ -27,6 +27,8 @@ namespace ReachingOutDB.Data
             modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
             modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
             modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
+            modelBuilder.Entity<Plate>().HasData(GetPlates());
+            modelBuilder.Entity<PlateAssignment>().HasData(GetPlateAssignments());
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
@@ -48,13 +50,13 @@ namespace ReachingOutDB.Data
 
             modelBuilder.Entity<PlateAssignment>()
                 .HasOne(pa => pa.Plate)
-                .WithMany()
+                .WithMany(p => p.PlateAssignments)
                 .HasForeignKey(pa => pa.PlateId)
                 .IsRequired();
 
             modelBuilder.Entity<PlateAssignment>()
                 .HasOne(pa => pa.Order)
-                .WithMany()
+                .WithMany(o => o.PlateAssignments)
                 .HasForeignKey(pa => pa.OrderId);
         }
 
@@ -122,6 +124,22 @@ namespace ReachingOutDB.Data
             return new List<MiscSetting>
             { 
                 new MiscSetting { Id = 1, MagazineWeight = 0.06m }
+            };
+        }
+
+        private List<Plate> GetPlates()
+        {
+            return new List<Plate>
+            {
+                new Plate { PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"), Number = 1, Quantity = 1, HasBlanks = false, Year = 1, Quarter = Quarter.Q1 }
+            };
+        }
+
+        private List<PlateAssignment> GetPlateAssignments()
+        {
+            return new List<PlateAssignment>
+            {
+                new PlateAssignment { PlateAssignmentId = new Guid("5ad5f77b-d3cc-4454-acbe-a5cbbc7f158e"), IsBlank = false, OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"), Position = 1 }
             };
         }
     }
