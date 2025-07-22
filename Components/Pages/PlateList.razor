@@ -13,27 +13,26 @@
 </div>
 <br />
 
-@* <span>Blank plates needed: @unplatedOrders.Sum(o => o.Qty)</span>
- *@
 
-<h3>PlateList</h3>
 @if (filteredPlates != null)
 {
+
+    <span>Blank plates needed: @unplatedOrders.Sum(o => o.Qty)</span>
+    <h3>PlateList</h3>
     @foreach (var plate in filteredPlates)
     {
-        <h6>Plate #: @plate.Number with @plate.Quantity sheets needed.</h6>
+        <h6>Plate #: @(plate.Number + 1) with @plate.Quantity sheets needed.</h6>
         <table>
             <tr>
                 <th>Position</th>
                 <th>Customer</th>
                 <th>Quantity Needed</th>
             </tr>
-            @plate.PlateAssignments.OrderBy(p => p.Position);
             @foreach (var assignment in plate.PlateAssignments)
             {
                 <tr>
-                    <td>@assignment.Position</td>
-                    @if (assignment.Order != null)
+                    <td>@(assignment.Position + 1)</td>
+                    @if (assignment.OrderId != null)
                     {
                         <td>@assignment.Order.Customer.CustomerName</td>
                         <td>@assignment.Order.Qty</td>
