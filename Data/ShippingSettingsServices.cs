@@ -26,7 +26,7 @@ namespace ReachingOutDB.Data
             var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
-                shippingSetting.UpdatedAt = DateTime.Now;
+                shippingSetting.UpdatedAt = DateTime.UtcNow;
                 dbContext.ShippingSettings.Add(shippingSetting);
                 await dbContext.SaveChangesAsync();
             }
@@ -41,7 +41,7 @@ namespace ReachingOutDB.Data
             var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
-                shippingSetting.UpdatedAt = DateTime.Now;
+                shippingSetting.UpdatedAt = DateTime.UtcNow;
                 dbContext.Update(shippingSetting);
                 await dbContext.SaveChangesAsync();
             }

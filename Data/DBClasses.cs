@@ -97,7 +97,7 @@ namespace ReachingOutDB.Data
     public class OrderAuditLog
     {
         public Guid OrderAuditLogId { get; set; }
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public string UserName { get; set; }
         public Order Order { get; set; }
         public Guid OrderId { get; set; }

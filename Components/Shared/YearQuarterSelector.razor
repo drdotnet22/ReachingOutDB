@@ -34,8 +34,8 @@
     {
         if (SelectedYear == 0 && SelectedQuarter == 0)
         {
-            SelectedYear = DateTime.Now.Year;
-            int month = DateTime.Now.Month;
+            SelectedYear = DateTime.UtcNow.Year;
+            int month = DateTime.UtcNow.Month;
 
             if (month >= 2 && month <= 4)
             {

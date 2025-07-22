@@ -78,9 +78,10 @@ namespace ReachingOutDB.Data
 
         private List<OrderAuditLog> GetOrderAuditLogs()
         {
+            var seedDate = new DateTime(2025, 06, 25, 0, 0, 0, DateTimeKind.Utc);
             return new List<OrderAuditLog>
             {
-                new OrderAuditLog { OrderAuditLogId = new Guid("02bbd91b-1be0-4640-b82f-66b38ba448b9"), Timestamp = new DateTime(2025, 06, 25), UserName = "Anonymous", OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), OldValue = "Old Value", NewValue = "New Value", PropertyName = "Some Property", Action = "Updated" }
+                new OrderAuditLog { OrderAuditLogId = new Guid("02bbd91b-1be0-4640-b82f-66b38ba448b9"), Timestamp = seedDate, UserName = "Anonymous", OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), OldValue = "Old Value", NewValue = "New Value", PropertyName = "Some Property", Action = "Updated" }
             };
         }
 
@@ -110,12 +111,13 @@ namespace ReachingOutDB.Data
 
         private List<ShippingSetting> GetShippingSettings()
         {
+            var seedDate = new DateTime(2025, 06, 25, 0, 0, 0, DateTimeKind.Utc);
             return new List<ShippingSetting>
             {
-                new ShippingSetting { Id = 1, Name = "UPS", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 4, MarkupPercentage = 0.6m, PerBoxFee = 1.75m, UpdatedAt = new DateTime(2025, 06, 25) },
-                new ShippingSetting { Id = 2, Name = "INTL", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 2, MarkupPercentage = 0.3m, PerBoxFee = 1.25m, UpdatedAt = new DateTime(2025, 06, 25) },
-                new ShippingSetting { Id = 3, Name = "LTL", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 25, MarkupPercentage = 0.15m, PerBoxFee = 1.25m, UpdatedAt = new DateTime(2025, 06, 25) },
-                new ShippingSetting { Id = 4, Name = "USPS", QuantityPerBox = 200, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 0, MarkupPercentage = 0.1m, PerBoxFee = 1.5m, UpdatedAt = new DateTime(2025, 06, 25) }
+                new ShippingSetting { Id = 1, Name = "UPS", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 4, MarkupPercentage = 0.6m, PerBoxFee = 1.75m, UpdatedAt = seedDate },
+                new ShippingSetting { Id = 2, Name = "INTL", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 2, MarkupPercentage = 0.3m, PerBoxFee = 1.25m, UpdatedAt = seedDate },
+                new ShippingSetting { Id = 3, Name = "LTL", QuantityPerBox = 750, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 25, MarkupPercentage = 0.15m, PerBoxFee = 1.25m, UpdatedAt = seedDate },
+                new ShippingSetting { Id = 4, Name = "USPS", QuantityPerBox = 200, BoxDiscountPercentage = 0.15m, BoxDiscountThreshold = 4, HandlingFee = 0, MarkupPercentage = 0.1m, PerBoxFee = 1.5m, UpdatedAt = seedDate }
             };
         }
 

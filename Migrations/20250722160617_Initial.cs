@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,48 +18,48 @@ namespace ReachingOutDB.Migrations
                 name: "Customers",
                 columns: table => new
                 {
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false),
-                    QtyQ1 = table.Column<int>(type: "int", nullable: false),
-                    QtyQ2 = table.Column<int>(type: "int", nullable: false),
-                    QtyQ3 = table.Column<int>(type: "int", nullable: false),
-                    QtyQ4 = table.Column<int>(type: "int", nullable: false),
-                    VariableQty = table.Column<bool>(type: "bit", nullable: false),
-                    NotesQ1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotesQ2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotesQ3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotesQ4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CustomBP = table.Column<bool>(type: "bit", nullable: false),
-                    DmQty = table.Column<int>(type: "int", nullable: true),
-                    DmQtyQ1 = table.Column<int>(type: "int", nullable: true),
-                    DmQtyQ2 = table.Column<int>(type: "int", nullable: true),
-                    DmQtyQ3 = table.Column<int>(type: "int", nullable: true),
-                    DmQtyQ4 = table.Column<int>(type: "int", nullable: true),
-                    UpsQty = table.Column<int>(type: "int", nullable: true),
-                    UpsQtyQ1 = table.Column<int>(type: "int", nullable: true),
-                    UpsQtyQ2 = table.Column<int>(type: "int", nullable: true),
-                    UpsQtyQ3 = table.Column<int>(type: "int", nullable: true),
-                    UpsQtyQ4 = table.Column<int>(type: "int", nullable: true),
-                    SpecialNoteUPS = table.Column<bool>(type: "bit", nullable: false),
-                    PostalQty = table.Column<int>(type: "int", nullable: true),
-                    PostalQtyQ1 = table.Column<int>(type: "int", nullable: true),
-                    PostalQtyQ2 = table.Column<int>(type: "int", nullable: true),
-                    PostalQtyQ3 = table.Column<int>(type: "int", nullable: true),
-                    PostalQtyQ4 = table.Column<int>(type: "int", nullable: true),
-                    LtlQty = table.Column<int>(type: "int", nullable: true),
-                    LtlQtyQ1 = table.Column<int>(type: "int", nullable: true),
-                    LtlQtyQ2 = table.Column<int>(type: "int", nullable: true),
-                    LtlQtyQ3 = table.Column<int>(type: "int", nullable: true),
-                    LtlQtyQ4 = table.Column<int>(type: "int", nullable: true),
-                    IntlQty = table.Column<int>(type: "int", nullable: true),
-                    IntlQtyQ1 = table.Column<int>(type: "int", nullable: true),
-                    IntlQtyQ2 = table.Column<int>(type: "int", nullable: true),
-                    IntlQtyQ3 = table.Column<int>(type: "int", nullable: true),
-                    IntlQtyQ4 = table.Column<int>(type: "int", nullable: true),
-                    YearlyBillingQuarter = table.Column<int>(type: "int", nullable: true),
-                    PackageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CustomerId = table.Column<int>(type: "integer", nullable: false),
+                    CustomerName = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false),
+                    QtyQ1 = table.Column<int>(type: "integer", nullable: false),
+                    QtyQ2 = table.Column<int>(type: "integer", nullable: false),
+                    QtyQ3 = table.Column<int>(type: "integer", nullable: false),
+                    QtyQ4 = table.Column<int>(type: "integer", nullable: false),
+                    VariableQty = table.Column<bool>(type: "boolean", nullable: false),
+                    NotesQ1 = table.Column<string>(type: "text", nullable: true),
+                    NotesQ2 = table.Column<string>(type: "text", nullable: true),
+                    NotesQ3 = table.Column<string>(type: "text", nullable: true),
+                    NotesQ4 = table.Column<string>(type: "text", nullable: true),
+                    CustomBP = table.Column<bool>(type: "boolean", nullable: false),
+                    DmQty = table.Column<int>(type: "integer", nullable: true),
+                    DmQtyQ1 = table.Column<int>(type: "integer", nullable: true),
+                    DmQtyQ2 = table.Column<int>(type: "integer", nullable: true),
+                    DmQtyQ3 = table.Column<int>(type: "integer", nullable: true),
+                    DmQtyQ4 = table.Column<int>(type: "integer", nullable: true),
+                    UpsQty = table.Column<int>(type: "integer", nullable: true),
+                    UpsQtyQ1 = table.Column<int>(type: "integer", nullable: true),
+                    UpsQtyQ2 = table.Column<int>(type: "integer", nullable: true),
+                    UpsQtyQ3 = table.Column<int>(type: "integer", nullable: true),
+                    UpsQtyQ4 = table.Column<int>(type: "integer", nullable: true),
+                    SpecialNoteUPS = table.Column<bool>(type: "boolean", nullable: false),
+                    PostalQty = table.Column<int>(type: "integer", nullable: true),
+                    PostalQtyQ1 = table.Column<int>(type: "integer", nullable: true),
+                    PostalQtyQ2 = table.Column<int>(type: "integer", nullable: true),
+                    PostalQtyQ3 = table.Column<int>(type: "integer", nullable: true),
+                    PostalQtyQ4 = table.Column<int>(type: "integer", nullable: true),
+                    LtlQty = table.Column<int>(type: "integer", nullable: true),
+                    LtlQtyQ1 = table.Column<int>(type: "integer", nullable: true),
+                    LtlQtyQ2 = table.Column<int>(type: "integer", nullable: true),
+                    LtlQtyQ3 = table.Column<int>(type: "integer", nullable: true),
+                    LtlQtyQ4 = table.Column<int>(type: "integer", nullable: true),
+                    IntlQty = table.Column<int>(type: "integer", nullable: true),
+                    IntlQtyQ1 = table.Column<int>(type: "integer", nullable: true),
+                    IntlQtyQ2 = table.Column<int>(type: "integer", nullable: true),
+                    IntlQtyQ3 = table.Column<int>(type: "integer", nullable: true),
+                    IntlQtyQ4 = table.Column<int>(type: "integer", nullable: true),
+                    YearlyBillingQuarter = table.Column<int>(type: "integer", nullable: true),
+                    PackageId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,9 +70,9 @@ namespace ReachingOutDB.Migrations
                 name: "MiscSettings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MagazineWeight = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MagazineWeight = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,12 +83,12 @@ namespace ReachingOutDB.Migrations
                 name: "PackageOptions",
                 columns: table => new
                 {
-                    PackageOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PackageDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PackagingWeight = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Length = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Width = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Height = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    PackageOptionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PackageDescription = table.Column<string>(type: "text", nullable: false),
+                    PackagingWeight = table.Column<decimal>(type: "numeric", nullable: false),
+                    Length = table.Column<decimal>(type: "numeric", nullable: true),
+                    Width = table.Column<decimal>(type: "numeric", nullable: true),
+                    Height = table.Column<decimal>(type: "numeric", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -98,12 +99,12 @@ namespace ReachingOutDB.Migrations
                 name: "Plates",
                 columns: table => new
                 {
-                    PlateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    Quarter = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    HasBlanks = table.Column<bool>(type: "bit", nullable: false)
+                    PlateId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    Year = table.Column<int>(type: "integer", nullable: false),
+                    Quarter = table.Column<int>(type: "integer", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    HasBlanks = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,16 +115,16 @@ namespace ReachingOutDB.Migrations
                 name: "ShippingSettings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    QuantityPerBox = table.Column<int>(type: "int", nullable: false),
-                    MarkupPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    HandlingFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PerBoxFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BoxDiscountThreshold = table.Column<int>(type: "int", nullable: true),
-                    BoxDiscountPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    QuantityPerBox = table.Column<int>(type: "integer", nullable: false),
+                    MarkupPercentage = table.Column<decimal>(type: "numeric", nullable: false),
+                    HandlingFee = table.Column<decimal>(type: "numeric", nullable: false),
+                    PerBoxFee = table.Column<decimal>(type: "numeric", nullable: false),
+                    BoxDiscountThreshold = table.Column<int>(type: "integer", nullable: true),
+                    BoxDiscountPercentage = table.Column<decimal>(type: "numeric", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -134,11 +135,11 @@ namespace ReachingOutDB.Migrations
                 name: "UserProfiles",
                 columns: table => new
                 {
-                    UserProfileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false)
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -149,31 +150,31 @@ namespace ReachingOutDB.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    Quarter = table.Column<int>(type: "int", nullable: false),
-                    JobStatus = table.Column<int>(type: "int", nullable: false),
-                    Qty = table.Column<int>(type: "int", nullable: false),
-                    SpecialNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotesForInvoicing = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    YearlyBilling = table.Column<bool>(type: "bit", nullable: true),
-                    HoldNote = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlateId = table.Column<int>(type: "int", nullable: true),
-                    BpUpdate = table.Column<bool>(type: "bit", nullable: false),
-                    DmQty = table.Column<int>(type: "int", nullable: true),
-                    UpsQty = table.Column<int>(type: "int", nullable: true),
-                    UpsCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PostalQty = table.Column<int>(type: "int", nullable: true),
-                    PostalCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    IntlQty = table.Column<int>(type: "int", nullable: true),
-                    IntlCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    LtlQty = table.Column<int>(type: "int", nullable: true),
-                    LTLCost = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PubUsps = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PubShipping = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    PpOrderNumber = table.Column<int>(type: "int", nullable: true),
-                    Archived = table.Column<bool>(type: "bit", nullable: false)
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Year = table.Column<int>(type: "integer", nullable: false),
+                    CustomerId = table.Column<int>(type: "integer", nullable: false),
+                    Quarter = table.Column<int>(type: "integer", nullable: false),
+                    JobStatus = table.Column<int>(type: "integer", nullable: false),
+                    Qty = table.Column<int>(type: "integer", nullable: false),
+                    SpecialNotes = table.Column<string>(type: "text", nullable: true),
+                    NotesForInvoicing = table.Column<string>(type: "text", nullable: true),
+                    YearlyBilling = table.Column<bool>(type: "boolean", nullable: true),
+                    HoldNote = table.Column<string>(type: "text", nullable: true),
+                    PlateId = table.Column<int>(type: "integer", nullable: true),
+                    BpUpdate = table.Column<bool>(type: "boolean", nullable: false),
+                    DmQty = table.Column<int>(type: "integer", nullable: true),
+                    UpsQty = table.Column<int>(type: "integer", nullable: true),
+                    UpsCost = table.Column<decimal>(type: "numeric", nullable: true),
+                    PostalQty = table.Column<int>(type: "integer", nullable: true),
+                    PostalCost = table.Column<decimal>(type: "numeric", nullable: true),
+                    IntlQty = table.Column<int>(type: "integer", nullable: true),
+                    IntlCost = table.Column<decimal>(type: "numeric", nullable: true),
+                    LtlQty = table.Column<int>(type: "integer", nullable: true),
+                    LTLCost = table.Column<decimal>(type: "numeric", nullable: true),
+                    PubUsps = table.Column<decimal>(type: "numeric", nullable: true),
+                    PubShipping = table.Column<decimal>(type: "numeric", nullable: true),
+                    PpOrderNumber = table.Column<int>(type: "integer", nullable: true),
+                    Archived = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -190,16 +191,16 @@ namespace ReachingOutDB.Migrations
                 name: "Packages",
                 columns: table => new
                 {
-                    PackageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ContactName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Qty = table.Column<int>(type: "int", nullable: false),
-                    MailClass = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PackageOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                    PackageId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ContactName = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<string>(type: "text", nullable: false),
+                    ZipCode = table.Column<string>(type: "text", nullable: false),
+                    Qty = table.Column<int>(type: "integer", nullable: false),
+                    MailClass = table.Column<string>(type: "text", nullable: false),
+                    PackageOptionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CustomerId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -222,14 +223,14 @@ namespace ReachingOutDB.Migrations
                 name: "OrderAuditLogs",
                 columns: table => new
                 {
-                    OrderAuditLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PropertyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OldValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NewValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    OrderAuditLogId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PropertyName = table.Column<string>(type: "text", nullable: true),
+                    OldValue = table.Column<string>(type: "text", nullable: true),
+                    NewValue = table.Column<string>(type: "text", nullable: true),
+                    Action = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -246,11 +247,11 @@ namespace ReachingOutDB.Migrations
                 name: "PlateAssignments",
                 columns: table => new
                 {
-                    PlateAssignmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PlateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Position = table.Column<int>(type: "int", nullable: false),
-                    IsBlank = table.Column<bool>(type: "bit", nullable: false)
+                    PlateAssignmentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PlateId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Position = table.Column<int>(type: "integer", nullable: false),
+                    IsBlank = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -293,10 +294,10 @@ namespace ReachingOutDB.Migrations
                 columns: new[] { "Id", "BoxDiscountPercentage", "BoxDiscountThreshold", "HandlingFee", "MarkupPercentage", "Name", "PerBoxFee", "QuantityPerBox", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, 0.15m, 4, 4m, 0.6m, "UPS", 1.75m, 750, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, 0.15m, 4, 2m, 0.3m, "INTL", 1.25m, 750, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, 0.15m, 4, 25m, 0.15m, "LTL", 1.25m, 750, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 4, 0.15m, 4, 0m, 0.1m, "USPS", 1.5m, 200, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, 0.15m, 4, 4m, 0.6m, "UPS", 1.75m, 750, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { 2, 0.15m, 4, 2m, 0.3m, "INTL", 1.25m, 750, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { 3, 0.15m, 4, 25m, 0.15m, "LTL", 1.25m, 750, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Utc) },
+                    { 4, 0.15m, 4, 0m, 0.1m, "USPS", 1.5m, 200, new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.InsertData(
@@ -317,7 +318,7 @@ namespace ReachingOutDB.Migrations
             migrationBuilder.InsertData(
                 table: "OrderAuditLogs",
                 columns: new[] { "OrderAuditLogId", "Action", "NewValue", "OldValue", "OrderId", "PropertyName", "Timestamp", "UserName" },
-                values: new object[] { new Guid("02bbd91b-1be0-4640-b82f-66b38ba448b9"), "Updated", "New Value", "Old Value", new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), "Some Property", new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Anonymous" });
+                values: new object[] { new Guid("02bbd91b-1be0-4640-b82f-66b38ba448b9"), "Updated", "New Value", "Old Value", new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), "Some Property", new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Utc), "Anonymous" });
 
             migrationBuilder.InsertData(
                 table: "PlateAssignments",

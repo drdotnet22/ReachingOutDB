@@ -25,51 +25,6 @@ namespace ReachingOutDB.Data
         }
         #endregion
 
-        //public async Task LogOrderChangesAsync(DbContext dbContext)
-        //{
-        //    dbContext.ChangeTracker.DetectChanges();
-        //    var entries = dbContext.ChangeTracker.Entries<Order>()
-        //        .Where(e => e.State == EntityState.Modified || e.State == EntityState.Added || e.State == EntityState.Deleted);
-
-
-        //    foreach ( var entry in entries )
-        //    {
-        //        var entityName = entry.Entity.GetType().Name;
-
-        //        foreach (var property in entry.Properties )
-        //        {
-        //            if (property.CurrentValue != property.OriginalValue)
-        //            {
-        //                OrderAuditLog auditLog = new OrderAuditLog();
-        //                auditLog.Timestamp = DateTime.Now;
-        //                auditLog.Order = (Order)entry.Entity;
-        //                auditLog.UserName = userService.CurrentUser.Name;
-        //                auditLog.PropertyName = property.Metadata.Name;
-        //                auditLog.OldValue = property.OriginalValue?.ToString();
-        //                auditLog.NewValue = property.CurrentValue?.ToString();
-        //                if (entry.State == EntityState.Modified && property.IsModified)
-        //                {
-        //                    auditLog.Action = "Updated";
-
-        //                }
-        //                else if (entry.State == EntityState.Added)
-        //                {
-        //                    auditLog.Action = "Added";
-        //                }
-        //                else if (entry.State == EntityState.Deleted)
-        //                {
-        //                    auditLog.Action = "Deleted";
-        //                }
-        //                if (auditLog.OldValue != auditLog.NewValue)
-        //                {
-        //                    dbContext.Add(auditLog);
-        //                }
-        //            }
-        //        }
-        //        dbContext.SaveChanges();
-        //    }
-        //}
-
         public async Task LogOrderChangesAsync(Order originalOrder, Order updatedOrder)
         {
             var dbContext = contextFactory.CreateDbContext();
@@ -86,7 +41,6 @@ namespace ReachingOutDB.Data
                 if (originalValue != updatedValue)
                 {
                     OrderAuditLog auditLog = new OrderAuditLog();
-                    auditLog.Timestamp = DateTime.Now;
                     auditLog.OrderId = originalOrder.OrderId;
                     auditLog.OldValue = originalValue;
                     auditLog.NewValue = updatedValue;

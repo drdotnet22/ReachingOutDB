@@ -1,8 +1,10 @@
-using Microsoft.FluentUI.AspNetCore.Components;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FluentUI.AspNetCore.Components;
 using ReachingOutDB.Components;
 using ReachingOutDB.Data;
 using Syncfusion.Blazor;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +16,11 @@ builder.Services.AddFluentUIComponents();
 //Custom code
 builder.Services.AddSyncfusionBlazor();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(connectionString).EnableSensitiveDataLogging());
+    options.UseNpgsql(connectionString));
+
+
 
 builder.Services.AddScoped<CustomerServices>();
 builder.Services.AddScoped<OrderServices>();
@@ -27,10 +31,39 @@ builder.Services.AddScoped<ShippingSettingsServices>();
 builder.Services.AddScoped<MiscSettingsServices>();
 builder.Services.AddScoped<PlateServices>();
 
+// Set default culture
+var defaultCulture = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
+
 var app = builder.Build();
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzkwNzg2OEAzMjM5MmUzMDJlMzAzYjMyMzkzYmlPa2xZa2MwblpXeUg3VFN6M3BzczdhT1VXbVhrUldvYlNWa0VpOTM4clE9");
 
+// Apply migrations automatically on startup
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        // Log the error (you might want to add logging here)
+        Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
+        throw;
+    }
+}
+
+// Configure localization
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = new[] { new CultureInfo("en-US") },
+    SupportedUICultures = new[] { new CultureInfo("en-US") }
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
