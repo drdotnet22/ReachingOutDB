@@ -171,7 +171,7 @@ namespace ReachingOutDB.Data
 
                 await auditLogServices.LogOrderChangesAsync(oringinalOrder, updatedOrder);
                 dbContext.Orders.Update(updatedOrder);
-                dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -193,7 +193,7 @@ namespace ReachingOutDB.Data
                     }
                 }
                 dbContext.Orders.Remove(order);
-                dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {

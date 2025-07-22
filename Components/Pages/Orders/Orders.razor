@@ -6,6 +6,7 @@
 @inject UserServices userService
 @inject PlateServices plateService
 @rendermode InteractiveServer
+<PageTitle>Orders - Reaching Out</PageTitle>
 
 <div class="myflexrow">
     <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
@@ -239,6 +240,7 @@
         {
             if (args.Action == "Add")
             {
+                args.Cancel = true;
                 if (args.Data.Customer == null)
                 {
                     await orderService.GenerateOrders(null, args.Data.Year, args.Data.Quarter);
@@ -251,12 +253,14 @@
             }
             else if (args.Action == "Edit")
             {
+                args.Cancel = true;
                 await orderService.UpdateOrderAsync(args.Data);
                 RefreshOrders();
             }
         }
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
+            args.Cancel = true;
             await orderService.DeleteOrderAsync(args.Data);
         }
     }
@@ -280,6 +284,7 @@
         }
         else if (args.CommandColumn.Type == CommandButtonType.None)
         {
+            args.Cancel = true;
             if (args.CommandColumn.ID == "view-order")
             {
                 orderViewDialogRecord = args.RowData;

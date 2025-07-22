@@ -2,6 +2,7 @@
 @using ReachingOutDB.Data
 @inject UserServices userService
 @rendermode InteractiveServer
+<PageTitle>Users - Reaching Out</PageTitle>
 
 @if (userService.CurrentUser.Role == UserRole.Admin)
 {
@@ -53,17 +54,22 @@
         {
             if (args.Action == "Add")
             {
+                args.Cancel = true;
                 await userService.AddUserAsync(args.Data);
             }
             else if (args.Action == "Edit")
             {
+                args.Cancel = true;
                 await userService.UpdateUserAsync(args.Data);
                 StateHasChanged();
             }
         }
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
-            //
+
+            args.Cancel = true;
+            await userService.DeleteUserAsync(args.Data);
+            StateHasChanged();
         }
     }
 }

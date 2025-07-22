@@ -5,6 +5,7 @@
 @inject CustomerServices customerService
 @inject UserServices userService
 @rendermode InteractiveServer
+<PageTitle>Customers - Reaching Out</PageTitle>
 
 <h3>Customers</h3>
 <div>
@@ -83,6 +84,7 @@
     {
         if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
         {
+            args.Cancel = true;
             if (args.Action == "Add")
             {
                 customerService.AddCustomerAsync(args.Data);
@@ -96,6 +98,7 @@
         }
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
+            args.Cancel = true;
             customerService.ArchiveCustomerAsync(args.Data);
             await RefreshCustomers();
         }
