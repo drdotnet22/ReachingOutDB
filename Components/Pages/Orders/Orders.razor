@@ -280,7 +280,9 @@
         }
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
-            //delete order
+            ActionEventArgs<Order> actionEventArgs = new ActionEventArgs<Order>();
+            actionEventArgs.Data = args.RowData;
+            ActionBeginHandler(actionEventArgs);
         }
         else if (args.CommandColumn.Type == CommandButtonType.None)
         {

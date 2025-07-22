@@ -60,7 +60,7 @@ namespace ReachingOutDB.Data
             if (customer.Active)
             {
                 customer.Active = false;
-                await dbContext.SaveChangesAsync();
+                await UpdateCustomerAsync(customer);
                 return true;
             }
             else

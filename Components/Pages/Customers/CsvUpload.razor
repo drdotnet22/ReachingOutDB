@@ -8,11 +8,17 @@
 
 <div class="content-wrapper">
     <div class="row">
+        <SfUploader AllowedExtensions=".csv" AllowMultiple="false">
+            <UploaderEvents ValueChange="@OnChange" OnRemove="@OnRemove"></UploaderEvents>
+        </SfUploader>
+    </div>
+    <div class="row">
         <SfButton @onclick="ProcessCSV" >Process CSV file</SfButton>
     </div>
 </div>
 @code {
     private string path;
+    private bool fileExists = false;
     protected override async Task OnInitializedAsync()
     {
         path = $"{env.WebRootPath}\\Data\\ReachingOutCustomers.csv";
@@ -20,6 +26,39 @@
 
     private async void ProcessCSV()
     {
+        if (!fileExists)
+        {
+            return;
+        }
         await customerService.InitialImportFromCSV(path);
+    }
+
+    private async Task OnChange(UploadChangeEventArgs args)
+    {
+        try
+        {
+            foreach (var file in args.Files)
+            {
+                FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+                await file.File.OpenReadStream(long.MaxValue).CopyToAsync(fs);
+                fs.Close();
+                fileExists = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+    private void OnRemove(RemovingEventArgs args)
+    {
+        foreach (var removeFile in args.FilesData)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            fileExists = false;
+        }
     }
 }
