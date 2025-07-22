@@ -12,7 +12,7 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250718183055_Initial")]
+    [Migration("20250722133307_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
