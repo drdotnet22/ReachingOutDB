@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ReachingOutDB.Data
@@ -90,6 +91,7 @@ namespace ReachingOutDB.Data
         public decimal? PubShipping { get; set; }
         public int? PpOrderNumber { get; set; }
         public bool Archived { get; set; }
+        public ICollection<PlateAssignment> PlateAssignments { get; } = new List<PlateAssignment>();
     }
 
     public class OrderAuditLog
@@ -113,6 +115,7 @@ namespace ReachingOutDB.Data
         public bool Active { get; set; }
     }
 
+    #region Shipping stuff
     public class Package
     {
         public Guid PackageId { get; set; }
@@ -157,7 +160,33 @@ namespace ReachingOutDB.Data
         public int Id { get; set; }
         public decimal MagazineWeight { get; set; }
     }
+    #endregion
+    #region Plates
+    public class Plate
+    {
+        public Guid PlateId { get; set; }
+        public int Number {  get; set; }
+        public int Year { get; set; }
+        public Quarter Quarter { get; set; }
+        public int Quantity { get; set; }
+        public bool HasBlanks { get; set; }
+        public ICollection<PlateAssignment> PlateAssignments { get; } = new List<PlateAssignment>();
 
+    }
+
+    public class PlateAssignment
+    {
+        public Guid PlateAssignmentId { get; set; }
+        public Guid PlateId { get; set; }
+        public Plate Plate { get; set; }
+        public Guid? OrderId { get; set; }
+        public Order? Order { get; set; }
+        public int Position { get; set; }
+        public bool IsBlank {  get; set; } = false;
+    }
+    #endregion
+
+    #region Enums
     public enum Quarter
     {
         Q1 = 1,
@@ -183,4 +212,5 @@ namespace ReachingOutDB.Data
         Duplo = 2,
         Shipping = 3
     }
+    #endregion
 }

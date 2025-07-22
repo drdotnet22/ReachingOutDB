@@ -9,10 +9,10 @@
 
 <SfDropDownList TItem="string" TValue="Quarter"
         @bind-Value="SelectedQuarter"
-        @onchange="ValuesChanged"
         DataSource="@quarterValues"
         Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
         Width="200px">
+        <DropDownListEvents TItem="string" TValue="Quarter" ValueChange="OnQuarterChange" />
 </SfDropDownList>
 
 @code {
@@ -67,6 +67,11 @@
     async Task ValuesChanged()
     {
         await SelectedYearChanged.InvokeAsync(SelectedYear);
+        await SelectedQuarterChanged.InvokeAsync(SelectedQuarter);
+    }
+
+    public async Task OnQuarterChange(ChangeEventArgs<Quarter, string> args)
+    {
         await SelectedQuarterChanged.InvokeAsync(SelectedQuarter);
     }
 }

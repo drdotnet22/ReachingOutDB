@@ -4,6 +4,7 @@
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @inject UserServices userService
+@inject PlateServices plateService
 @rendermode InteractiveServer
 
 <div class="myflexrow">
@@ -18,6 +19,7 @@
         {
             <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
             <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
+            <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" />
         }
         else if (userService.CurrentUser.Role == UserRole.Duplo)
         {
@@ -337,6 +339,10 @@
                 RefreshOrders();
             }
             Grid.ClearRowSelectionAsync();
+        }
+        else if (args.Item.Text == "Assign Plates")
+        {
+            plateService.AssignJobsToPlatesAsync(orders);
         }
     }
 

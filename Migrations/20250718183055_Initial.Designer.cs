@@ -12,7 +12,7 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250625143411_Initial")]
+    [Migration("20250718183055_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -131,6 +131,9 @@ namespace ReachingOutDB.Migrations
                     b.Property<int>("QtyQ4")
                         .HasColumnType("int");
 
+                    b.Property<bool>("SpecialNoteUPS")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("UpsQty")
                         .HasColumnType("int");
 
@@ -168,7 +171,31 @@ namespace ReachingOutDB.Migrations
                             QtyQ2 = 0,
                             QtyQ3 = 0,
                             QtyQ4 = 0,
+                            SpecialNoteUPS = false,
                             VariableQty = false
+                        });
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.MiscSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("MagazineWeight")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MiscSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            MagazineWeight = 0.06m
                         });
                 });
 
@@ -347,6 +374,9 @@ namespace ReachingOutDB.Migrations
                     b.Property<Guid>("PackageOptionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
+
                     b.Property<string>("State")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -359,8 +389,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("PackageOptionId")
-                        .IsUnique();
+                    b.HasIndex("PackageOptionId");
 
                     b.ToTable("Packages");
 
@@ -374,6 +403,7 @@ namespace ReachingOutDB.Migrations
                             CustomerId = 2000,
                             MailClass = "FCF",
                             PackageOptionId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"),
+                            Qty = 1,
                             State = "NY",
                             ZipCode = "14775"
                         });
@@ -411,6 +441,80 @@ namespace ReachingOutDB.Migrations
                             PackageOptionId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"),
                             PackageDescription = "10x13 plastic sleeve",
                             PackagingWeight = 0.1m
+                        });
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.Plate", b =>
+                {
+                    b.Property<Guid>("PlateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("HasBlanks")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quarter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlateId");
+
+                    b.ToTable("Plates");
+
+                    b.HasData(
+                        new
+                        {
+                            PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"),
+                            HasBlanks = false,
+                            Number = 1,
+                            Quantity = 1,
+                            Quarter = 1,
+                            Year = 1
+                        });
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.PlateAssignment", b =>
+                {
+                    b.Property<Guid>("PlateAssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsBlank")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PlateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlateAssignmentId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PlateId");
+
+                    b.ToTable("PlateAssignments");
+
+                    b.HasData(
+                        new
+                        {
+                            PlateAssignmentId = new Guid("5ad5f77b-d3cc-4454-acbe-a5cbbc7f158e"),
+                            IsBlank = false,
+                            OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"),
+                            PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"),
+                            Position = 1
                         });
                 });
 
@@ -565,8 +669,8 @@ namespace ReachingOutDB.Migrations
                         .IsRequired();
 
                     b.HasOne("ReachingOutDB.Data.PackageOption", "PackageOption")
-                        .WithOne("Package")
-                        .HasForeignKey("ReachingOutDB.Data.Package", "PackageOptionId")
+                        .WithMany()
+                        .HasForeignKey("PackageOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -575,15 +679,36 @@ namespace ReachingOutDB.Migrations
                     b.Navigation("PackageOption");
                 });
 
+            modelBuilder.Entity("ReachingOutDB.Data.PlateAssignment", b =>
+                {
+                    b.HasOne("ReachingOutDB.Data.Order", "Order")
+                        .WithMany("PlateAssignments")
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("ReachingOutDB.Data.Plate", "Plate")
+                        .WithMany("PlateAssignments")
+                        .HasForeignKey("PlateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Plate");
+                });
+
             modelBuilder.Entity("ReachingOutDB.Data.Customer", b =>
                 {
                     b.Navigation("Packages");
                 });
 
-            modelBuilder.Entity("ReachingOutDB.Data.PackageOption", b =>
+            modelBuilder.Entity("ReachingOutDB.Data.Order", b =>
                 {
-                    b.Navigation("Package")
-                        .IsRequired();
+                    b.Navigation("PlateAssignments");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.Plate", b =>
+                {
+                    b.Navigation("PlateAssignments");
                 });
 #pragma warning restore 612, 618
         }
