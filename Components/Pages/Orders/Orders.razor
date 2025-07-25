@@ -16,6 +16,8 @@
         <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
     </div>
     <br />
+
+    //Custom toolbar for each type of user
     <SfToolbar>
         <ToolbarEvents Clicked="ToolbarClickHandler" />
         <ToolbarItems>
@@ -34,6 +36,15 @@
             else if (userService.CurrentUser.Role == UserRole.Duplo)
             {
                 <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
+                <ToolbarItem Type="ItemType.Spacer" />
+                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
+                    <Template>
+                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+                    </Template>
+                </ToolbarItem>
+            }
+            else
+            {
                 <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
                     <Template>
