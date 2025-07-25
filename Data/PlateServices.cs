@@ -93,7 +93,7 @@ namespace ReachingOutDB.Data
                 int totalBlanksNeeded = lowQtyOrders.Sum(o => o.Qty) + 2000;
 
 
-                while (sortedOrders[0].Qty > 999)
+                while (sortedOrders[0].Qty > 950)
                 {
                     var plate = new Plate()
                     {
