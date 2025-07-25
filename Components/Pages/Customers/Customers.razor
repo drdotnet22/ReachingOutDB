@@ -52,6 +52,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        userService.OnUserChanged += OnUserChanged;
         await RefreshCustomers();
         await base.OnInitializedAsync();
     }
@@ -126,6 +127,18 @@
             : "Edit Record of " + arg.CustomerName;
     }
     #endregion
+
+
+
+    private async void OnUserChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= OnUserChanged;
+    }
 }
 
 <style>

@@ -51,7 +51,7 @@ namespace ReachingOutDB.Data
             var dbContext = await contextFactory.CreateDbContextAsync();
             var user = await dbContext.UserProfiles.FirstOrDefaultAsync(u => u.UserProfileId == userId);
             CurrentUser = user;
-            //await SaveUserToBrowserAsync();
+            OnUserChanged?.Invoke();
         }
 
         private async Task SaveUserToBrowserAsync()

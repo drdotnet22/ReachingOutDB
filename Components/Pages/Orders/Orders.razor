@@ -5,75 +5,85 @@
 @inject CustomerServices customerService
 @inject UserServices userService
 @inject PlateServices plateService
+@implements IDisposable
 @rendermode InteractiveServer
 <PageTitle>Orders - Reaching Out</PageTitle>
 
-<div class="myflexrow">
-    <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
-    <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
-</div>
-<br />
-<SfToolbar>
-    <ToolbarEvents Clicked="ToolbarClickHandler" />
-    <ToolbarItems>
-        @if (userService.CurrentUser.Role == UserRole.Admin)
-        {
-            <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
-            <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
-            <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" />
-        }
-        else if (userService.CurrentUser.Role == UserRole.Duplo)
-        {
-            <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
-        }
-        <ToolbarItem Type="ItemType.Spacer" />
-        <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show" >
+@if (userService.CurrentUser != null)
+{
+    <div class="myflexrow">
+        <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
+        <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
+    </div>
+    <br />
+    <SfToolbar>
+        <ToolbarEvents Clicked="ToolbarClickHandler" />
+        <ToolbarItems>
+            @if (userService.CurrentUser.Role == UserRole.Admin)
+            {
+                <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
+                <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
+                <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" />
+                <ToolbarItem Type="ItemType.Spacer" />
+                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
+                    <Template>
+                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+                    </Template>
+                </ToolbarItem>
+            }
+            else if (userService.CurrentUser.Role == UserRole.Duplo)
+            {
+                <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
+                <ToolbarItem Type="ItemType.Spacer" />
+                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
+                    <Template>
+                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+                    </Template>
+                </ToolbarItem>
+            }
+        </ToolbarItems>
+    </SfToolbar>
+    <SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true">
+        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
+        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" OnToolbarClick="ToolbarClickHandler" TValue="Order" />
+        <GridSortSettings>
+            <GridSortColumns>
+                <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
+            </GridSortColumns>
+        </GridSortSettings>
+        <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin" AllowEditing="userService.CurrentUser.Role == UserRole.Admin" AllowDeleting="userService.CurrentUser.Role == UserRole.Admin" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" Context="thisOrder">
+            <HeaderTemplate>
+                <span>@GetHeader((thisOrder as Order))</span>
+            </HeaderTemplate>
             <Template>
-                <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+                <OrderViewEdit ThisOrder="(thisOrder as Order)" Editable="@true" CustomerList="customers" />
             </Template>
-        </ToolbarItem>
-    </ToolbarItems>
-</SfToolbar>
-<SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" >
-    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
-    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
-    <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" OnToolbarClick="ToolbarClickHandler" TValue="Order" />
-    <GridSortSettings>
-        <GridSortColumns>
-            <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
-        </GridSortColumns>
-    </GridSortSettings>
-    <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin" AllowEditing="userService.CurrentUser.Role == UserRole.Admin" AllowDeleting="userService.CurrentUser.Role == UserRole.Admin" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" Context="thisOrder">
-        <HeaderTemplate>
-            <span>@GetHeader((thisOrder as Order))</span>
-        </HeaderTemplate>
-        <Template>
-            <OrderViewEdit ThisOrder="(thisOrder as Order)" Editable="@true" CustomerList="customers" />
-        </Template>
-    </GridEditSettings>
-    <GridColumns>
-        <GridColumn Type="ColumnType.CheckBox" Width="50" ></GridColumn>
-        <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120" >
-            <FilterTemplate>
-                <SfDropDownList ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
-                    <DropDownListEvents TItem="string" TValue="JobStatus" ValueChange="ChangeJobStatusFilter" />
-                    <DropDownListFieldSettings Value="JobStatus" Text="JobStatus" />
-                </SfDropDownList>
-            </FilterTemplate>
-        </GridColumn>
-        @if (userService.CurrentUser.Role == UserRole.Admin)
-        {
-            <GridColumn Width="55" >
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
-                </GridCommandColumns>
+        </GridEditSettings>
+        <GridColumns>
+            <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+            <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120">
+                <FilterTemplate>
+                    <SfDropDownList ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
+                        <DropDownListEvents TItem="string" TValue="JobStatus" ValueChange="ChangeJobStatusFilter" />
+                        <DropDownListFieldSettings Value="JobStatus" Text="JobStatus" />
+                    </SfDropDownList>
+                </FilterTemplate>
             </GridColumn>
-        }
-        <GridColumn HeaderText="Ship Methods" Width="200" >
-            <Template>
-                
-                @{ var order = (context as Order); 
-                    { 
+            @if (userService.CurrentUser.Role == UserRole.Admin)
+            {
+                <GridColumn Width="55">
+                    <GridCommandColumns>
+                        <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
+                    </GridCommandColumns>
+                </GridColumn>
+            }
+            <GridColumn HeaderText="Ship Methods" Width="200">
+                <Template>
+
+                    @{
+                        var order = (context as Order);
+                        {
                             @if (order.DmQty.HasValue && order.DmQty > 0)
                             {
                                 <span class="chip-shipping chip-dm">DM</span>
@@ -94,32 +104,41 @@
                             {
                                 <span class="chip-shipping chip-ltl">LTL</span>
                             }
+                        }
                     }
-                }
-                   
-            </Template>
-            <FilterTemplate>
-                <SfMultiSelect TValue="string[]" TItem="string" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
-                    <MultiSelectEvents TValue="string[]" TItem="string" ValueChange="@ShipMethodOnChange" />
-                </SfMultiSelect>
-            </FilterTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" />
-        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
-        <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" />
-        <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
-        <GridColumn Width="152" >
-            <GridCommandColumns>
-                <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
-                @if (userService.CurrentUser.Role == UserRole.Admin)
-                {
-                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
-                    <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
-                }
-            </GridCommandColumns>
-        </GridColumn>
-    </GridColumns>
-</SfGrid>
+
+                </Template>
+                <FilterTemplate>
+                    <SfMultiSelect TValue="string[]" TItem="string" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
+                        <MultiSelectEvents TValue="string[]" TItem="string" ValueChange="@ShipMethodOnChange" />
+                    </SfMultiSelect>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" />
+            <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
+            <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" />
+            <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
+            <GridColumn Width="152">
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+                    @if (userService.CurrentUser.Role == UserRole.Admin)
+                    {
+                        <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                        <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+                    }
+                </GridCommandColumns>
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
+}
+else
+{
+    <div class="myflexrow">
+        <h1>Please select a user from the dropdown.</h1>
+        <FluentIcon Value="@(new Icons.Regular.Size24.ArrowUpRight())" Color="Color.Neutral" />
+    </div>
+}
+
 
 <SfDialog @ref="orderViewDialog" Visible="false" ShowCloseIcon="true" Width="50%" Header="@orderViewDialogHeader">
     <DialogTemplates>
@@ -172,6 +191,7 @@
     protected override async Task OnInitializedAsync()
     {
         customers = await customerService.GetCustomersAsync();
+        userService.OnUserChanged += OnUserChanged;
         await base.OnInitializedAsync();
     }
 
@@ -366,4 +386,14 @@
     private Order orderViewDialogRecord;
 
     #endregion
+
+    private async void OnUserChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= OnUserChanged;
+    }
 }

@@ -14,7 +14,7 @@
     protected override async Task OnInitializedAsync()
     {
         userProfiles = await userService.GetUserListAsync();
-        userService.OnUserChanged += StateHasChanged;
+        userService.OnUserChanged += OnUserChanged;
         await base.OnInitializedAsync();
     }
 
@@ -27,7 +27,6 @@
             {
                 ActiveUserId = userService.CurrentUser.UserProfileId; //error if user has not been assigned
             }
-            StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -38,8 +37,17 @@
         await userService.SelectUserAsync(userId.Value);
     }
 
+    private async void OnUserChanged()
+    {
+        if (userService.CurrentUser != null)
+        {
+            ActiveUserId = userService.CurrentUser.UserProfileId;
+        }
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
-        userService.OnUserChanged -= StateHasChanged;
+        userService.OnUserChanged -= OnUserChanged;
     }
 }

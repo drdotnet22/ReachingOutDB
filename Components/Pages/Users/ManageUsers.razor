@@ -40,6 +40,7 @@
     protected override async Task OnInitializedAsync()
     {
         userList = await userService.GetUserListAsync();
+        userService.OnUserChanged += OnUserChanged;
 
         foreach (string item in UserRole.GetNames(typeof(UserRole)))
         {
@@ -71,5 +72,15 @@
             await userService.DeleteUserAsync(args.Data);
             StateHasChanged();
         }
+    }
+
+    private async void OnUserChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= OnUserChanged;
     }
 }
