@@ -170,6 +170,7 @@ namespace ReachingOutDB.Data
         public Quarter Quarter { get; set; }
         public int Quantity { get; set; }
         public bool HasBlanks { get; set; }
+        public bool IsPlated { get; set; } = false;
         public ICollection<PlateAssignment> PlateAssignments { get; } = new List<PlateAssignment>();
 
     }

@@ -45,8 +45,20 @@ namespace ReachingOutDB.Data
             }
             else
             {
-                return await dbContext.Orders.Include(o => o.Customer).ToListAsync();
+                return await dbContext.Orders.Include(o => o.Customer).Include(o => o.PlateAssignments).ToListAsync();
             }
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersIncludePlateAssignmentsAsync(int year, Quarter quarter)
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            return await dbContext.Orders
+                    .Include(o => o.Customer)
+                    .Include(o => o.PlateAssignments)
+                    .ThenInclude(pa => pa.Plate)
+                    .Where(o => o.Year == year)
+                    .Where(o => o.Quarter == quarter)
+                    .ToListAsync();
         }
 
         public async Task<int> GenerateOrders(int? customerId, int year, Quarter quarter)

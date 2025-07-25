@@ -12,7 +12,7 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250722160617_Initial")]
+    [Migration("20250723215835_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -453,6 +453,9 @@ namespace ReachingOutDB.Migrations
                     b.Property<bool>("HasBlanks")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPlated")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
@@ -474,6 +477,7 @@ namespace ReachingOutDB.Migrations
                         {
                             PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"),
                             HasBlanks = false,
+                            IsPlated = false,
                             Number = 1,
                             Quantity = 1,
                             Quarter = 1,

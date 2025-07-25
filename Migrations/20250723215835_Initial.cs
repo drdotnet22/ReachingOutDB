@@ -104,7 +104,8 @@ namespace ReachingOutDB.Migrations
                     Year = table.Column<int>(type: "integer", nullable: false),
                     Quarter = table.Column<int>(type: "integer", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
-                    HasBlanks = table.Column<bool>(type: "boolean", nullable: false)
+                    HasBlanks = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPlated = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -286,8 +287,8 @@ namespace ReachingOutDB.Migrations
 
             migrationBuilder.InsertData(
                 table: "Plates",
-                columns: new[] { "PlateId", "HasBlanks", "Number", "Quantity", "Quarter", "Year" },
-                values: new object[] { new Guid("6447999c-271d-4985-6275-08ddc619be12"), false, 1, 1, 1, 1 });
+                columns: new[] { "PlateId", "HasBlanks", "IsPlated", "Number", "Quantity", "Quarter", "Year" },
+                values: new object[] { new Guid("6447999c-271d-4985-6275-08ddc619be12"), false, false, 1, 1, 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "ShippingSettings",

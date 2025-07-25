@@ -22,14 +22,15 @@
     protected override async Task OnInitializedAsync()
     {
         path = $"{env.WebRootPath}\\Data\\ReachingOutCustomers.csv";
+        fileExists = File.Exists(path);
     }
 
     private async void ProcessCSV()
     {
-        if (!fileExists)
-        {
-            return;
-        }
+        // if (!fileExists)
+        // {
+        //     return;
+        // }
         await customerService.InitialImportFromCSV(path);
     }
 

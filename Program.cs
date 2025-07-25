@@ -17,8 +17,19 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddSyncfusionBlazor();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var isDevelopment = builder.Environment.IsDevelopment();
+
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+{
+    if (isDevelopment)
+    {
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        options.UseNpgsql(connectionString);
+    }
+});
 
 
 

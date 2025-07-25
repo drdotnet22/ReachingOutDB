@@ -17,36 +17,82 @@
 @if (filteredPlates != null)
 {
 
-    <span>Blank plates needed: @unplatedOrders.Sum(o => o.Qty)</span>
+    <span>Blank plates needed: @blanksNeeded</span>
+    <span>Blank sheets plated: @blankSheets</span><br/>
+    <span>Efficiency: @efficiency.ToString("P1")</span>
     <h3>PlateList</h3>
-    @foreach (var plate in filteredPlates)
-    {
-        <h6>Plate #: @(plate.Number + 1) with @plate.Quantity sheets needed.</h6>
-        <table>
-            <tr>
-                <th>Position</th>
-                <th>Customer</th>
-                <th>Quantity Needed</th>
-            </tr>
-            @foreach (var assignment in plate.PlateAssignments)
-            {
-                <tr>
-                    <td>@(assignment.Position + 1)</td>
-                    @if (assignment.OrderId != null)
-                    {
-                        <td>@assignment.Order.Customer.CustomerName</td>
-                        <td>@assignment.Order.Qty</td>
-                    }
-                    else
-                    {
-                        <td>Blank</td>
-                        <td>@plate.Quantity</td>
-                    }
-                </tr>
-            }
-        </table>
-    }
-
+    <div class="card-container">
+        @foreach (var plate in filteredPlates)
+        {
+            <SfCard>
+                <CardContent>
+                    <div class="myflexrow" style="align-items:center">
+                        <h5>Plate #: @(plate.Number + 1) with @plate.Quantity sheets needed.</h5>
+                        @if (plate.IsPlated)
+                        {
+                            <FluentIcon Value="@(new Icons.Regular.Size24.CheckmarkCircle())" Color="Color.Success" />
+                        }
+                        else
+                        {
+                            <FluentButton Title="Plate Order" OnClick="() => PlateOrder(plate)">
+                                <FluentIcon Value="@(new Icons.Regular.Size24.Checkmark())" Color="Color.Accent"/>
+                            </FluentButton>
+                            <FluentButton Title="Edit Plate (Not implemented)" >
+                                <FluentIcon Value="@(new Icons.Regular.Size24.Edit())" Color="Color.Neutral"  />
+                            </FluentButton>
+                        }
+                        <FluentButton Title="Delete Plate" OnClick="() => DeletePlate(plate)">
+                            <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Error" />
+                        </FluentButton>
+                    </div>
+                    <SfGrid DataSource="plate.PlateAssignments" AllowSorting="true" RowHeight="20">
+                        <GridSortSettings>
+                            <GridSortColumns>
+                                <GridSortColumn Field="Position" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending" />
+                            </GridSortColumns>
+                        </GridSortSettings>
+                        <GridColumns>
+                            <GridColumn HeaderText="Position" Field="@nameof(PlateAssignment.Position)" TextAlign="TextAlign.Right" Width="100"/>
+                            <GridColumn HeaderText="Customer">
+                                <Template>
+                                    @{
+                                        var assignment = (context as PlateAssignment);
+                                        {
+                                            if (assignment.OrderId != null)
+                                            {
+                                                <span>@assignment.Order.Customer.CustomerName - @assignment.Order.CustomerId.ToString()</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Blank</span>
+                                            }
+                                        }
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="Quantity" TextAlign="TextAlign.Right">
+                                <Template>
+                                    @{
+                                        var assignment = (context as PlateAssignment);
+                                        {
+                                            if (assignment.OrderId != null)
+                                            {
+                                                <span>@assignment.Order.Qty</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@plate.Quantity</span>
+                                            }
+                                        }
+                                    }
+                                </Template>
+                            </GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                </CardContent>
+            </SfCard>
+        }
+    </div>
 }
 else
 {
@@ -54,21 +100,17 @@ else
 }
 @code {
     public int selectedYear { get; set; }
+    public int blankSheets { get; set; }
+    public int blanksNeeded { get; set; }
+    public int platedOrderTotal { get; set; }
+    public double efficiency { get; set; }
     public Quarter selectedQuarter { get; set; }
     public IEnumerable<Plate> filteredPlates { get; set; }
-    public IEnumerable<Order> platedOrders { get; set; }
     public IEnumerable<Order> unplatedOrders { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IEnumerable<Order> orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
-        platedOrders = orders.Where(o => o.PlateAssignments.Count > 0);
-        unplatedOrders = orders.Where(o => o.PlateAssignments.Count == 0);
-
-        selectedYear = 2025;
-        selectedQuarter = Quarter.Q3;
         await RefreshPlates();
-
         await base.OnInitializedAsync();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -82,6 +124,51 @@ else
 
     public async Task RefreshPlates()
     {
+        IEnumerable<Order> orders = await orderService.GetOrdersIncludePlateAssignmentsAsync(selectedYear, selectedQuarter);
+        blanksNeeded = orders
+            .Where(o => o.Qty < 1000)
+            .Where(o => !o.PlateAssignments.Any())
+            .Sum(o => o.Qty);
+
+        platedOrderTotal = orders
+            .Where(o => o.PlateAssignments.Any())
+            .Sum(o => o.Qty);
+
+
         filteredPlates = await plateService.GetFilteredPlatesAsync(selectedYear, selectedQuarter);
+        blankSheets = filteredPlates
+            .SelectMany(p => p.PlateAssignments)
+            .Where(pa => pa.IsBlank == true)
+            .Sum(pa => pa.Plate.Quantity);
+
+        int platedQty = filteredPlates.Sum(p => p.Quantity);
+
+        efficiency = ((double)(blanksNeeded + 2000 + platedOrderTotal)) / (platedQty * 4);
+        StateHasChanged();
+    }
+
+    public async Task PlateOrder(Plate plate)
+    {
+        await plateService.MarkPlatedAsync(plate);
+        await RefreshPlates();
+    }
+
+    public async Task DeletePlate(Plate plate)
+    {
+        await plateService.DeletePlateAsync(plate);
+        await RefreshPlates();
     }
 }
+
+<style>
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px; /* Adjust spacing between cards as needed */
+    }
+
+    .card-container .e-card {
+        flex: 0 0 calc(50% - 8px); /* 50% width minus half the gap */
+        box-sizing: border-box;
+    }
+</style>
