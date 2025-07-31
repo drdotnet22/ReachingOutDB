@@ -1,0 +1,66 @@
+﻿@using ReachingOutDB.Data
+@using System.IO
+@using Sylvan.Data.Csv
+@inject OrderServices orderService
+@inject IWebHostEnvironment env
+@rendermode InteractiveServer
+
+<div class="content-wrapper">
+    <div class="row">
+        <SfUploader AllowedExtensions=".csv" AllowMultiple="false" AutoUpload="true">
+            <UploaderEvents ValueChange="@OnChange" OnRemove="@OnRemove"></UploaderEvents>
+        </SfUploader>
+    </div>
+    <div class="row">
+        <SfButton @onclick="ProcessCsv" Disabled="!fileExists">Process CSV file</SfButton>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int ThisYear { get; set; }
+
+    [Parameter] public Quarter ThisQuarter { get; set; }
+
+    private string path;
+    private bool fileExists = false;
+    protected override async Task OnInitializedAsync()
+    {
+        path = $"{env.WebRootPath}\\Data\\EndiciaImport.csv";
+        fileExists = File.Exists(path);
+    }
+
+    private async void ProcessCsv()
+    {
+        await orderService.ImportEndiciaPrintLogCsvAsync(path, ThisYear, ThisQuarter);
+    }
+
+    private void OnChange(UploadChangeEventArgs args)
+    {
+        try
+        {
+            foreach (var file in args.Files)
+            {
+                FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+                file.File.OpenReadStream(long.MaxValue).CopyTo(fs);
+                fs.Close();
+                fileExists = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void OnRemove(RemovingEventArgs args)
+    {
+        foreach (var removeFile in args.FilesData)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            fileExists = false;
+        }
+    }
+}

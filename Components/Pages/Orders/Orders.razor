@@ -26,6 +26,7 @@
                 <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
                 <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
                 <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" />
+                <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" />
                 <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
                     <Template>
@@ -156,6 +157,14 @@ else
         <Content>
             <OrderViewEdit ThisOrder="orderViewDialogRecord" Editable="false" CustomerList="customers" />
             <OrderLogView ThisOrder="orderViewDialogRecord" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<SfDialog @ref="endiciaImportDialog" Visible="false" ShowCloseIcon="true" Width="30%">
+    <DialogTemplates>
+        <Content>
+            <ImportEndiciaCsv ThisYear="selectedYear" ThisQuarter="selectedQuarter" />
         </Content>
     </DialogTemplates>
 </SfDialog>
@@ -382,6 +391,10 @@ else
         {
             plateService.AssignJobsToPlatesAsync(orders);
         }
+        else if (args.Item.Text == "Import Endicia")
+        {
+            endiciaImportDialog.ShowAsync();
+        }
     }
 
     public SfTextBox ToolbarSearchBox;
@@ -396,6 +409,7 @@ else
     private string orderViewDialogHeader;
     private Order orderViewDialogRecord;
 
+    private SfDialog endiciaImportDialog;
     #endregion
 
     private async void OnUserChanged()
@@ -407,4 +421,5 @@ else
     {
         userService.OnUserChanged -= OnUserChanged;
     }
+
 }

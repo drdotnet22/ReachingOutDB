@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Sylvan.Data.Csv;
+using System.Data;
 
 namespace ReachingOutDB.Data
 {
@@ -215,7 +216,7 @@ namespace ReachingOutDB.Data
 
         public async Task CalculatePublishedPostageAsync(Order order)
         {
-            if (!order.DmQty.HasValue &&  order.DmQty.Value < 1)
+            if (!order.DmQty.HasValue ||  order.DmQty.Value < 1)
             {
                 var dbContext = await contextFactory.CreateDbContextAsync();
                 var uspsShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "USPS");
@@ -256,6 +257,34 @@ namespace ReachingOutDB.Data
             }
             order.PubShipping = pubShip;
             await UpdateOrderAsync(order);
+        }
+
+        public async Task ImportEndiciaPrintLogCsvAsync(string path, int year, Quarter quarter)
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            try
+            {
+                var orders = await GetOrdersAsync(year, quarter);
+                CsvDataReader reader = CsvDataReader.Create(path, new CsvDataReaderOptions
+                {
+                    Delimiter = ',',
+                    HasHeaders = true
+                });
+                DataTable dataTable = new DataTable();
+                dataTable.Load(reader);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    var customerId = int.Parse(row["Order Number"].ToString());
+                    var order = orders.FirstOrDefault(o => o.CustomerId == int.Parse(row["Order Number"].ToString()));
+                    order.PostalCost = (order.PostalCost ?? 0) + Convert.ToDecimal(row["Cost"].ToString());
+                    await CalculatePublishedPostageAsync(order);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }
