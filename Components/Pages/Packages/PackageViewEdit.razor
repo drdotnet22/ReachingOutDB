@@ -1,0 +1,105 @@
+@using ReachingOutDB.Data
+@using Syncfusion.Blazor.MultiColumnComboBox
+@using Syncfusion.Blazor.DataForm
+
+@inject PackageServices packageService
+@inject CustomerServices customerService
+
+@rendermode InteractiveServer
+
+@if (ThisPackage != null)
+{
+   <SfDataForm ID="package-edit-form" 
+            Model="@ThisPackage"
+            OnValidSubmit="OnValidSubmitHandler">
+       <FormValidator>
+           <DataAnnotationsValidator />
+           <ValidationSummary />
+       </FormValidator>
+
+       <FormTemplate>
+            <div class="myflexcolumn">
+                <SfMultiColumnComboBox TItem="Customer" TValue="int" AllowFiltering="true"
+                                       FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
+                                       @bind-Value="ThisPackage.CustomerId"
+                                       DataSource="CustomerList"
+                                       ValueField="CustomerId"
+                                       TextField="CustomerName"
+                                       Width="400px"
+                                       ShowClearButton="false"
+                                       Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+                    <MultiColumnComboboxColumns>
+                        <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
+                        <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
+                    </MultiColumnComboboxColumns>
+                </SfMultiColumnComboBox>
+                <div class="myflexrow">
+                    <SfTextBox @bind-Value="ThisPackage.ContactName"
+                               FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                               Placeholder="Contact name" />
+
+                    <SfTextBox @bind-Value="ThisPackage.Address"
+                               FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                               Placeholder="Address" />
+                </div>
+                <div class="myflexrow">
+                    <SfTextBox @bind-Value="ThisPackage.City"
+                               FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                               Placeholder="City" />
+
+                    <SfTextBox @bind-Value="ThisPackage.State"
+                               FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                               Placeholder="State" />
+
+                    <SfTextBox @bind-Value="ThisPackage.ZipCode"
+                               FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                               Placeholder="Zip code" />
+                </div>
+                <div class="myflexrow">
+                    <SfNumericTextBox @bind-Value="ThisPackage.Qty" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Placeholder="Quantity" ShowSpinButton="false" />
+                    <SfTextBox @bind-Value="ThisPackage.MailClass"
+                               FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                               Placeholder="Mail class" />
+
+                    <SfDropDownList TItem="PackageOption" TValue="Guid"
+                                    @bind-Value="ThisPackage.PackageOptionId"
+                                    DataSource="@PackageOptionList"
+                                    FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                                    Placeholder="Packaging">
+                        <DropDownListFieldSettings Value="PackageOptionId" Text="PackageDescription" />
+                    </SfDropDownList>
+                </div>
+            </div>
+       </FormTemplate>
+   </SfDataForm>
+   <br />
+}
+
+@code {
+    [Parameter]
+    public Package ThisPackage { get; set; }
+
+    [Parameter]
+    public EventCallback CloseDialog { get; set; }
+
+    private IEnumerable<Customer> CustomerList { get; set; }
+    private IEnumerable<PackageOption> PackageOptionList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CustomerList = await customerService.GetCustomersAsync();
+        PackageOptionList = await packageService.GetPackageOptionsAsync();
+        if (ThisPackage == null)
+        {
+            ThisPackage = new Package();
+        }
+    }
+
+    public async Task OnValidSubmitHandler()
+    {
+        ThisPackage.Customer = null;
+        ThisPackage.PackageOption = null;
+        await packageService.UpdatePackageAsync(ThisPackage);
+        CloseDialog.InvokeAsync();
+    }
+}

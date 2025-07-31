@@ -1,0 +1,136 @@
+﻿@page "/shipping-settings"
+@using ReachingOutDB.Data
+@using Microsoft.EntityFrameworkCore
+@inject ShippingSettingsServices shippingSettingsService
+@rendermode InteractiveServer
+
+<h3>Shipping Settings Management</h3>
+
+<SfGrid @ref="Grid" DataSource="@shippingSettings" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30">
+    <GridEvents OnActionBegin="ActionBeginHandler" TValue="ShippingSetting" />
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog">
+        <HeaderTemplate>
+            @{
+                var dialogHeader = GetHeader((context as ShippingSetting));
+                <span>@dialogHeader</span>
+            }
+        </HeaderTemplate>
+        <Template>
+            <div class="flexcolumn">
+                <SfCard>
+                    <CardHeader Title="Basic Settings" />
+                    <CardContent>
+                        <div class="flexrow">
+                            <SfTextBox ID="Name" @bind-Value="@((context as ShippingSetting).Name)" Placeholder="Shipping Method Name" FloatLabelType="FloatLabelType.Always" Width="250px" />
+                            <SfNumericTextBox ID="QuantityPerBox" @bind-Value="@((context as ShippingSetting).QuantityPerBox)" Placeholder="Quantity Per Box" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Width="180px" />
+                        </div>
+                    </CardContent>
+                </SfCard>
+                
+                <SfCard>
+                    <CardHeader Title="Pricing Settings" />
+                    <CardContent>
+                        <div class="flexrow">
+                            <SfNumericTextBox ID="MarkupPercentage" @bind-Value="@((context as ShippingSetting).MarkupPercentage)" Placeholder="Markup Percentage" FloatLabelType="FloatLabelType.Always" Format="p2" Width="180px" ShowSpinButton="false" />
+                            <SfNumericTextBox ID="HandlingFee" @bind-Value="@((context as ShippingSetting).HandlingFee)" Placeholder="Handling Fee ($)" FloatLabelType="FloatLabelType.Always" Format="c2" Width="150px" ShowSpinButton="false" />
+                            <SfNumericTextBox ID="PerBoxFee" @bind-Value="@((context as ShippingSetting).PerBoxFee)" Placeholder="Per Box Fee ($)" FloatLabelType="FloatLabelType.Always" Format="c2" Width="150px" ShowSpinButton="false" />
+                        </div>
+                    </CardContent>
+                </SfCard>
+                
+                <SfCard>
+                    <CardHeader Title="Discount Settings" />
+                    <CardContent>
+                        <div class="flexrow">
+                            <SfNumericTextBox ID="BoxDiscountThreshold" @bind-Value="@((context as ShippingSetting).BoxDiscountThreshold)" Placeholder="Box Discount Threshold" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Width="200px" />
+                            <SfNumericTextBox ID="BoxDiscountPercentage" @bind-Value="@((context as ShippingSetting).BoxDiscountPercentage)" Placeholder="Box Discount Percentage" FloatLabelType="FloatLabelType.Always" Format="p2" Width="200px" ShowSpinButton="false" />
+                        </div>
+                    </CardContent>
+                </SfCard>
+            </div>
+        </Template>
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn HeaderText="Shipping Method" Field="Name" Type="ColumnType.String" TextAlign="TextAlign.Left" Width="120" />
+        <GridColumn HeaderText="Qty/Box" Field="QuantityPerBox" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Markup %" Field="MarkupPercentage" Type="ColumnType.Number" Format="p0" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Handling Fee" Field="HandlingFee" Type="ColumnType.Number" Format="c" TextAlign="TextAlign.Right" Width="130" />
+        <GridColumn HeaderText="Per Box Fee" Field="PerBoxFee" Type="ColumnType.Number" Format="c" TextAlign="TextAlign.Right" Width="120" />
+        <GridColumn HeaderText="Disc. Threshold" Field="BoxDiscountThreshold" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="130" />
+        <GridColumn HeaderText="Disc. %" Field="BoxDiscountPercentage" Type="ColumnType.Number" Format="p0" TextAlign="TextAlign.Right" Width="80" />
+        <GridColumn HeaderText="Updated" Field="UpdatedAt" Type="ColumnType.DateTime" Format="d" TextAlign="TextAlign.Center" Width="100" />
+        <GridColumn>
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() {IconCss="e-icons e-delete", CssClass="e-flat" })"/>
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code {
+    public IEnumerable<ShippingSetting> shippingSettings { get; set; } = new List<ShippingSetting>();
+    public SfGrid<ShippingSetting> Grid { get; set; }
+    private List<Object> ToolbarItems = new List<Object>() { "Add", "Search" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshShippingSettings();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshShippingSettings()
+    {
+        shippingSettings = await shippingSettingsService.GetShippingSettingsAsync();
+    }
+
+    #region Datagrid handlers
+    private async Task ActionBeginHandler(ActionEventArgs<ShippingSetting> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                args.Cancel = true;
+                await shippingSettingsService.AddShippingSettingAsync(args.Data);
+                await RefreshShippingSettings();
+            }
+            else if (args.Action == "Edit")
+            {
+                args.Cancel = true;
+                await shippingSettingsService.UpdateShippingSettingAsync(args.Data);
+                await RefreshShippingSettings();
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            args.Cancel = true;
+            await shippingSettingsService.DeleteShippingSettingAsync(args.Data);
+            await RefreshShippingSettings();
+        }
+    }
+
+    public string GetHeader(ShippingSetting arg)
+    {
+        return arg.Id == 0
+            ? "New Shipping Setting"
+            : "Edit Shipping Setting: " + arg.Name;
+    }
+    #endregion
+}
+
+<style>
+    .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+    }
+
+    .flexcolumn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+</style>

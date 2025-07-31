@@ -1,0 +1,176 @@
+@page "/packages"
+@using ReachingOutDB.Data
+@inject PackageServices packageService
+@inject CustomerServices customerService
+@inject MiscSettingsServices miscSettingsService
+@rendermode InteractiveServer
+
+<PageTitle>Packages</PageTitle>
+
+<h3>Package Management</h3>
+
+<SfGrid @ref="Grid" DataSource="@packages" AllowSorting="true" AllowResizing="true" RowHeight="30" Toolbar="@ToolbarItems" AllowExcelExport="true" AllowSelection="true">
+    <GridEvents TValue="Package" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" OnToolbarClick="ToolbarClickHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" CommandClicked="CommandClickedHandler"></GridEvents>
+    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending" />
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridEditSettings AllowAdding="true" AllowEditing="false" AllowDeleting="true" />
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+        <GridForeignColumn Field="@nameof(Package.CustomerId)" ForeignKeyValue="CustomerName" ForeignDataSource="@customers" HeaderText="Customer Name" />
+        <GridColumn Field="@nameof(Package.CustomerId)" HeaderText="Customer ID" />
+        <GridColumn Field="@nameof(Package.ContactName)" HeaderText="Contact Name" />
+        <GridColumn Field="@nameof(Package.Address)" HeaderText="Address" Width="250" />
+        <GridColumn Field="@nameof(Package.City)" HeaderText="City" Width="150" />
+        <GridColumn Field="@nameof(Package.State)" HeaderText="State" Width="85" />
+        <GridColumn Field="@nameof(Package.ZipCode)" HeaderText="Zip Code" Width="100" />
+        <GridColumn Field="@nameof(Package.Qty)" HeaderText="Quantity" TextAlign="TextAlign.Right" />
+        <GridColumn HeaderText="Weight" TextAlign="TextAlign.Right" >
+            <Template>
+                @{
+                    var package = (context as Package);
+                    if (package.PackageOption != null)
+                    {
+                        var weight = (package.Qty * miscSetting.MagazineWeight) + package.PackageOption.PackagingWeight;
+                        <div>@weight</div>
+                    }
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(Package.MailClass)" HeaderText="Mail Class" Width="100" />
+        <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="PackageDescription" ForeignDataSource="@packageOptions" HeaderText="Packaging" />
+        <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="Length" ForeignDataSource="@packageOptions" HeaderText="PackageLength" Visible="exportColumnsVisible" />
+        <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="Width" ForeignDataSource="@packageOptions" HeaderText="PackageWidth" Visible="exportColumnsVisible" />
+        <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="Height" ForeignDataSource="@packageOptions" HeaderText="PackageHeight" Visible="exportColumnsVisible" />
+        <GridColumn Width="110">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })" />
+                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="packageEditDialog" Width="700" Visible=false ShowCloseIcon="true" >
+    <DialogTemplates>
+        <Header>
+            <span>@GetHeader(selectedPackage)</span>
+        </Header>
+        <Content>
+            <PackageViewEdit ThisPackage="selectedPackage" CloseDialog="ClosePackageEditDialog" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    private SfGrid<Package> Grid;
+    private IEnumerable<Package> packages { get; set; }
+    private IEnumerable<Customer> customers { get; set; }
+    private IEnumerable<PackageOption> packageOptions { get; set; }
+    private List<Object> ToolbarItems = new List<Object>() { "Add", "CsvExport", "Search" };
+    private bool exportColumnsVisible = false;
+    public MiscSetting miscSetting;
+    public Package selectedPackage = new Package();
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await customerService.GetCustomersAsync();
+        packageOptions = await packageService.GetPackageOptionsAsync();
+        miscSetting = await miscSettingsService.GetMiscSettingsAsync();
+        await RefreshPackages();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshPackages()
+    {
+        packages = await packageService.GetPackagesAsync();
+        StateHasChanged();
+    }
+
+    private async Task ActionBeginHandler(ActionEventArgs<Package> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            args.Cancel = true;
+            await packageService.DeletePackageAsync(args.Data);
+            await RefreshPackages();
+        }
+    }
+
+    public async void CommandClickedHandler(CommandClickEventArgs<Package> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        {
+            selectedPackage = args.RowData;
+            packageEditDialog.ShowAsync();
+            args.Cancel = true;
+        }
+        else if (args.CommandColumn.Type == CommandButtonType.Delete)
+        {
+            ActionEventArgs<Package> actionEventArgs = new ActionEventArgs<Package>();
+            actionEventArgs.Data = args.RowData;
+            ActionBeginHandler(actionEventArgs);
+        }
+    }
+
+    private async Task ActionCompleteHandler(ActionEventArgs<Package> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save) || args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            await Grid.Refresh();
+        }
+    }
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Add")
+        {
+            selectedPackage = null;
+            packageEditDialog.ShowAsync();
+            args.Cancel = true;
+        }
+        else if (args.Item.Text == "CSV Export")
+        {
+            var selectedRecords = await Grid.GetSelectedRecordsAsync();
+            ExcelExportProperties ExportProperties = new ExcelExportProperties
+            {
+                IncludeTemplateColumn = true,
+                IncludeHiddenColumn = true,
+                DataSource = selectedRecords
+            };
+            await Grid.ExportToCsvAsync(ExportProperties);
+        }
+    }
+
+    public void ExcelQueryCellInfoHandler(ExcelQueryCellInfoEventArgs<Package> args)
+    {
+        if (args.Column.HeaderText == "Weight")
+        {
+            var weight = (args.Data.Qty * miscSetting.MagazineWeight) + args.Data.PackageOption.PackagingWeight;
+            args.Cell.Value = weight.ToString();
+        }
+    }
+
+    private string GetHeader(Package package)
+    {
+        if (selectedPackage == null)
+        {
+            return "Add New Package";
+        }
+        else
+        {
+            return $"Edit Package - {package?.ContactName}";
+        }
+    }
+
+    SfDialog packageEditDialog;
+
+    private async Task ClosePackageEditDialog()
+    {
+        await packageEditDialog.HideAsync();
+        RefreshPackages();
+    }
+}

@@ -1,0 +1,117 @@
+﻿@page "/package-options"
+@using ReachingOutDB.Data
+@using Microsoft.EntityFrameworkCore
+@inject PackageServices packageService
+@rendermode InteractiveServer
+
+<h3>Package Options Management</h3>
+
+<SfGrid @ref="Grid" DataSource="@packageOptions" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30">
+    <GridEvents OnActionBegin="ActionBeginHandler" TValue="PackageOption" />
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog">
+        <HeaderTemplate>
+            @{
+                var dialogHeader = GetHeader((context as PackageOption));
+                <span>@dialogHeader</span>
+            }
+        </HeaderTemplate>
+        <Template>
+            <div class="flexcolumn">
+                <SfCard>
+                    <CardContent>
+                        <div class="flexrow">
+                            <SfTextBox ID="PackageDescription" @bind-Value="@((context as PackageOption).PackageDescription)" Placeholder="Package Description" FloatLabelType="FloatLabelType.Always" Width="300px" />
+                            <SfNumericTextBox ID="PackagingWeight" @bind-Value="@((context as PackageOption).PackagingWeight)" Placeholder="Packaging Weight (lbs)" FloatLabelType="FloatLabelType.Always" Width="200px" ShowSpinButton="false"/>
+                        </div>
+                        <div class="flexrow">
+                            <SfNumericTextBox ID="Length" @bind-Value="@((context as PackageOption).Length)" Placeholder="Length (inches)" FloatLabelType="FloatLabelType.Always" Width="150px" ShowSpinButton="false" />
+                            <SfNumericTextBox ID="Width" @bind-Value="@((context as PackageOption).Width)" Placeholder="Width (inches)" FloatLabelType="FloatLabelType.Always" Width="150px" ShowSpinButton="false" />
+                            <SfNumericTextBox ID="Height" @bind-Value="@((context as PackageOption).Height)" Placeholder="Height (inches)" FloatLabelType="FloatLabelType.Always" Width="150px" ShowSpinButton="false" />
+                        </div>
+                    </CardContent>
+                </SfCard>
+            </div>
+        </Template>
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn HeaderText="Description" Field="PackageDescription" Type="ColumnType.String" TextAlign="TextAlign.Left" Width="200" />
+        <GridColumn HeaderText="Weight (lbs)" Field="PackagingWeight" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="120" />
+        <GridColumn HeaderText="Length (in)" Field="Length" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Width (in)" Field="Width" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Height (in)" Field="Height" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn>
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() {IconCss="e-icons e-delete", CssClass="e-flat" })"/>
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code {
+    public IEnumerable<PackageOption> packageOptions { get; set; } = new List<PackageOption>();
+    public SfGrid<PackageOption> Grid { get; set; }
+    private List<Object> ToolbarItems = new List<Object>() { "Add", "Search" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshPackageOptions();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshPackageOptions()
+    {
+        packageOptions = await packageService.GetPackageOptionsAsync();
+    }
+
+    #region Datagrid handlers
+    private async Task ActionBeginHandler(ActionEventArgs<PackageOption> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                args.Cancel = true;
+                args.Data.PackageOptionId = Guid.NewGuid();
+                await packageService.AddPackageOptionAsync(args.Data);
+                await RefreshPackageOptions();
+            }
+            else if (args.Action == "Edit")
+            {
+                args.Cancel = true;
+                await packageService.UpdatePackageOptionAsync(args.Data);
+                await RefreshPackageOptions();
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            args.Cancel = true;
+            await packageService.DeletePackageOptionAsync(args.Data);
+            await RefreshPackageOptions();
+        }
+    }
+
+    public string GetHeader(PackageOption arg)
+    {
+        return arg.PackageOptionId == Guid.Empty
+            ? "New Package Option"
+            : "Edit Package Option: " + arg.PackageDescription;
+    }
+    #endregion
+}
+
+<style>
+    .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+    }
+
+    .flexcolumn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+</style>

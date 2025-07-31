@@ -1,0 +1,61 @@
+﻿@page "/shippingadmin"
+@using ReachingOutDB.Data
+@inject UserServices userService
+@rendermode InteractiveServer
+<PageTitle>Shipping - Reaching Out</PageTitle>
+
+@if (userService.CurrentUser.Role == UserRole.Admin)
+{
+    <SfTab>
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Packages" />
+                </ChildContent>
+                <ContentTemplate>
+                    <br /><Packages />
+                </ContentTemplate>
+            </TabItem>
+
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Package Options" />
+                </ChildContent>
+                <ContentTemplate>
+                    <br /><PackageOptions />
+                </ContentTemplate>
+            </TabItem>
+
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Shipping Settings" />
+                </ChildContent>
+                <ContentTemplate>
+                    <br /><ShippingSettings />
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+} else {
+    <p>😢 Your role in the system doesn't allow you to see this page.</p>
+}
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        userService.OnUserChanged += OnUserChanged;
+        return base.OnInitializedAsync();
+    }
+
+    private async void OnUserChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= OnUserChanged;
+    }
+}
+
+
