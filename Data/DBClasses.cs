@@ -21,6 +21,8 @@ namespace ReachingOutDB.Data
         public string? NotesQ3 { get; set; }
         public string? NotesQ4 { get; set; }
         public bool CustomBP { get; set; }
+        public Quarter? YearlyBillingQuarter { get; set; }
+        public string? MailingNotes {  get; set; }
         //DM
         public int? DmQty { get; set; }
         public int? DmQtyQ1 { get; set; }
@@ -52,7 +54,6 @@ namespace ReachingOutDB.Data
         public int? IntlQtyQ2 { get; set; }
         public int? IntlQtyQ3 { get; set; }
         public int? IntlQtyQ4 { get; set; }
-        public Quarter? YearlyBillingQuarter { get; set; }
         public Guid? PackageId { get; set; }
         public ICollection<Package> Packages { get; } = new List<Package>();
     }
@@ -118,16 +119,33 @@ namespace ReachingOutDB.Data
     #region Shipping stuff
     public class Package
     {
-        public Guid PackageId { get; set; }
-        public string ContactName { get; set; }
+        public Guid PackageId { get; set; } = Guid.NewGuid();
+        public string? ContactName { get; set; }
+
+        [Required(ErrorMessage = "Address is required")]
+        [MinLength(4, ErrorMessage = "Address is too short")]
         public string Address { get; set; }
+
+        [Required(ErrorMessage = "City is required")]
         public string City { get; set; }
+
+        [Required(ErrorMessage = "State is required")]
         public string State { get; set; }
+
+        [Required(ErrorMessage = "State is required")]
         public string ZipCode { get; set; }
+
+        [Required(ErrorMessage = "A quantity is required")]
         public int Qty { get; set; } = 1;
+
+        [Required(ErrorMessage = "MailClass is required")]
         public string MailClass { get; set; }
+
+        [RequiredNonEmptyGuid(ErrorMessage = "Please select a package option")]
         public Guid PackageOptionId { get; set; }
         public PackageOption PackageOption { get; set; }
+
+        [Range(2000, 2999, ErrorMessage = "Please select a customer")]
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
     }
@@ -214,4 +232,16 @@ namespace ReachingOutDB.Data
         Shipping = 3
     }
     #endregion
+
+    public class RequiredNonEmptyGuidAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            if (value is Guid guid)
+            {
+                return guid != Guid.Empty;
+            }
+            return false;
+        }
+    }
 }

@@ -1,0 +1,158 @@
+﻿@page "/mailingnotes"
+
+@using ReachingOutDB.Data
+@using Syncfusion.Blazor.MultiColumnComboBox
+
+@inject CustomerServices customerService
+@rendermode InteractiveServer
+
+<h3>MailingNotes</h3>
+
+<SfToolbar>
+    <ToolbarEvents Clicked="ToolbarClickHandler" />
+    <ToolbarItems>
+        <ToolbarItem Text="Add" TooltipText="New mailing notes." PrefixIcon="e-duplicate icon" />
+        <ToolbarItem Type="ItemType.Spacer" />
+        <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
+            <Template>
+                <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+            </Template>
+        </ToolbarItem>
+    </ToolbarItems>
+</SfToolbar>
+
+<SfGrid @ref="@Grid" DataSource="customersWithMailingNotes" >
+    <GridEvents CommandClicked="CommandClickedHandler" TValue="Customer" />
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="CustomerName" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending" />
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridColumns>
+        <GridColumn Field="@nameof(Customer.CustomerId)" HeaderText="Customer ID" />
+        <GridColumn Field="@nameof(Customer.CustomerName)" HeaderText="Customer Name" />
+        <GridColumn Width="152">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="addMailingNotesDialog" Visible="false" ShowCloseIcon="true" Width="50%">
+    <DialogTemplates>
+        <Content>
+            <div class="myflexrow">
+                <SfMultiColumnComboBox TItem="Customer" TValue="Customer" AllowFiltering="true"
+                        FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
+                        @bind-Value="selectedCustomer"
+                        DataSource="customers"
+                        ValueField="CustomerId"
+                        TextField="CustomerName"
+                        Width="400px"
+                        Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+                    <MultiColumnComboboxColumns>
+                        <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
+                        <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
+                    </MultiColumnComboboxColumns>
+                </SfMultiColumnComboBox>
+                <SfButton OnClick="CreateMailingNotes" IsPrimary="true">Create Mailing Notes</SfButton>
+                <SfButton OnClick="CancelAddMailingNotes">Cancel</SfButton>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<SfDialog @ref="editMailingNotesDialog" Visible="false" ShowCloseIcon="true" Width="80%">
+    <DialogEvents Closed="@EditMailingNotesDialogClosedHandler" />
+    <DialogTemplates>
+        <Content>
+            <MailingNotesEditor SelectedCustomer="selectedCustomer" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    public SfGrid<Customer> Grid { get; set; }
+    IEnumerable<Customer> customers;
+    IEnumerable<Customer> customersWithMailingNotes;
+    public Customer selectedCustomer { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshCustomers();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshCustomers()
+    {
+        customers = await customerService.GetCustomersAsync();
+        customersWithMailingNotes = customers.Where(c => c.MailingNotes != null);
+        StateHasChanged();
+    }
+
+    #region Datagrid Handlers
+    public async void CommandClickedHandler(CommandClickEventArgs<Customer> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        {
+            selectedCustomer = args.RowData;
+            OpenEditMailingNotesDialog();
+        }
+        else if (args.CommandColumn.Type == CommandButtonType.Delete)
+        {
+            selectedCustomer = args.RowData;
+            selectedCustomer.MailingNotes = null;
+            await customerService.UpdateCustomerAsync(selectedCustomer);
+            RefreshCustomers();
+        }
+    }
+    #endregion
+
+    #region Toolbar Handlers
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Add")
+        {
+            selectedCustomer = null;
+            OpenAddMailingNotesDialog();
+        }
+    }
+
+    public SfTextBox ToolbarSearchBox;
+    private async Task SearchGrid()
+    {
+        Grid.SearchAsync(ToolbarSearchBox.Value);
+    }
+    #endregion
+
+    #region Dialog Handlers
+    private SfDialog addMailingNotesDialog;
+    private SfDialog editMailingNotesDialog;
+
+    private void OpenAddMailingNotesDialog()
+    {
+        addMailingNotesDialog.ShowAsync();
+    }
+    private void CreateMailingNotes()
+    {
+        addMailingNotesDialog.HideAsync();
+        editMailingNotesDialog.ShowAsync();
+    }
+    private void CancelAddMailingNotes()
+    {
+        addMailingNotesDialog.HideAsync();
+    }
+
+    private void OpenEditMailingNotesDialog()
+    {
+        editMailingNotesDialog.ShowAsync();
+    }
+    private async Task EditMailingNotesDialogClosedHandler(Syncfusion.Blazor.Popups.CloseEventArgs args)
+    {
+        await customerService.UpdateCustomerAsync(selectedCustomer);
+        RefreshCustomers();
+    }
+    #endregion
+}

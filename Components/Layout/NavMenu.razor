@@ -7,15 +7,45 @@
     <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
     <nav class="sitenav" aria-labelledby="main-menu">
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
-            <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.ClipboardTaskListLtr())" IconColor="Color.Accent">Orders</FluentNavLink>
-            <FluentNavLink Href="/upsdashboard" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.VehicleTruckCube())" IconColor="Color.Accent" >UPS Dashboard</FluentNavLink>
-            <FluentNavLink Href="customers" Icon="@(new Icons.Regular.Size20.HomePerson())" IconColor="Color.Accent">Customers</FluentNavLink>
-            <FluentNavLink Href="users" Icon="@(new Icons.Regular.Size20.PeopleSettings())" IconColor="Color.Accent">Manage Users</FluentNavLink>
-            <FluentNavLink Href="shippingadmin" Icon="@(new Icons.Regular.Size20.BoxEdit())" IconColor="Color.Accent">Shipping Settings</FluentNavLink>
+            @if (userService.CurrentUser.Role == UserRole.Admin)
+            {
+                <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.ClipboardTaskListLtr())" IconColor="Color.Accent">Orders</FluentNavLink>
+                <FluentNavLink Href="/upsdashboard" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.VehicleTruckCube())" IconColor="Color.Accent">UPS Dashboard</FluentNavLink>
+                <FluentNavLink Href="customers" Icon="@(new Icons.Regular.Size20.HomePerson())" IconColor="Color.Accent">Customers</FluentNavLink>
+                <FluentNavLink Href="/mailingnotes" Icon="@(new Icons.Regular.Size20.MailEdit())">Mailing Notes</FluentNavLink>
+                <FluentNavLink Href="users" Icon="@(new Icons.Regular.Size20.PeopleSettings())" IconColor="Color.Accent">Manage Users</FluentNavLink>
+                <FluentNavLink Href="shippingadmin" Icon="@(new Icons.Regular.Size20.BoxEdit())" IconColor="Color.Accent">Shipping Settings</FluentNavLink>
+            }
+            else if (userService.CurrentUser.Role == UserRole.Shipping)
+            {
+                <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.ClipboardTaskListLtr())" IconColor="Color.Accent">Orders</FluentNavLink>
+                <FluentNavLink Href="/upsdashboard" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.VehicleTruckCube())" IconColor="Color.Accent">UPS Dashboard</FluentNavLink>
+            }
+            else
+            {
+                <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.ClipboardTaskListLtr())" IconColor="Color.Accent">Orders</FluentNavLink>
+                <FluentNavLink Href="customers" Icon="@(new Icons.Regular.Size20.HomePerson())" IconColor="Color.Accent">Customers</FluentNavLink>
+            }
         </FluentNavMenu>
     </nav>
 </div>
 
 @code {
     private bool expanded = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userService.OnUserChanged += OnUserChanged;
+        await base.OnInitializedAsync();
+    }
+
+    private async void OnUserChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= OnUserChanged;
+    }
 }

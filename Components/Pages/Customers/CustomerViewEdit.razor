@@ -1,10 +1,10 @@
 ﻿@using ReachingOutDB.Data
 @rendermode InteractiveServer
 
-<div class="flexcolumn">
+<div class="myflexcolumn">
     <SfCard>
         <CardContent>
-            <div class="flexrow">
+            <div class="myflexrow">
                 <SfNumericTextBox ID="CustomerId" @bind-Value="@ThisCustomer.CustomerId" Placeholder="Number" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Format="####" Enabled="ThisCustomer.CustomerId == 0" Width="250px" />
                 <SfTextBox ID="CustomerName" @bind-Value="@(ThisCustomer.CustomerName)" Placeholder="Customer Name" FloatLabelType="FloatLabelType.Auto" />
                 <SfTextBox ID="CustomerLocation" @bind-Value="@(ThisCustomer.Location)" Placeholder="Customer Location" FloatLabelType="FloatLabelType.Auto" />
@@ -13,19 +13,19 @@
     </SfCard>
     <SfCard>
         <CardContent>
-            <div class="flexrow">
+            <div class="myflexrow">
                 <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ1)" Placeholder="Quantity Q1" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
                 <SfTextArea @bind-Value="@(ThisCustomer.NotesQ1)" Placeholder="Notes for Q1" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
             </div>
-            <div class="flexrow">
+            <div class="myflexrow">
                 <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ2)" Placeholder="Quantity Q2" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
                 <SfTextArea @bind-Value="@(ThisCustomer.NotesQ2)" Placeholder="Notes for Q2" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
             </div>
-            <div class="flexrow">
+            <div class="myflexrow">
                 <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ3)" Placeholder="Quantity Q3" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
                 <SfTextArea @bind-Value="@(ThisCustomer.NotesQ3)" Placeholder="Notes for Q3" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
             </div>
-            <div class="flexrow">
+            <div class="myflexrow">
                 <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ4)" Placeholder="Quantity Q4" FloatLabelType="FloatLabelType.Auto" Width="100px" ShowSpinButton="false" />
                 <SfTextArea @bind-Value="@(ThisCustomer.NotesQ4)" Placeholder="Notes for Q4" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Auto" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
             </div>
@@ -43,7 +43,7 @@
     </SfDropDownList>
     @if (ThisCustomer.VariableQty)
     {
-        <div class="flexrow">
+        <div class="myflexrow">
             <SfCard>
                 <CardHeader Title="Variable Direct Mail Quantity" />
                 <CardContent>
@@ -96,42 +96,51 @@
         <SfCard>
             <CardHeader Title="Quarterly Quantities" />
             <CardContent>
-                <div class="flexrow">
+                <div class="myflexrow">
                     <SfNumericTextBox ID="DMQty" @bind-Value="@(ThisCustomer.DmQty)" Placeholder="Quantity by direct mail" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
                 </div>
-                <div class="flexrow">
+                <div class="myflexrow">
                     <SfNumericTextBox ID="UpsQty" @bind-Value="@(ThisCustomer.UpsQty)" Placeholder="Quantity by UPS" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
                 </div>
-                <div class="flexrow">
+                <div class="myflexrow">
                     <SfNumericTextBox ID="PostalQty" @bind-Value="@(ThisCustomer.PostalQty)" Placeholder="Quantity by Postal" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
                 </div>
-                <div class="flexrow">
+                <div class="myflexrow">
                     <SfNumericTextBox ID="IntlQty" @bind-Value="@(ThisCustomer.IntlQty)" Placeholder="Quantity by INTL" FloatLabelType="FloatLabelType.Auto" ShowSpinButton="false" />
                 </div>
             </CardContent>
         </SfCard>
     }
-   
+
+    @if (ThisCustomer.MailingNotes != null)
+    {
+        <SfAccordion>
+            <AccordionItems>
+                <AccordionItem Expanded="@mailingNotesExpanded">
+                    <HeaderTemplate>Mailing Notes</HeaderTemplate>
+                    <ContentTemplate>
+                        <MailingNotesEditor SelectedCustomer="ThisCustomer" />
+                    </ContentTemplate>
+                </AccordionItem>
+            </AccordionItems>
+        </SfAccordion>
+    }
+    else
+    {
+        <SfButton OnClick="AddMailingNotes">Add Mailing Notes</SfButton>
+    }
+
 </div>
 
 @code {
     [Parameter] public Customer ThisCustomer { get; set; }
     [Parameter] public bool Editable { get; set; }
     public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+    private bool mailingNotesExpanded = false;
+
+    private async Task AddMailingNotes()
+    {
+        ThisCustomer.MailingNotes = "";
+        mailingNotesExpanded = true;
+    }
 }
-
-<style>
-    .flexrow {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 15px;
-    }
-
-    .flexcolumn {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-</style>

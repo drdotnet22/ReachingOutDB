@@ -57,7 +57,7 @@
     <SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true">
         <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
-        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" OnToolbarClick="ToolbarClickHandler" TValue="Order" />
+        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
         <GridSortSettings>
             <GridSortColumns>
                 <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />

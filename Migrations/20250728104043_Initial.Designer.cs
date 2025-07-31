@@ -12,7 +12,7 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250723215835_Initial")]
+    [Migration("20250728104043_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace ReachingOutDB.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -88,6 +88,9 @@ namespace ReachingOutDB.Migrations
 
                     b.Property<int?>("LtlQtyQ4")
                         .HasColumnType("integer");
+
+                    b.Property<string>("MailingNotes")
+                        .HasColumnType("text");
 
                     b.Property<string>("NotesQ1")
                         .HasColumnType("text");
@@ -167,6 +170,7 @@ namespace ReachingOutDB.Migrations
                             CustomBP = false,
                             CustomerName = "Mennonite Church",
                             Location = "PA",
+                            MailingNotes = "test",
                             QtyQ1 = 0,
                             QtyQ2 = 0,
                             QtyQ3 = 0,

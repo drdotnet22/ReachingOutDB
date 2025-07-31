@@ -130,5 +130,13 @@ namespace ReachingOutDB.Data
 
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Customer>> GetMailingNotesAsync()
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            return await dbContext.Customers
+                .Where(c => c.MailingNotes != null)
+                .ToListAsync();
+        }
     }
 }

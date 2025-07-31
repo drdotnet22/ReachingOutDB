@@ -64,7 +64,7 @@ namespace ReachingOutDB.Data
         {
             return new List<Customer>
             {
-                new Customer { CustomerId = 2000, CustomerName = "Mennonite Church", Location = "PA", Active = true, QtyQ1 = 0, QtyQ2 = 0, QtyQ3 = 0, QtyQ4 = 0, VariableQty = false, CustomBP = false }
+                new Customer { CustomerId = 2000, CustomerName = "Mennonite Church", Location = "PA", Active = true, QtyQ1 = 0, QtyQ2 = 0, QtyQ3 = 0, QtyQ4 = 0, VariableQty = false, CustomBP = false, MailingNotes = "test" }
             };
         }
 

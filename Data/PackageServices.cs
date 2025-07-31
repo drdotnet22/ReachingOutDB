@@ -92,7 +92,17 @@ namespace ReachingOutDB.Data
             var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
-                dbContext.Update(package);
+                var exists = await dbContext.Packages
+                    .AsNoTracking()
+                    .AnyAsync(p => p.PackageId == package.PackageId);
+                if (!exists)
+                {
+                    dbContext.Packages.Add(package);
+                }
+                else
+                {
+                    dbContext.Update(package);
+                }
                 await dbContext.SaveChangesAsync();
             }
             catch (Exception ex)

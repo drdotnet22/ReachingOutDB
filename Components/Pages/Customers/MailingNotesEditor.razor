@@ -1,0 +1,45 @@
+﻿@using ReachingOutDB.Data
+@using Syncfusion.Blazor.MultiColumnComboBox
+
+@inject CustomerServices customerService
+@rendermode InteractiveServer
+
+
+<SfRichTextEditor @bind-Value="SelectedCustomer.MailingNotes" SaveInterval="5000" AutoSaveOnIdle="true">
+    <RichTextEditorToolbarSettings Items="@RichTextTools" />
+    <RichTextEditorEvents ValueChange="UpdateMailingNotes" />
+</SfRichTextEditor>
+
+@code {
+    [Parameter]
+    public Customer SelectedCustomer { get; set; }
+
+    private void UpdateMailingNotes(Syncfusion.Blazor.RichTextEditor.ChangeEventArgs args)
+    {
+        customerService.UpdateCustomerAsync(SelectedCustomer);
+    }
+
+    private List<ToolbarItemModel> RichTextTools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Redo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.StrikeThrough },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.BulletFormatList },
+        new ToolbarItemModel() { Command = ToolbarCommand.NumberFormatList },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Outdent },
+        new ToolbarItemModel() { Command = ToolbarCommand.Indent },
+        new ToolbarItemModel() {Command = ToolbarCommand.Separator},
+        new ToolbarItemModel() { Command = ToolbarCommand.FormatPainter },
+        new ToolbarItemModel() { Command = ToolbarCommand.ClearFormat },
+        new ToolbarItemModel() { Command = ToolbarCommand.Print },
+        new ToolbarItemModel() { Command = ToolbarCommand.SourceCode },
+    };
+}

@@ -3,10 +3,13 @@
 
 <FluentLayout>
     <FluentHeader>
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <span>Reaching Out Database</span>
-            <UserSelector />
-        </div>
+        <a href="/">
+            <img src="favicon.png" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid; border-color:black; background-color:white; object-fit:contain; padding: 2px; box-sizing: border-box; display:block;" />
+        </a>
+        <FluentSpacer Width="15" />
+        <span>Haines Printing • Reaching Out Database</span>
+        <FluentSpacer />
+        <UserSelector />
     </FluentHeader>
     <FluentStack Class="main" Orientation="Microsoft.FluentUI.AspNetCore.Components.Orientation.Horizontal" Width="100%">
         <NavMenu />
@@ -17,9 +20,7 @@
         </FluentBodyContent>
     </FluentStack>
     <FluentFooter>
-        <a href="https://www.fluentui-blazor.net" target="_blank">Documentation and demos</a>
-        <FluentSpacer />
-        <a href="https://learn.microsoft.com/en-us/aspnet/core/blazor" target="_blank">About Blazor</a>
+        <span>©2025, Ryan Stauffer</span>
     </FluentFooter>
 </FluentLayout>
 <FluentDialogProvider />
