@@ -30,6 +30,7 @@
         <GridColumn HeaderText="Customer Name" Field="CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Location" Field="Location" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Variable Qty" Field="VariableQty" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" />
+        <GridColumn HeaderText="Customer BP" Field="CustomBP" TextAlign="TextAlign.Center" DisplayAsCheckBox="true"/>
 
         @if (userService.CurrentUser.Role == UserRole.Admin)
         {

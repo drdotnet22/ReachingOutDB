@@ -5,14 +5,14 @@
 @rendermode InteractiveServer
 
 
-<SfRichTextEditor @bind-Value="SelectedCustomer.MailingNotes" SaveInterval="5000" AutoSaveOnIdle="true">
+<SfRichTextEditor @bind-Value="SelectedCustomer.MailingNotes" SaveInterval="5000" AutoSaveOnIdle="true" Readonly="!Editable" >
     <RichTextEditorToolbarSettings Items="@RichTextTools" />
     <RichTextEditorEvents ValueChange="UpdateMailingNotes" />
 </SfRichTextEditor>
 
 @code {
-    [Parameter]
-    public Customer SelectedCustomer { get; set; }
+    [Parameter] public Customer SelectedCustomer { get; set; }
+    [Parameter] public bool Editable { get; set; } = true;
 
     private void UpdateMailingNotes(Syncfusion.Blazor.RichTextEditor.ChangeEventArgs args)
     {

@@ -55,7 +55,7 @@
             }
         </ToolbarItems>
     </SfToolbar>
-    <SfGrid @ref="Grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true">
+    <SfGrid @ref="Grid" ID="orders-grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" >
         <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
         <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
@@ -64,7 +64,12 @@
                 <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
             </GridSortColumns>
         </GridSortSettings>
-        <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin" AllowEditing="userService.CurrentUser.Role == UserRole.Admin" AllowDeleting="userService.CurrentUser.Role == UserRole.Admin" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" Context="thisOrder">
+        <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin" 
+                    AllowEditing="userService.CurrentUser.Role == UserRole.Admin"
+                    AllowEditOnDblClick="false"
+                    AllowDeleting="userService.CurrentUser.Role == UserRole.Admin" 
+                    Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" 
+                    Context="thisOrder">
             <HeaderTemplate>
                 <span>@GetHeader((thisOrder as Order))</span>
             </HeaderTemplate>
@@ -82,14 +87,6 @@
                     </SfDropDownList>
                 </FilterTemplate>
             </GridColumn>
-            @if (userService.CurrentUser.Role == UserRole.Admin)
-            {
-                <GridColumn Width="55">
-                    <GridCommandColumns>
-                        <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
-                    </GridCommandColumns>
-                </GridColumn>
-            }
             <GridColumn HeaderText="Ship Methods" Width="200">
                 <Template>
 
@@ -127,19 +124,30 @@
                 </FilterTemplate>
             </GridColumn>
             <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" />
+            <GridColumn Field="Customer.CustomBP" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
             <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
             <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" />
             <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
-            <GridColumn Width="152">
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
-                    @if (userService.CurrentUser.Role == UserRole.Admin)
-                    {
+            
+            @if (userService.CurrentUser.Role == UserRole.Admin)
+            {
+                <GridColumn Width="152">
+                    <GridCommandColumns>
+                        <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
                         <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
                         <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
-                    }
-                </GridCommandColumns>
-            </GridColumn>
+                    </GridCommandColumns>
+                </GridColumn>
+            }
+            else
+            {
+                <GridColumn Width="60">
+                    <GridCommandColumns>
+                        <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+                    </GridCommandColumns>
+                </GridColumn>
+            }
+                
         </GridColumns>
     </SfGrid>
 }
