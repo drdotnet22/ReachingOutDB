@@ -40,14 +40,31 @@
                 </GridCommandColumns>
             </GridColumn>
         }
+        else
+        {
+            <GridColumn>
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+                </GridCommandColumns>
+            </GridColumn>
+        }
     </GridColumns>
 </SfGrid>
+
+<SfDialog @ref="customerViewDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%" >
+    <DialogTemplates>
+        <Content>
+            <CustomerViewEdit ThisCustomer="selectedCustomer" Editable="false"/>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
 
 @code {
     public IEnumerable<Customer> allCustomers { get; set; }
     public IEnumerable<Customer> filteredCustomers { get; set; }
     public SfGrid<Customer> Grid { get; set; }
     public bool showArchivedCustomers = false;
+    public Customer selectedCustomer;
     private List<Object> ToolbarItems = new List<Object>() { "Add", "Search" };
 
     protected override async Task OnInitializedAsync()
@@ -113,6 +130,11 @@
             actionEventArgs.Data = args.RowData;
             ActionBeginHandler(actionEventArgs);
         }
+        else if (args.CommandColumn.Type == CommandButtonType.None)
+        {
+            selectedCustomer = args.RowData;
+            customerViewDialog.ShowAsync();
+        }
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
             await customerService.ArchiveCustomerAsync(args.RowData);
@@ -128,7 +150,10 @@
     }
     #endregion
 
+    #region Dialog handlers
+    private SfDialog customerViewDialog;
 
+    #endregion
 
     private async void OnUserChanged()
     {

@@ -162,6 +162,7 @@ else
 </SfDialog>
 
 <SfDialog @ref="endiciaImportDialog" Visible="false" ShowCloseIcon="true" Width="25%" Height="50%">
+    <DialogEvents OnClose="RefreshOrders" />
     <DialogTemplates>
         <Content>
             <ImportEndiciaCsv ThisYear="selectedYear" ThisQuarter="selectedQuarter" />
