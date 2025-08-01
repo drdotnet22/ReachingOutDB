@@ -1,15 +1,16 @@
 ﻿@using ReachingOutDB.Data
-@using System.IO
-@using Sylvan.Data.Csv
+@using System.Data
+
 @inject OrderServices orderService
 @inject IWebHostEnvironment env
-@rendermode InteractiveServer
 
 <div class="myflexcolumn">
-        <SfUploader AllowedExtensions=".csv" AllowMultiple="false" AutoUpload="true">
-            <UploaderEvents ValueChange="@OnChange" OnRemove="@OnRemove"></UploaderEvents>
+        <SfUploader ID="upload-endicia" AllowedExtensions=".csv" AllowMultiple="false" >
+            <UploaderEvents ValueChange="OnChange" OnRemove="OnRemove"></UploaderEvents>
         </SfUploader>
+
         <SfButton @onclick="ProcessCsv" Disabled="!fileExists">Process CSV file</SfButton>
+
         <pre>@responseMessage</pre>
 </div>
 
@@ -19,7 +20,7 @@
     [Parameter] public Quarter ThisQuarter { get; set; }
 
     private string path;
-    private string responseMessage = $"Waiting for response{Environment.NewLine}Still waiting";
+    private string responseMessage = " ";
     private bool fileExists = false;
     protected override async Task OnInitializedAsync()
     {
@@ -33,17 +34,17 @@
         StateHasChanged();
     }
 
-    private void OnChange(UploadChangeEventArgs args)
+    private async Task OnChange(UploadChangeEventArgs args)
     {
         try
         {
             foreach (var file in args.Files)
             {
                 FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-                file.File.OpenReadStream(long.MaxValue).CopyTo(fs);
+                await file.File.OpenReadStream(long.MaxValue).CopyToAsync(fs);
                 fs.Close();
-                fileExists = true;
             }
+            fileExists = true;
         }
         catch (Exception ex)
         {

@@ -99,6 +99,8 @@
         </div>
         <SfCheckBox @bind-Checked="ThisOrder.Archived" Label="Archived" Disabled="@(!Editable)" />
     }
+
+    <OrderLogView ThisOrder="ThisOrder" />
 </div>
 
 @code {
