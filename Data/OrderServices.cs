@@ -259,9 +259,13 @@ namespace ReachingOutDB.Data
             await UpdateOrderAsync(order);
         }
 
-        public async Task ImportEndiciaPrintLogCsvAsync(string path, int year, Quarter quarter)
+        public async Task<string> ImportEndiciaPrintLogCsvAsync(string path, int year, Quarter quarter)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
+            string successMessage = "";
+            string errorMessage = "";
+            int successCt = 0;
+            int errrorCt = 0;
             try
             {
                 var orders = await GetOrdersAsync(year, quarter);
@@ -275,15 +279,29 @@ namespace ReachingOutDB.Data
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    var customerId = int.Parse(row["Order Number"].ToString());
-                    var order = orders.FirstOrDefault(o => o.CustomerId == int.Parse(row["Order Number"].ToString()));
-                    order.PostalCost = (order.PostalCost ?? 0) + Convert.ToDecimal(row["Cost"].ToString());
-                    await CalculatePublishedPostageAsync(order);
+                    try
+                    {
+                        var customerId = int.Parse(row["Order Number"].ToString());
+                        var order = orders.FirstOrDefault(o => o.CustomerId == customerId);
+                        order.PostalCost = (order.PostalCost ?? 0) + Convert.ToDecimal(row["Cost"].ToString());
+                        await CalculatePublishedPostageAsync(order);
+                        successMessage += $"Added postage cost for {order.Customer.CustomerName} - {customerId}{Environment.NewLine}";
+                        successCt++;
+                    }
+                    catch
+                    {
+                        errorMessage += $"Could not add customer with ID: {row["Order Number"].ToString()} Cost: {row["Cost"].ToString()}{Environment.NewLine}";
+                        errrorCt++;
+                    }
                 }
+                successMessage = $"There were {successCt.ToString()} records imported{Environment.NewLine}" + successMessage;
+                errorMessage = $"There were {errrorCt.ToString()} records that could not be imported{Environment.NewLine}" + errorMessage;
+                return successMessage + $"{Environment.NewLine}{Environment.NewLine}" + errorMessage;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                return ex.ToString();
             }
         }
     }

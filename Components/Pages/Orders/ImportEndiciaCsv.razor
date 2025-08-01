@@ -5,15 +5,12 @@
 @inject IWebHostEnvironment env
 @rendermode InteractiveServer
 
-<div class="content-wrapper">
-    <div class="row">
+<div class="myflexcolumn">
         <SfUploader AllowedExtensions=".csv" AllowMultiple="false" AutoUpload="true">
             <UploaderEvents ValueChange="@OnChange" OnRemove="@OnRemove"></UploaderEvents>
         </SfUploader>
-    </div>
-    <div class="row">
         <SfButton @onclick="ProcessCsv" Disabled="!fileExists">Process CSV file</SfButton>
-    </div>
+        <pre>@responseMessage</pre>
 </div>
 
 @code {
@@ -22,6 +19,7 @@
     [Parameter] public Quarter ThisQuarter { get; set; }
 
     private string path;
+    private string responseMessage = $"Waiting for response{Environment.NewLine}Still waiting";
     private bool fileExists = false;
     protected override async Task OnInitializedAsync()
     {
@@ -31,7 +29,8 @@
 
     private async void ProcessCsv()
     {
-        await orderService.ImportEndiciaPrintLogCsvAsync(path, ThisYear, ThisQuarter);
+        responseMessage = await orderService.ImportEndiciaPrintLogCsvAsync(path, ThisYear, ThisQuarter);
+        StateHasChanged();
     }
 
     private void OnChange(UploadChangeEventArgs args)
