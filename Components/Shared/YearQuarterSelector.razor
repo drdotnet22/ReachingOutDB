@@ -2,15 +2,12 @@
 
 <SfNumericTextBox @bind-Value="SelectedYear"
         @onchange="ValuesChanged"
-        Placeholder="Year"
         Format="####"
-        FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
         Width="200px" />
 
 <SfDropDownList TItem="string" TValue="Quarter"
         @bind-Value="SelectedQuarter"
         DataSource="@quarterValues"
-        Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
         Width="200px">
         <DropDownListEvents TItem="string" TValue="Quarter" ValueChange="OnQuarterChange" />
 </SfDropDownList>
