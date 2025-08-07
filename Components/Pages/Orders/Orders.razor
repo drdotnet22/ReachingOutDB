@@ -9,7 +9,7 @@
 @rendermode InteractiveServer
 <PageTitle>Orders - Reaching Out</PageTitle>
 
-@if (userService.CurrentUser != null)
+@if (userService.CurrentUser.Role != UserRole.UnAssigned)
 {
     <div class="myflexrow">
         <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
@@ -161,7 +161,7 @@
                     </SfMultiSelect>
                 </FilterTemplate>
             </GridColumn>
-            <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" />
+            <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" FilterSettings="new FilterSettings{ Operator = Operator.Contains }" />
             <GridColumn Field="Customer.CustomBP" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
             <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
             <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />

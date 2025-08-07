@@ -1,7 +1,8 @@
 ﻿@using Syncfusion.Blazor.LinearGauge
 @using ReachingOutDB.Data
+@rendermode InteractiveServer
 
-<SfLinearGauge Orientation="Syncfusion.Blazor.LinearGauge.Orientation.Horizontal" Background="transparent" Width="600">
+<SfLinearGauge Orientation="Syncfusion.Blazor.LinearGauge.Orientation.Horizontal" Background="transparent" Width="500" >
     <LinearGaugeContainer Width="25" RoundedCornerRadius="20" Type="ContainerType.Normal">
         <LinearGaugeContainerBorder Width="1" Color="#3D3D3D" />
         <LinearGaugeAxes>
@@ -16,7 +17,7 @@
                     <LinearGaugePointer PointerValue="@progressPercentage" Height="25" Width="25" Type="Point.Bar" Color="#62CC87" />
                 </LinearGaugePointers>
                 <LinearGaugeAnnotations>
-                    <LinearGaugeAnnotation AxisIndex="0" AxisValue="10" X="0" Y="0" ZIndex="1">
+                    <LinearGaugeAnnotation AxisIndex="0" AxisValue="12" X="0" Y="0" ZIndex="1">
                         <ContentTemplate>
                             <div style="font-size: 13px;color: black;margin-top: 3px;">Assembled @assembledOrders.ToString("N0") of @totalOrders.ToString("N0") - @progressPercentage% complete</div>
                         </ContentTemplate>
