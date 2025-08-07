@@ -1,0 +1,49 @@
+﻿@using Syncfusion.Blazor.LinearGauge
+@using ReachingOutDB.Data
+
+<SfLinearGauge Orientation="Syncfusion.Blazor.LinearGauge.Orientation.Horizontal" Background="transparent" Width="600">
+    <LinearGaugeContainer Width="25" RoundedCornerRadius="20" Type="ContainerType.Normal">
+        <LinearGaugeContainerBorder Width="1" Color="#3D3D3D" />
+        <LinearGaugeAxes>
+            <LinearGaugeAxis Minimum="0" Maximum="100">
+                <LinearGaugeLine Width="0" />
+                <LinearGaugeMajorTicks Interval="10" Height="0" />
+                <LinearGaugeMinorTicks Interval="1" Height="0" />
+                <LinearGaugeAxisLabelStyle>
+                    <LinearGaugeAxisLabelFont Size="0"></LinearGaugeAxisLabelFont>
+                </LinearGaugeAxisLabelStyle>
+                <LinearGaugePointers>
+                    <LinearGaugePointer PointerValue="@progressPercentage" Height="25" Width="25" Type="Point.Bar" Color="#62CC87" />
+                </LinearGaugePointers>
+                <LinearGaugeAnnotations>
+                    <LinearGaugeAnnotation AxisIndex="0" AxisValue="10" X="0" Y="0" ZIndex="1">
+                        <ContentTemplate>
+                            <div style="font-size: 13px;color: black;margin-top: 3px;">Assembled @assembledOrders.ToString("N0") of @totalOrders.ToString("N0") - @progressPercentage% complete</div>
+                        </ContentTemplate>
+                    </LinearGaugeAnnotation>
+                </LinearGaugeAnnotations>
+            </LinearGaugeAxis>
+        </LinearGaugeAxes>
+    </LinearGaugeContainer>
+</SfLinearGauge>
+
+@code {
+    [Parameter] public IEnumerable<Order> Orders { get; set; }
+
+    private int totalOrders { get; set; } = 0;
+    private int assembledOrders { get; set; } = 0;
+    private int progressPercentage { get; set; } = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        CalculateProgress();
+        await base.OnParametersSetAsync();
+    }
+
+    public async Task CalculateProgress()
+    {
+        totalOrders = Orders.Sum(o => o.Qty);
+        assembledOrders = Orders.Where(o => o.JobStatus >= JobStatus.ReadyToShip).ToList().Sum(o => o.Qty);
+        progressPercentage = (assembledOrders * 100) / totalOrders;
+    }
+}

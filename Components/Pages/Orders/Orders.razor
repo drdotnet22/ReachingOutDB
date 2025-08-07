@@ -28,6 +28,12 @@
                 <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" />
                 <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" />
                 <ToolbarItem Type="ItemType.Spacer" />
+                <ToolbarItem>
+                    <Template>
+                        <DuploProgress Orders="orders" />
+                    </Template>
+                </ToolbarItem>
+                <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
                     <Template>
                         <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
@@ -37,6 +43,12 @@
             else if (userService.CurrentUser.Role == UserRole.Duplo)
             {
                 <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
+                <ToolbarItem Type="ItemType.Spacer" />
+                <ToolbarItem>
+                    <Template>
+                        <DuploProgress Orders="orders" />
+                    </Template>
+                </ToolbarItem>
                 <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
                     <Template>
@@ -77,6 +89,32 @@
                 <OrderViewEdit ThisOrder="(thisOrder as Order)" Editable="@true" CustomerList="customers" />
             </Template>
         </GridEditSettings>
+        <GridAggregates>
+            <GridAggregate>
+                <GridAggregateColumns>
+                    <GridAggregateColumn Field="@nameof(Order.CustomerId)" Type="AggregateType.Count">
+                        <FooterTemplate>
+                            @{
+                                var CountValue = (context as AggregateTemplateContext);
+                                <div>
+                                    Count: @CountValue.Count
+                                </div>
+                            }
+                        </FooterTemplate>
+                    </GridAggregateColumn>
+                    <GridAggregateColumn Field="@nameof(Order.Qty)" Type="AggregateType.Sum">
+                        <FooterTemplate>
+                            @{
+                                var SumValue = (context as AggregateTemplateContext);
+                                <div>
+                                    Sum: @($"{int.Parse(SumValue.Sum):N0}")
+                                </div>
+                            }
+                        </FooterTemplate>
+                    </GridAggregateColumn>
+                </GridAggregateColumns>
+            </GridAggregate>
+        </GridAggregates>
         <GridColumns>
             <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
             <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120">
@@ -125,8 +163,8 @@
             </GridColumn>
             <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" />
             <GridColumn Field="Customer.CustomBP" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
-            <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignKeyValue="CustomerId" ForeignDataSource="@customers" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
-            <GridForeignColumn Field="@nameof(Order.CustomerId)" ForeignDataSource="@customers" ForeignKeyValue="CustomerName" HeaderText="Customer" />
+            <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="Customer ID" Width="110" TextAlign="TextAlign.Right" />
+            <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />
             <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
             
             @if (userService.CurrentUser.Role == UserRole.Admin)
