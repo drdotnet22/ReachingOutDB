@@ -58,6 +58,7 @@
         </div>
         <SfCheckBox @bind-Checked="ThisOrder.YearlyBilling" Label="Yearly Billing" Disabled="@(!Editable)" />
         <SfCheckBox @bind-Checked="ThisOrder.BpUpdate" Label="Backpage Update" Disabled="@(!Editable)" />
+        <SfCheckBox @bind-Checked="ThisOrder.CustomBP" Label="Custom back page" Disabled="@(!Editable)" />
         <div class="flexrow">
             <SfCard>
                 <CardHeader Title="Direct Mail Details" />

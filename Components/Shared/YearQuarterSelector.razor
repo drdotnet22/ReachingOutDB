@@ -1,7 +1,7 @@
 ﻿@using ReachingOutDB.Data
 
 <SfNumericTextBox @bind-Value="SelectedYear"
-        @onchange="ValuesChanged"
+        @onchange="OnYearChanged"
         Format="####"
         Width="200px" />
 
@@ -24,6 +24,9 @@
 
     [Parameter]
     public EventCallback<Quarter> SelectedQuarterChanged { get; set; }
+
+    [Parameter]
+    public EventCallback ValuesChanged { get; set; }
 
     public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
 
@@ -55,20 +58,21 @@
             {
                 SelectedQuarter = Quarter.Q1;
             }
-
-            ValuesChanged();
+            OnQuarterChange();
+            OnYearChanged();
         }
         await base.OnInitializedAsync();
     }
 
-    async Task ValuesChanged()
+    private async Task OnYearChanged()
     {
         await SelectedYearChanged.InvokeAsync(SelectedYear);
-        await SelectedQuarterChanged.InvokeAsync(SelectedQuarter);
+        await ValuesChanged.InvokeAsync();
     }
 
-    public async Task OnQuarterChange(ChangeEventArgs<Quarter, string> args)
+    private async Task OnQuarterChange()
     {
         await SelectedQuarterChanged.InvokeAsync(SelectedQuarter);
+        await ValuesChanged.InvokeAsync();
     }
 }

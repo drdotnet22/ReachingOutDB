@@ -72,7 +72,7 @@ namespace ReachingOutDB.Data
         {
             return new List<Order>
             {
-                new Order { OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), CustomerId = 2000, Year = 2025, Quarter = Quarter.Q3, JobStatus = JobStatus.OnHold, Qty = 0,  BpUpdate = false, Archived = false }
+                new Order { OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), CustomerId = 2000, Year = 2025, Quarter = Quarter.Q3, JobStatus = JobStatus.OnHold, Qty = 0,  BpUpdate = false, Archived = false, CustomBP = false }
             };
         }
 

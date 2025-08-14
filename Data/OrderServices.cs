@@ -107,9 +107,14 @@ namespace ReachingOutDB.Data
                     }
                     if (customer.YearlyBillingQuarter != null)
                     {
-                        order.YearlyBilling = (customer.YearlyBillingQuarter == quarter);
+                        order.YearlyBilling = (customer.YearlyBillingQuarter == quarter) ? true : null;
+                    }
+                    else
+                    {
+                        order.YearlyBilling = false;
                     }
                     order.BpUpdate = false;
+                    order.CustomBP = customer.CustomBP;
                     order.Archived = false;
                     if (customer.VariableQty)
                     {

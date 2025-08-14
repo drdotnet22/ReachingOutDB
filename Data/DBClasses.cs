@@ -73,6 +73,7 @@ namespace ReachingOutDB.Data
         public string? HoldNote { get; set; }
         public int? PlateId { get; set; }
         public bool BpUpdate { get; set; }
+        public bool CustomBP {  get; set; }
         //DM
         public int? DmQty { get; set; }
         //UPS
