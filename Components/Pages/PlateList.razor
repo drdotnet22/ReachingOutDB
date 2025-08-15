@@ -24,6 +24,10 @@
     <div class="card-container">
         @foreach (var plate in filteredPlates)
         {
+            bool onHold = plate.PlateAssignments?.Any(assignment =>
+            assignment.OrderId != null &&
+            assignment.Order.JobStatus == JobStatus.OnHold) ?? false;
+
             <SfCard style="@(plate.IsPlated ? "background-color: #e9ecef;" : "")"
                     class="@(plate.IsPlated ? "plated-card e-card" : "e-card")">
                 <CardContent>
@@ -35,12 +39,12 @@
                         }
                         else
                         {
-                            <FluentButton Title="Plate Order" OnClick="() => PlateOrder(plate)">
+                            <FluentButton Title="Plate Order" OnClick="() => PlateOrder(plate)" Disabled="onHold" >
                                 <FluentIcon Value="@(new Icons.Regular.Size24.Checkmark())" Color="Color.Accent"/>
                             </FluentButton>
-                            <FluentButton Title="Edit Plate (Not implemented)" >
+                            @* <FluentButton Title="Edit Plate (Not implemented)" >
                                 <FluentIcon Value="@(new Icons.Regular.Size24.Edit())" Color="Color.Neutral"  />
-                            </FluentButton>
+                            </FluentButton> *@
                         }
                         <FluentButton Title="Delete Plate" OnClick="() => DeletePlate(plate)">
                             <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Error" />
@@ -53,7 +57,21 @@
                             </GridSortColumns>
                         </GridSortSettings>
                         <GridColumns>
-                            <GridColumn HeaderText="Position" Field="@nameof(PlateAssignment.Position)" TextAlign="TextAlign.Right" Width="100"/>
+                            <GridColumn HeaderText="Position" Field="@nameof(PlateAssignment.Position)" TextAlign="TextAlign.Right" Width="100" />
+                            <GridColumn TextAlign="TextAlign.Center" Width="40">
+                                <Template>
+                                    @{
+                                        var assignment = (context as PlateAssignment);
+                                        if (assignment.OrderId != null)
+                                        {
+                                            if (assignment.Order.JobStatus == JobStatus.OnHold)
+                                            {
+                                                <SfCheckBox Checked="true" CssClass="e-danger" Disabled="true" />
+                                            }
+                                        }
+                                    }
+                                </Template>
+                            </GridColumn>
                             <GridColumn HeaderText="Customer">
                                 <Template>
                                     @{
@@ -71,7 +89,21 @@
                                     }
                                 </Template>
                             </GridColumn>
-                            <GridColumn HeaderText="Quantity" TextAlign="TextAlign.Right">
+                            <GridColumn HeaderText="BP" TextAlign="TextAlign.Center" Width="40" >
+                                <Template>
+                                    @{
+                                        var assignment = (context as PlateAssignment);
+                                        if (assignment.OrderId != null)
+                                        {
+                                            if (assignment.Order.BpUpdate)
+                                            {
+                                                <SfCheckBox Checked="true" CssClass="e-alert" Disabled="true" />
+                                            }
+                                        }
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="Quantity" TextAlign="TextAlign.Right" Width="100">
                                 <Template>
                                     @{
                                         var assignment = (context as PlateAssignment);
@@ -173,14 +205,31 @@ else
         box-sizing: border-box;
     }
 
+    .e-grid .e-row .e-rowcell {
+        background-color: #E8EEFA;
+    }
+
+    .e-grid .e-altrow .e-rowcell {
+        background-color: white;
+    }
+
     .plated-card .e-grid .e-headercell,
     .plated-card .e-grid .e-row .e-rowcell,
     .plated-card .e-grid .e-altrow .e-rowcell {
         background-color: #e9ecef !important;
     }
-
     
     .e-grid .e-table {
         margin-bottom: 0 !important;
+    }
+
+    .e-checkbox-wrapper.e-alert .e-frame.e-check { /* csslint allow: adjoining-classes */
+        background-color: #ffff00;
+        color: black
+    }
+
+    .e-checkbox-wrapper.e-danger .e-frame.e-check { /* csslint allow: adjoining-classes */
+        background-color: #fd0031;
+        color: #fd0031
     }
 </style>
