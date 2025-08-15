@@ -78,7 +78,7 @@
     <SfGrid @ref="Grid" ID="orders-grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" >
         <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
-        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Order" />
+        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" TValue="Order" />
         <GridSortSettings>
             <GridSortColumns>
                 <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
@@ -193,6 +193,7 @@
             <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@billingColumnsVisible" />
             <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="60" TextAlign="TextAlign.Right" />
             <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />
+            <GridColumn Field="Customer.Location" HeaderText="Customer Location" Visible="false" />
             <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@billingColumnsVisible" />
             <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
             
@@ -414,6 +415,63 @@ else
         }
     }
 
+    public void ExcelQueryCellInfoHandler(ExcelQueryCellInfoEventArgs<Order> args)
+    {
+        if (args.Column.HeaderText == "Ship Methods")
+        {
+            string shipMethodsString = "";
+            if (args.Data.DmQty.HasValue && args.Data.DmQty > 0)
+            {
+                shipMethodsString = "DM";
+            }
+            if (args.Data.LtlQty.HasValue && args.Data.LtlQty > 0)
+            {
+                if (shipMethodsString == "")
+                {
+                    shipMethodsString = "LTL";
+                }
+                else
+                {
+                    shipMethodsString = shipMethodsString + " + LTL";
+                }
+            }
+            if (args.Data.UpsQty.HasValue && args.Data.UpsQty > 0)
+            {
+                if (shipMethodsString == "")
+                {
+                    shipMethodsString = "UPS";
+                }
+                else
+                {
+                    shipMethodsString = shipMethodsString + " + UPS";
+                }
+            }
+            if (args.Data.IntlQty.HasValue && args.Data.IntlQty > 0)
+            {
+                if (shipMethodsString == "")
+                {
+                    shipMethodsString = "INTL";
+                }
+                else
+                {
+                    shipMethodsString = shipMethodsString + " + INTL";
+                }
+            }
+            if (args.Data.PostalQty.HasValue && args.Data.PostalQty > 0)
+            {
+                if (shipMethodsString == "")
+                {
+                    shipMethodsString = "USPS";
+                }
+                else
+                {
+                    shipMethodsString = shipMethodsString + " + USPS";
+                }
+            }
+            args.Cell.Value = shipMethodsString;
+        }
+    }
+
     public async Task ChangeJobStatusFilter(ChangeEventArgs<JobStatus, string> args)
     {
         if (args.Value == 0)
@@ -444,7 +502,12 @@ else
         }
         else if (args.Item.Text == "CSV Export")
         {
-            Grid.ExportToCsvAsync();
+            ExcelExportProperties ExportProperties = new ExcelExportProperties
+            {
+                IncludeTemplateColumn = true,
+                IncludeHiddenColumn = true
+            };
+            await Grid.ExportToCsvAsync(ExportProperties);
         }
         else if (args.Item.Text == "Saddle Stitched")
         {
