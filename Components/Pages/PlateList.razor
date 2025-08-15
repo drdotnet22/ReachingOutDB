@@ -24,7 +24,8 @@
     <div class="card-container">
         @foreach (var plate in filteredPlates)
         {
-            <SfCard>
+            <SfCard style="@(plate.IsPlated ? "background-color: #e9ecef;" : "")"
+                    class="@(plate.IsPlated ? "plated-card e-card" : "e-card")">
                 <CardContent>
                     <div class="myflexrow" style="align-items:center">
                         <h5>Plate #: @(plate.Number + 1) with @plate.Quantity sheets needed.</h5>
@@ -45,7 +46,7 @@
                             <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Error" />
                         </FluentButton>
                     </div>
-                    <SfGrid DataSource="plate.PlateAssignments" AllowSorting="true" RowHeight="20">
+                    <SfGrid DataSource="plate.PlateAssignments" AllowSorting="true" RowHeight="20" >
                         <GridSortSettings>
                             <GridSortColumns>
                                 <GridSortColumn Field="Position" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending" />
@@ -60,7 +61,7 @@
                                         {
                                             if (assignment.OrderId != null)
                                             {
-                                                <span>@assignment.Order.Customer.CustomerName - @assignment.Order.CustomerId.ToString()</span>
+                                                <span>@assignment.Order.CustomerId.ToString() - @assignment.Order.Customer.CustomerName</span>
                                             }
                                             else
                                             {
@@ -170,5 +171,16 @@ else
     .card-container .e-card {
         flex: 0 0 calc(50% - 8px); /* 50% width minus half the gap */
         box-sizing: border-box;
+    }
+
+    .plated-card .e-grid .e-headercell,
+    .plated-card .e-grid .e-row .e-rowcell,
+    .plated-card .e-grid .e-altrow .e-rowcell {
+        background-color: #e9ecef !important;
+    }
+
+    
+    .e-grid .e-table {
+        margin-bottom: 0 !important;
     }
 </style>
