@@ -30,21 +30,31 @@
             <span style="color:gray; font-size:small">Leave customer field blank to generate bulk orders.</span>
         </div>
     }
+    <div class="myflexrow">
+        <SfMultiColumnComboBox TItem="Customer" TValue="Customer" AllowFiltering="true"
+                               FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
+                               @bind-Value="ThisOrder.Customer"
+                               DataSource="CustomerList"
+                               ValueField="CustomerId"
+                               TextField="CustomerName"
+                               ReadOnly="@(!Editable)"
+                               Width="400px"
+                               Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+            <MultiColumnComboboxColumns>
+                <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
+                <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
+            </MultiColumnComboboxColumns>
+        </SfMultiColumnComboBox>
 
-    <SfMultiColumnComboBox TItem="Customer" TValue="Customer" AllowFiltering="true" 
-                FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
-                @bind-Value="ThisOrder.Customer"
-                DataSource="CustomerList"
-                ValueField="CustomerId"
-                TextField="CustomerName"
-                           ReadOnly="@(!Editable)"
-                Width="400px"
-                Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
-        <MultiColumnComboboxColumns>
-            <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
-            <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
-        </MultiColumnComboboxColumns>
-    </SfMultiColumnComboBox>
+        <div id="customer-tooltip">
+            <SfButton IconCss="e-icons e-eye" id="customer-info" Disabled="@(ThisOrder.Customer == null || ThisOrder.CustomerId == 0)" tabindex="-1" />
+        </div>
+        <SfTooltip Position="Syncfusion.Blazor.Popups.Position.BottomCenter" Target="#customer-info" WindowCollision="true" TargetContainer="#customer-tooltip" OpensOn="Hover" Width="1200" Height="400">
+            <ContentTemplate>
+                <ReachingOutDB.Components.Pages.Customers.CustomerViewEdit Editable="false" ThisCustomer="ThisOrder.Customer" />
+            </ContentTemplate>
+        </SfTooltip>
+    </div>
 
     @if (ThisOrder.OrderId != Guid.Empty)
     {
