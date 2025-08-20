@@ -21,7 +21,7 @@
     </ToolbarItems>
 </SfToolbar>
 
-<SfGrid @ref="@Grid" DataSource="customersWithMailingNotes" >
+<SfGrid @ref="@Grid" DataSource="customersWithMailingNotes" RowHeight="25">
     <GridEvents CommandClicked="CommandClickedHandler" TValue="Customer" />
     <GridSortSettings>
         <GridSortColumns>
@@ -64,13 +64,27 @@
     </DialogTemplates>
 </SfDialog>
 
-<SfDialog @ref="editMailingNotesDialog" Visible="false" ShowCloseIcon="true" Width="80%">
+<SfDialog @ref="editMailingNotesDialog" Visible="false" ShowCloseIcon="true" Width="80%" AllowDragging="true" IsModal="true">
     <DialogEvents Closed="@EditMailingNotesDialogClosedHandler" />
     <DialogTemplates>
+        <Header>
+            <div class="myflexrow">
+                <span>@selectedCustomer.CustomerId.ToString() - @selectedCustomer.CustomerName</span>
+                <div id="customer-tooltip">
+                    <SfButton CssClass="e-flat" IconCss="e-icons e-eye" id="customer-info" Disabled="@(selectedCustomer == null || selectedCustomer.CustomerId == 0)" tabindex="-1" />
+                </div>
+                <SfTooltip Position="Syncfusion.Blazor.Popups.Position.BottomCenter" Target="#customer-info" WindowCollision="true" TargetContainer="#customer-tooltip" OpensOn="Hover" Width="1200" Height="400">
+                    <ContentTemplate>
+                        <ReachingOutDB.Components.Pages.Customers.CustomerViewEdit Editable="false" ThisCustomer="selectedCustomer" />
+                    </ContentTemplate>
+                </SfTooltip>
+            </div>
+        </Header>
         <Content>
             <MailingNotesEditor SelectedCustomer="selectedCustomer" />
         </Content>
     </DialogTemplates>
+    <DialogPositionData X="center" Y="150" />
 </SfDialog>
 
 @code {
