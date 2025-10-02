@@ -4,6 +4,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using ReachingOutDB.Components;
 using ReachingOutDB.Data;
 using Syncfusion.Blazor;
+using Syncfusion.Blazor.Popups;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +42,7 @@ builder.Services.AddScoped<PackageServices>();
 builder.Services.AddScoped<ShippingSettingsServices>();
 builder.Services.AddScoped<MiscSettingsServices>();
 builder.Services.AddScoped<PlateServices>();
+builder.Services.AddScoped<SfDialogService>();
 
 // Set default culture
 var defaultCulture = new CultureInfo("en-US");

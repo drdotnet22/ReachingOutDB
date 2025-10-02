@@ -5,6 +5,7 @@
 @inject CustomerServices customerService
 @inject UserServices userService
 @inject PlateServices plateService
+@inject SfDialogService DialogService
 @implements IDisposable
 @rendermode InteractiveServer
 <PageTitle>Orders - Reaching Out</PageTitle>
@@ -234,6 +235,8 @@ else
     </DialogTemplates>
 </SfDialog>
 
+<Syncfusion.Blazor.Popups.SfDialogProvider />
+
 <style>
     .chip-shipping {
         display: inline-block;
@@ -306,35 +309,6 @@ else
     {
         selectedShipMethods = args.Value ?? Array.Empty<string>();
         ApplyShipMethodFilter();
-
-        // if (args.Value?.Length > 0)
-        // {
-        //     filteredOrders = orders;
-        //     if (args.Value.Contains("DM"))
-        //     {
-        //         filteredOrders = filteredOrders.Where(o => o.DmQty.HasValue && o.DmQty > 0);
-        //     }
-        //     if (args.Value.Contains("UPS"))
-        //     {
-        //         filteredOrders = filteredOrders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0);
-        //     }
-        //     if (args.Value.Contains("USPS"))
-        //     {
-        //         filteredOrders = filteredOrders.Where(o => o.PostalQty.HasValue && o.PostalQty > 0);
-        //     }
-        //     if (args.Value.Contains("INTL"))
-        //     {
-        //         filteredOrders = filteredOrders.Where(o => o.IntlQty.HasValue && o.IntlQty > 0);
-        //     }
-        //     if (args.Value.Contains("LTL"))
-        //     {
-        //         filteredOrders = filteredOrders.Where(o => o.LtlQty.HasValue && o.LtlQty > 0);
-        //     }
-        // }
-        // else
-        // {
-        //     filteredOrders = orders;
-        // }
     }
 
     private void ApplyShipMethodFilter()
@@ -399,7 +373,17 @@ else
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
             args.Cancel = true;
-            await orderService.DeleteOrderAsync(args.Data);
+            DeleteOrderAsync(args.Data);
+        }
+    }
+
+    private async Task DeleteOrderAsync(Order order)
+    {
+        bool isConfirm = await DialogService.ConfirmAsync("Are you sure you want to permanently delete this order? This action cannot be undone", "Delete");
+        if (isConfirm)
+        {
+            await orderService.DeleteOrderAsync(order);
+            RefreshOrders();
         }
     }
 
