@@ -83,7 +83,7 @@
     private async Task SaveOrderUpdates()
     {
         //await orderService.UpdateOrderAsync(order); This is being called and the end of the published shipping calculations.
-        await orderService.CalculatePublishedShippingAsync(order);
+        await orderService.UpdateOrderAsync(order);
         order = new Order();
         customerIdSearch = null;
         orderSet = false;

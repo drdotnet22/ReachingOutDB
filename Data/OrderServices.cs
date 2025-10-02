@@ -180,14 +180,23 @@ namespace ReachingOutDB.Data
             var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
-                var oringinalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == updatedOrder.OrderId);
+                var originalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == updatedOrder.OrderId);
 
-                if (oringinalOrder == null)
+                if (originalOrder == null)
                 {
                     throw new InvalidOperationException($"Order with ID {updatedOrder.OrderId} not found.");
                 }
 
-                await auditLogServices.LogOrderChangesAsync(oringinalOrder, updatedOrder);
+                // Check if any shipping cost fields changed
+                if (originalOrder.UpsCost != updatedOrder.UpsCost ||
+                    originalOrder.IntlCost != updatedOrder.IntlCost ||
+                    originalOrder.LTLCost != updatedOrder.LTLCost)
+                {
+                    // Recalculate shipping (this now only updates the order object, doesn't save)
+                    await CalculatePublishedShippingAsync(updatedOrder);
+                }
+
+                await auditLogServices.LogOrderChangesAsync(originalOrder, updatedOrder);
                 dbContext.Orders.Update(updatedOrder);
                 await dbContext.SaveChangesAsync();
             }
@@ -219,49 +228,76 @@ namespace ReachingOutDB.Data
             }
         }
 
-        public async Task CalculatePublishedPostageAsync(Order order)
+        private async Task CalculatePublishedPostageAsync(Order order)
         {
             if (!order.DmQty.HasValue ||  order.DmQty.Value < 1)
             {
                 var dbContext = await contextFactory.CreateDbContextAsync();
+                var originalVal = order.PubUsps;
                 var uspsShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "USPS");
                 int numberOfBoxes = (order.PostalQty.Value + uspsShipSettings.QuantityPerBox - 1) / uspsShipSettings.QuantityPerBox;
                 order.PubUsps = order.PostalCost + (order.PostalCost * uspsShipSettings.MarkupPercentage) + (uspsShipSettings.PerBoxFee * numberOfBoxes);
-                await UpdateOrderAsync(order);
+                if (order.PubUsps != originalVal)
+                {
+                    await UpdateOrderAsync(order);
+                }
             }
         }
 
-        public async Task CalculatePublishedShippingAsync(Order order)
+        private async Task CalculatePublishedShippingAsync(Order order)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
 
-            decimal pubShip = 0m;
+            try
+            {
+                decimal pubShip = 0m;
 
-            if (order.UpsCost != null)
-            {
-                var upsShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "UPS");
-                int numberOfBoxes = (order.UpsQty.Value + upsShipSettings.QuantityPerBox - 1) / upsShipSettings.QuantityPerBox;
-                pubShip = order.UpsCost.Value + (order.UpsCost.Value * upsShipSettings.MarkupPercentage) + upsShipSettings.HandlingFee + (upsShipSettings.PerBoxFee * numberOfBoxes);
-                if (numberOfBoxes > 4)
+                if (order.UpsCost != null)
                 {
-                    decimal discount = (numberOfBoxes / 4 - 1) * -0.15m * order.UpsCost.Value;
-                    pubShip -= (numberOfBoxes/upsShipSettings.BoxDiscountThreshold.Value - 1) * upsShipSettings.BoxDiscountPercentage.Value * order.UpsCost.Value;
+                    var upsShipSettings = await dbContext.ShippingSettings
+                        .FirstOrDefaultAsync(s => s.Name == "UPS");
+                    int numberOfBoxes = (order.UpsQty.Value + upsShipSettings.QuantityPerBox - 1) / upsShipSettings.QuantityPerBox;
+                    pubShip = order.UpsCost.Value +
+                             (order.UpsCost.Value * upsShipSettings.MarkupPercentage) +
+                             upsShipSettings.HandlingFee +
+                             (upsShipSettings.PerBoxFee * numberOfBoxes);
+
+                    if (numberOfBoxes > upsShipSettings.BoxDiscountThreshold.Value)
+                    {
+                        pubShip -= (numberOfBoxes / upsShipSettings.BoxDiscountThreshold.Value - 1) *
+                                  upsShipSettings.BoxDiscountPercentage.Value * order.UpsCost.Value;
+                    }
                 }
+
+                if (order.IntlCost != null)
+                {
+                    var intlShipSettings = await dbContext.ShippingSettings
+                        .FirstOrDefaultAsync(s => s.Name == "INTL");
+                    int numberOfBoxes = (order.IntlQty.Value + intlShipSettings.QuantityPerBox - 1) / intlShipSettings.QuantityPerBox;
+                    pubShip += order.IntlCost.Value +
+                              (order.IntlCost.Value * intlShipSettings.MarkupPercentage) +
+                              intlShipSettings.HandlingFee +
+                              (intlShipSettings.PerBoxFee * numberOfBoxes);
+                }
+
+                if (order.LTLCost != null)
+                {
+                    var ltlShipSettings = await dbContext.ShippingSettings
+                        .FirstOrDefaultAsync(s => s.Name == "LTL");
+                    int numberOfBoxes = (order.LtlQty.Value + ltlShipSettings.QuantityPerBox - 1) / ltlShipSettings.QuantityPerBox;
+                    pubShip += order.LTLCost.Value +
+                              (order.LTLCost.Value * ltlShipSettings.MarkupPercentage) +
+                              ltlShipSettings.HandlingFee +
+                              (ltlShipSettings.PerBoxFee * numberOfBoxes);
+                }
+
+                // Just update the property, don't save
+                order.PubShipping = pubShip;
             }
-            if (order.IntlCost != null)
+            catch (Exception ex)
             {
-                var intlShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "INTL");
-                int numberOfBoxes = (order.IntlQty.Value + intlShipSettings.QuantityPerBox - 1) / intlShipSettings.QuantityPerBox;
-                pubShip += order.IntlCost.Value + (order.IntlCost.Value * intlShipSettings.MarkupPercentage) + intlShipSettings.HandlingFee + (intlShipSettings.PerBoxFee * numberOfBoxes);
+                Console.WriteLine(ex.ToString());
             }
-            if (order.LTLCost != null)
-            {
-                var ltlShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "LTL");
-                int numberOfBoxes = (order.LtlQty.Value + ltlShipSettings.QuantityPerBox - 1) / ltlShipSettings.QuantityPerBox;
-                pubShip += order.LTLCost.Value + (order.LTLCost.Value * ltlShipSettings.MarkupPercentage) + ltlShipSettings.HandlingFee + (ltlShipSettings.PerBoxFee * numberOfBoxes);
-            }
-            order.PubShipping = pubShip;
-            await UpdateOrderAsync(order);
         }
 
         public async Task<string> ImportEndiciaPrintLogCsvAsync(string path, int year, Quarter quarter)
