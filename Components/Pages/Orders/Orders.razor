@@ -41,12 +41,6 @@
                         <DuploProgress Orders="orders" />
                     </Template>
                 </ToolbarItem>
-                <ToolbarItem Type="ItemType.Spacer" />
-                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
-                    <Template>
-                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
-                    </Template>
-                </ToolbarItem>
             }
             else if (userService.CurrentUser.Role == UserRole.Duplo)
             {
@@ -57,28 +51,20 @@
                         <DuploProgress Orders="orders" />
                     </Template>
                 </ToolbarItem>
-                <ToolbarItem Type="ItemType.Spacer" />
-                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
-                    <Template>
-                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
-                    </Template>
-                </ToolbarItem>
             }
-            else
-            {
-                <ToolbarItem Type="ItemType.Spacer" />
-                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
-                    <Template>
-                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
-                    </Template>
-                </ToolbarItem>
-            }
+            <ToolbarItem Type="ItemType.Spacer" />
+            <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
+                <Template>
+                    <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+                </Template>
+            </ToolbarItem>
+            <ToolbarItem TooltipText="Clear all grid filters" PrefixIcon="e-close icon" Visible="gridFiltered" OnClick="ClearGridFiltering"/>
         </ToolbarItems>
     </SfToolbar>
     <SfGrid @ref="Grid" ID="orders-grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" >
         <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
         <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
-        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" TValue="Order" />
+        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" Filtered="GridFiltered" TValue="Order" />
         <GridSortSettings>
             <GridSortColumns>
                 <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
@@ -127,7 +113,7 @@
             <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
             <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120">
                 <FilterTemplate>
-                    <SfDropDownList ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
+                    <SfDropDownList @ref="jobStatusFilter" ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
                         <DropDownListEvents TItem="string" TValue="JobStatus" ValueChange="ChangeJobStatusFilter" />
                         <DropDownListFieldSettings Value="JobStatus" Text="JobStatus" />
                     </SfDropDownList>
@@ -164,7 +150,7 @@
 
                 </Template>
                 <FilterTemplate>
-                    <SfMultiSelect TValue="string[]" TItem="string" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
+                    <SfMultiSelect TValue="string[]" TItem="string" @bind-Value="selectedShipMethods" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
                         <MultiSelectEvents TValue="string[]" TItem="string" ValueChange="@ShipMethodOnChange" />
                     </SfMultiSelect>
                 </FilterTemplate>
@@ -196,12 +182,15 @@
             <GridColumn Field="Customer.Location" HeaderText="Customer Location" Visible="false" />
             <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@billingColumnsVisible" />
             <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
-            
+            <GridColumn Width="60" Visible="@billingColumnsVisible">
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
+                </GridCommandColumns>
+            </GridColumn>
             @if (userService.CurrentUser.Role == UserRole.Admin)
             {
-                <GridColumn Width="152">
+                <GridColumn Width="105">
                     <GridCommandColumns>
-                        <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
                         <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
                         <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
                     </GridCommandColumns>
@@ -301,47 +290,83 @@ else
     {
 
         orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
-        filteredOrders = orders;
+        ApplyShipMethodFilter();
         StateHasChanged();
     }
 
 
     #region Custom Shipping methods filter
     private string[] ShipMethodOptions = new[] { "DM", "UPS", "USPS", "INTL", "LTL" };
-    List<string> SelectedShipMethods = new List<string>();
     public bool IsFilterValueChange { get; set; }
 
     public Syncfusion.Blazor.Grids.FilteringEventArgs filteringEvent { get; set; }
 
+    private string[] selectedShipMethods = Array.Empty<string>();
     private async Task ShipMethodOnChange(MultiSelectChangeEventArgs<string[]> args)
     {
-        if (args.Value?.Length > 0)
+        selectedShipMethods = args.Value ?? Array.Empty<string>();
+        ApplyShipMethodFilter();
+
+        // if (args.Value?.Length > 0)
+        // {
+        //     filteredOrders = orders;
+        //     if (args.Value.Contains("DM"))
+        //     {
+        //         filteredOrders = filteredOrders.Where(o => o.DmQty.HasValue && o.DmQty > 0);
+        //     }
+        //     if (args.Value.Contains("UPS"))
+        //     {
+        //         filteredOrders = filteredOrders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0);
+        //     }
+        //     if (args.Value.Contains("USPS"))
+        //     {
+        //         filteredOrders = filteredOrders.Where(o => o.PostalQty.HasValue && o.PostalQty > 0);
+        //     }
+        //     if (args.Value.Contains("INTL"))
+        //     {
+        //         filteredOrders = filteredOrders.Where(o => o.IntlQty.HasValue && o.IntlQty > 0);
+        //     }
+        //     if (args.Value.Contains("LTL"))
+        //     {
+        //         filteredOrders = filteredOrders.Where(o => o.LtlQty.HasValue && o.LtlQty > 0);
+        //     }
+        // }
+        // else
+        // {
+        //     filteredOrders = orders;
+        // }
+    }
+
+    private void ApplyShipMethodFilter()
+    {
+        // Start with all orders
+        filteredOrders = orders;
+
+        // Only filter if something is selected
+        if (selectedShipMethods?.Length > 0)
         {
-            filteredOrders = orders;
-            if (args.Value.Contains("DM"))
+            gridFiltered = true;
+            filteredOrders = filteredOrders.Where(o =>
             {
-                filteredOrders = filteredOrders.Where(o => o.DmQty.HasValue && o.DmQty > 0);
-            }
-            if (args.Value.Contains("UPS"))
-            {
-                filteredOrders = filteredOrders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0);
-            }
-            if (args.Value.Contains("USPS"))
-            {
-                filteredOrders = filteredOrders.Where(o => o.PostalQty.HasValue && o.PostalQty > 0);
-            }
-            if (args.Value.Contains("INTL"))
-            {
-                filteredOrders = filteredOrders.Where(o => o.IntlQty.HasValue && o.IntlQty > 0);
-            }
-            if (args.Value.Contains("LTL"))
-            {
-                filteredOrders = filteredOrders.Where(o => o.LtlQty.HasValue && o.LtlQty > 0);
-            }
-        }
-        else
-        {
-            filteredOrders = orders;
+                bool matches = false;
+
+                if (selectedShipMethods.Contains("DM") && o.DmQty.HasValue && o.DmQty > 0)
+                    matches = true;
+
+                if (selectedShipMethods.Contains("UPS") && o.UpsQty.HasValue && o.UpsQty > 0)
+                    matches = true;
+
+                if (selectedShipMethods.Contains("USPS") && o.PostalQty.HasValue && o.PostalQty > 0)
+                    matches = true;
+
+                if (selectedShipMethods.Contains("INTL") && o.IntlQty.HasValue && o.IntlQty > 0)
+                    matches = true;
+
+                if (selectedShipMethods.Contains("LTL") && o.LtlQty.HasValue && o.LtlQty > 0)
+                    matches = true;
+
+                return matches;
+            });
         }
     }
     #endregion
@@ -480,6 +505,7 @@ else
         }
         else
         {
+            gridFiltered = true;
             await this.Grid.FilterByColumnAsync("JobStatus", "contains", args.Value);
         }
     }
@@ -490,6 +516,21 @@ else
         return arg.OrderId == Guid.Empty
             ? "Add New Order"
             : "Edit the " + arg.Year + " " + arg.Quarter + " order of " + arg.Customer.CustomerName;
+    }
+
+    private SfDropDownList<JobStatus, string> jobStatusFilter;
+    private bool gridFiltered = false;
+    private async Task ClearGridFiltering()
+    {
+        Grid.ClearFilteringAsync();
+        jobStatusFilter.ClearAsync();
+        selectedShipMethods = Array.Empty<string>();
+        filteredOrders = orders;
+        gridFiltered = false;
+    }
+    private async Task GridFiltered()
+    {
+        gridFiltered = true;
     }
     #endregion
 
