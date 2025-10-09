@@ -4,6 +4,7 @@
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @inject UserServices userService
+@inject YearQuarterService yearQuarterService
 @inject PlateServices plateService
 @inject SfDialogService DialogService
 @implements IDisposable
@@ -13,7 +14,7 @@
 @if (userService.CurrentUser.Role != UserRole.UnAssigned)
 {
     <div class="myflexrow">
-        <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" ValuesChanged="RefreshOrders" />
+        <YearQuarterSelector @bind-SelectedYear="yearQuarterService.SelectedYear" @bind-SelectedQuarter="yearQuarterService.SelectedQuarter" ValuesChanged="RefreshOrders" />
     </div>
     <br />
 
@@ -230,7 +231,7 @@ else
     <DialogEvents OnClose="RefreshOrders" />
     <DialogTemplates>
         <Content>
-            <ImportEndiciaCsv ThisYear="selectedYear" ThisQuarter="selectedQuarter" />
+            <ImportEndiciaCsv ThisYear="yearQuarterService.SelectedYear" ThisQuarter="yearQuarterService.SelectedQuarter" />
         </Content>
     </DialogTemplates>
 </SfDialog>
@@ -277,8 +278,6 @@ else
     public IEnumerable<Order> orders { get; set; }
     public IEnumerable<Order> filteredOrders { get; set; }
     public IEnumerable<Customer> customers { get; set; }
-    public int selectedYear { get; set; }
-    public Quarter selectedQuarter { get; set; }
     public string[] jobStatValues = JobStatus.GetNames(typeof(JobStatus));
     public bool billingColumnsVisible = false;
 
@@ -286,13 +285,14 @@ else
     {
         customers = await customerService.GetCustomersAsync();
         userService.OnUserChanged += OnUserChanged;
+        yearQuarterService.OnYearQuarterChanged += StateHasChanged;
         await base.OnInitializedAsync();
     }
 
     private async Task RefreshOrders()
     {
 
-        orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
+        orders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         ApplyShipMethodFilter();
         StateHasChanged();
     }

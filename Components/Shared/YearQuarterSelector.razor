@@ -1,15 +1,16 @@
 ﻿@using ReachingOutDB.Data
 
-<SfNumericTextBox @bind-Value="SelectedYear"
-        @onchange="OnYearChanged"
+@inject YearQuarterService yearQuarterService
+
+<SfNumericTextBox @bind-Value="yearQuarterService.SelectedYear"
         Format="####"
         Width="200px" />
 
 <SfDropDownList TItem="string" TValue="Quarter"
-        @bind-Value="SelectedQuarter"
+        @bind-Value="yearQuarterService.SelectedQuarter"
         DataSource="@quarterValues"
         Width="200px">
-        <DropDownListEvents TItem="string" TValue="Quarter" ValueChange="OnQuarterChange" />
+        <DropDownListEvents TItem="string" TValue="Quarter" />
 </SfDropDownList>
 
 @code {
@@ -32,35 +33,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (SelectedYear == 0 && SelectedQuarter == 0)
-        {
-            SelectedYear = DateTime.UtcNow.Year;
-            int month = DateTime.UtcNow.Month;
-
-            if (month >= 2 && month <= 4)
-            {
-                SelectedQuarter = Quarter.Q2;
-            }
-            else if (month >= 5 && month <= 7)
-            {
-                SelectedQuarter = Quarter.Q3;
-            }
-            else if (month >= 8 && month <= 10)
-            {
-                SelectedQuarter = Quarter.Q4;
-            }
-            else if (month >= 11)
-            {
-                SelectedQuarter = Quarter.Q1;
-                SelectedYear++;
-            }
-            else
-            {
-                SelectedQuarter = Quarter.Q1;
-            }
-            OnQuarterChange();
-            OnYearChanged();
-        }
+        yearQuarterService.CalculateYearQuarterAsync();
         await base.OnInitializedAsync();
     }
 
