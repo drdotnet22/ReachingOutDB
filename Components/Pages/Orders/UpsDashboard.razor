@@ -27,6 +27,7 @@
 </div>
 
 <SfDialog @ref="upsCostDialog" Visible="false" Width="700" ShowCloseIcon="true" AllowDragging="true" IsModal="true" >
+    <DialogEvents OnClose="RefreshOrders" />
     <DialogTemplates>
         <Header>Enter UPS Cost</Header>
         <Content>
@@ -80,9 +81,4 @@
     }
 
     private SfDialog upsCostDialog;
-
-    public void CloseUPSDialog(string action)
-    {
-        this.upsCostDialog.Visible = false;
-    }
 }
