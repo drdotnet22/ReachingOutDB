@@ -14,13 +14,21 @@ namespace ReachingOutDB.Data
         public int SelectedYear
         {
             get => _year;
-            set => _year = value;
+            set
+            {
+                _year = value;
+                OnYearQuarterChanged?.Invoke();
+            }
         }
 
         public Quarter SelectedQuarter
         {
             get => _quarter;
-            set => _quarter = value;
+            set
+            {
+                _quarter = value;
+                OnYearQuarterChanged?.Invoke();
+            }
         }
 
         public async Task SelectYearAsync(int year)

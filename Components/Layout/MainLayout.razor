@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using ReachingOutDB.Components.Pages.Users
+@using ReachingOutDB.Components.Shared
 
 <FluentLayout>
     <FluentHeader>
@@ -9,7 +10,10 @@
         <FluentSpacer Width="15" />
         <span>Haines Printing • Reaching Out Database</span>
         <FluentSpacer />
-        <UserSelector />
+        <div class="myflexrow">
+            <YearQuarterSelector />
+            <UserSelector />
+        </div>
     </FluentHeader>
     <FluentStack Class="main" Orientation="Microsoft.FluentUI.AspNetCore.Components.Orientation.Horizontal" Width="100%">
         <NavMenu />

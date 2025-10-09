@@ -4,14 +4,10 @@
 @using ReachingOutDB.Components.Shared
 @inject OrderServices orderService
 @inject CustomerServices customerService
-@rendermode InteractiveServer
+@inject YearQuarterService yearQuarterService
+@implements IDisposable
 <PageTitle>UPS - Reaching Out</PageTitle>
 
-<div class="myflexrow">
-    <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
-    <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshOrders"></SfButton>
-</div>
-<br />
 <div class="myflexcolumn">
     <SfGrid @ref="Grid" DataSource="upsOrders" RowHeight="25" Width="1200" Toolbar="@ToolbarItems">
         <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="Order" />
@@ -41,13 +37,12 @@
     public IEnumerable<Order> orders { get; set; }
     public IEnumerable<Order> upsOrders { get; set; }
     public IEnumerable<Customer> customers { get; set; }
-    public int selectedYear { get; set; }
-    public Quarter selectedQuarter { get; set; }
     private List<Object> ToolbarItems = new List<Object>() { new ItemModel() { Text = "Refresh Grid", TooltipText = "Refresh the datagrid.", PrefixIcon = "e-refresh icon" }, new ItemModel() { Text = "Cost Input", TooltipText = "Enter cost of UPS shipment", PrefixIcon = "e-check-box icon" }, "Search" };
 
     protected override async Task OnInitializedAsync()
     {
         customers = await customerService.GetCustomersAsync();
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
         await base.OnInitializedAsync();
     }
 
@@ -62,7 +57,7 @@
 
     private async Task RefreshOrders()
     {
-        orders = await orderService.GetOrdersAsync(selectedYear, selectedQuarter);
+        orders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         upsOrders = orders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0 && (JobStatus)((int)o.JobStatus) <= (JobStatus)((int)JobStatus.Shipped));
         StateHasChanged();
     }
@@ -81,4 +76,14 @@
     }
 
     private SfDialog upsCostDialog;
+
+    private async void YearQuarterChanged()
+    {
+        await RefreshOrders();
+    }
+
+    public void Dispose()
+    {
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
+    }
 }

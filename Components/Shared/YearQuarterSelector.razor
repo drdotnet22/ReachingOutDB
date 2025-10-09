@@ -2,50 +2,35 @@
 
 @inject YearQuarterService yearQuarterService
 
+
 <SfNumericTextBox @bind-Value="yearQuarterService.SelectedYear"
         Format="####"
-        Width="200px" />
+        Width="125px" />
 
 <SfDropDownList TItem="string" TValue="Quarter"
         @bind-Value="yearQuarterService.SelectedQuarter"
         DataSource="@quarterValues"
-        Width="200px">
+        Width="100px">
         <DropDownListEvents TItem="string" TValue="Quarter" />
 </SfDropDownList>
 
 @code {
-    [Parameter]
-    public int SelectedYear { get; set; }
-
-    [Parameter]
-    public EventCallback<int> SelectedYearChanged { get; set; }
-
-    [Parameter]
-    public Quarter SelectedQuarter { get; set; }
-
-    [Parameter]
-    public EventCallback<Quarter> SelectedQuarterChanged { get; set; }
-
-    [Parameter]
-    public EventCallback ValuesChanged { get; set; }
-
     public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
 
     protected override async Task OnInitializedAsync()
     {
-        yearQuarterService.CalculateYearQuarterAsync();
+        if (yearQuarterService.SelectedYear == 0)
+        {
+            yearQuarterService.CalculateYearQuarterAsync();
+        }
         await base.OnInitializedAsync();
     }
 
-    private async Task OnYearChanged()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await SelectedYearChanged.InvokeAsync(SelectedYear);
-        await ValuesChanged.InvokeAsync();
-    }
-
-    private async Task OnQuarterChange()
-    {
-        await SelectedQuarterChanged.InvokeAsync(SelectedQuarter);
-        await ValuesChanged.InvokeAsync();
+        if (firstRender)
+        {
+            yearQuarterService.CalculateYearQuarterAsync();
+        }
     }
 }

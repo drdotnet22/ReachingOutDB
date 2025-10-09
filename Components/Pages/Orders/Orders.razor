@@ -8,16 +8,11 @@
 @inject PlateServices plateService
 @inject SfDialogService DialogService
 @implements IDisposable
-@rendermode InteractiveServer
+
 <PageTitle>Orders - Reaching Out</PageTitle>
 
 @if (userService.CurrentUser.Role != UserRole.UnAssigned)
 {
-    <div class="myflexrow">
-        <YearQuarterSelector @bind-SelectedYear="yearQuarterService.SelectedYear" @bind-SelectedQuarter="yearQuarterService.SelectedQuarter" ValuesChanged="RefreshOrders" />
-    </div>
-    <br />
-
     //Custom toolbar for each type of user
     <SfToolbar>
         <ToolbarEvents Clicked="ToolbarClickHandler" />
@@ -285,13 +280,13 @@ else
     {
         customers = await customerService.GetCustomersAsync();
         userService.OnUserChanged += OnUserChanged;
-        yearQuarterService.OnYearQuarterChanged += StateHasChanged;
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
+        RefreshOrders();
         await base.OnInitializedAsync();
     }
 
     private async Task RefreshOrders()
     {
-
         orders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         ApplyShipMethodFilter();
         StateHasChanged();
@@ -578,9 +573,15 @@ else
         StateHasChanged();
     }
 
+    private async void YearQuarterChanged()
+    {
+        await RefreshOrders();
+    }
+
     public void Dispose()
     {
         userService.OnUserChanged -= OnUserChanged;
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
     }
 
 }
