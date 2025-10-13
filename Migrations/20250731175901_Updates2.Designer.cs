@@ -152,7 +152,7 @@ namespace ReachingOutDB.Migrations
                     b.Property<int?>("UpsQtyQ4")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("VariableQty")
+                    b.Property<bool>("VariableOrders")
                         .HasColumnType("boolean");
 
                     b.Property<int?>("YearlyBillingQuarter")
@@ -176,7 +176,7 @@ namespace ReachingOutDB.Migrations
                             QtyQ3 = 0,
                             QtyQ4 = 0,
                             SpecialNoteUPS = false,
-                            VariableQty = false
+                            VariableOrders = false
                         });
                 });
 

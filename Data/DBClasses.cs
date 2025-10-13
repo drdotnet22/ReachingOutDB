@@ -11,11 +11,13 @@ namespace ReachingOutDB.Data
         public string CustomerName { get; set; }
         public string Location { get; set; }
         public bool Active { get; set; }
-        public int QtyQ1 { get; set; }
-        public int QtyQ2 { get; set; }
-        public int QtyQ3 { get; set; }
-        public int QtyQ4 { get; set; }
-        public bool VariableQty { get; set; }
+        public int? Qty { get; set; }
+        public int? QtyQ1 { get; set; }
+        public int? QtyQ2 { get; set; }
+        public int? QtyQ3 { get; set; }
+        public int? QtyQ4 { get; set; }
+        public bool VariableOrders { get; set; }
+        public string? Notes { get; set; }
         public string? NotesQ1 { get; set; }
         public string? NotesQ2 { get; set; }
         public string? NotesQ3 { get; set; }
@@ -66,7 +68,7 @@ namespace ReachingOutDB.Data
         public Customer Customer { get; set; }
         public Quarter Quarter { get; set; }
         public JobStatus JobStatus { get; set; }
-        public int Qty { get; set; } = 0;
+        public int Qty { get; set; }
         public string? SpecialNotes { get; set; }
         public string? NotesForInvoicing { get; set; }
         public bool? YearlyBilling { get; set; }

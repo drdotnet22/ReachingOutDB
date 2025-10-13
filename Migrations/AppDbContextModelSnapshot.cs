@@ -89,6 +89,9 @@ namespace ReachingOutDB.Migrations
                     b.Property<string>("MailingNotes")
                         .HasColumnType("text");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
                     b.Property<string>("NotesQ1")
                         .HasColumnType("text");
 
@@ -119,16 +122,19 @@ namespace ReachingOutDB.Migrations
                     b.Property<int?>("PostalQtyQ4")
                         .HasColumnType("integer");
 
-                    b.Property<int>("QtyQ1")
+                    b.Property<int?>("Qty")
                         .HasColumnType("integer");
 
-                    b.Property<int>("QtyQ2")
+                    b.Property<int?>("QtyQ1")
                         .HasColumnType("integer");
 
-                    b.Property<int>("QtyQ3")
+                    b.Property<int?>("QtyQ2")
                         .HasColumnType("integer");
 
-                    b.Property<int>("QtyQ4")
+                    b.Property<int?>("QtyQ3")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("QtyQ4")
                         .HasColumnType("integer");
 
                     b.Property<bool>("SpecialNoteUPS")
@@ -149,7 +155,7 @@ namespace ReachingOutDB.Migrations
                     b.Property<int?>("UpsQtyQ4")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("VariableQty")
+                    b.Property<bool>("VariableOrders")
                         .HasColumnType("boolean");
 
                     b.Property<int?>("YearlyBillingQuarter")
@@ -173,7 +179,7 @@ namespace ReachingOutDB.Migrations
                             QtyQ3 = 0,
                             QtyQ4 = 0,
                             SpecialNoteUPS = false,
-                            VariableQty = false
+                            VariableOrders = false
                         });
                 });
 

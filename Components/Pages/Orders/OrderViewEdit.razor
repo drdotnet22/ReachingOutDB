@@ -13,7 +13,7 @@
         </SfDropDownList>
         @if (ThisOrder.OrderId != Guid.Empty)
         {
-            <SfNumericTextBox @bind-Value="ThisOrder.Qty" Readonly="@(!Editable)" Placeholder="Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" />
+            <SfNumericTextBox @bind-Value="ThisOrder.Qty" Readonly="true" Placeholder="Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" />
             <SfDropDownList TItem="string" TValue="JobStatus"
                             @bind-Value="ThisOrder.JobStatus"
                             DataSource="jobStatusValues"

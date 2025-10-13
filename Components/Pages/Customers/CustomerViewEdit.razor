@@ -11,29 +11,43 @@
             </div>
         </CardContent>
     </SfCard>
-    <SfCard>
-        <CardContent>
-            <div class="myflexrow">
-                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ1)" Placeholder="Quantity Q1" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="@(!Editable)" />
-                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ1)" Placeholder="Notes for Q1" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
-            </div>
-            <div class="myflexrow">
-                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ2)" Placeholder="Quantity Q2" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="@(!Editable)" />
-                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ2)" Placeholder="Notes for Q2" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
-            </div>
-            <div class="myflexrow">
-                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ3)" Placeholder="Quantity Q3" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="@(!Editable)" />
-                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ3)" Placeholder="Notes for Q3" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
-            </div>
-            <div class="myflexrow">
-                <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ4)" Placeholder="Quantity Q4" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="@(!Editable)" />
-                <SfTextArea @bind-Value="@(ThisCustomer.NotesQ4)" Placeholder="Notes for Q4" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
-            </div>
-        </CardContent>
-    </SfCard>
+    @if (ThisCustomer.VariableOrders)
+    {
+        <SfCard>
+            <CardContent>
+                <div class="myflexrow">
+                    <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ1)" Placeholder="Quantity Q1" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="true" />
+                    <SfTextArea @bind-Value="@(ThisCustomer.NotesQ1)" Placeholder="Notes for Q1" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
+                </div>
+                <div class="myflexrow">
+                    <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ2)" Placeholder="Quantity Q2" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="true" />
+                    <SfTextArea @bind-Value="@(ThisCustomer.NotesQ2)" Placeholder="Notes for Q2" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
+                </div>
+                <div class="myflexrow">
+                    <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ3)" Placeholder="Quantity Q3" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="true" />
+                    <SfTextArea @bind-Value="@(ThisCustomer.NotesQ3)" Placeholder="Notes for Q3" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
+                </div>
+                <div class="myflexrow">
+                    <SfNumericTextBox ID="QtyQ1" @bind-Value="@(ThisCustomer.QtyQ4)" Placeholder="Quantity Q4" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="true" />
+                    <SfTextArea @bind-Value="@(ThisCustomer.NotesQ4)" Placeholder="Notes for Q4" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
+                </div>
+            </CardContent>
+        </SfCard>
+    }
+    else
+    {
+        <SfCard>
+            <CardContent>
+                <div class="myflexrow">
+                    <SfNumericTextBox ID="Qty" @bind-Value="@(ThisCustomer.Qty)" Placeholder="Quantity" FloatLabelType="FloatLabelType.Always" Width="100px" ShowSpinButton="false" Readonly="true" />
+                    <SfTextArea @bind-Value="@(ThisCustomer.Notes)" Placeholder="Notes" RowCount="1" ColumnCount="100" FloatLabelType="FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" Readonly="@(!Editable)" />
+                </div>
+            </CardContent>
+        </SfCard>
+    }
 
     <SfCheckBox @bind-Checked="@(ThisCustomer.Active)" Label="Active Customer" Disabled="@(!Editable)"/>
-    <SfCheckBox @bind-Checked="@(ThisCustomer.VariableQty)" Label="Variable Quantity" Disabled="@(!Editable)" />
+    <SfCheckBox @bind-Checked="@(ThisCustomer.VariableOrders)" Label="Variable Quantity" Disabled="@(!Editable)" />
     <SfCheckBox @bind-Checked="@(ThisCustomer.CustomBP)" Label="Custom Back Page" Disabled="@(!Editable)" />
     <SfCheckBox @bind-Checked="@(ThisCustomer.SpecialNoteUPS)" Label="Special Notes for UPS shipping" Disabled="@(!Editable)" />
     <SfDropDownList TItem="string" TValue="Quarter?"
@@ -44,7 +58,7 @@
                     ShowClearButton="true" 
                     Readonly="@(!Editable)">
     </SfDropDownList>
-    @if (ThisCustomer.VariableQty)
+    @if (ThisCustomer.VariableOrders)
     {
         <div class="myflexrow">
             <SfCard>

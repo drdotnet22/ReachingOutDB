@@ -12,15 +12,15 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250731151757_Update1")]
-    partial class Update1
+    [Migration("20251013140155_SimplifyCustomerQtyAndNotes")]
+    partial class SimplifyCustomerQtyAndNotes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -92,6 +92,9 @@ namespace ReachingOutDB.Migrations
                     b.Property<string>("MailingNotes")
                         .HasColumnType("text");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
                     b.Property<string>("NotesQ1")
                         .HasColumnType("text");
 
@@ -120,6 +123,9 @@ namespace ReachingOutDB.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int?>("PostalQtyQ4")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Qty")
                         .HasColumnType("integer");
 
                     b.Property<int>("QtyQ1")
@@ -171,6 +177,7 @@ namespace ReachingOutDB.Migrations
                             CustomerName = "Mennonite Church",
                             Location = "PA",
                             MailingNotes = "test",
+                            Qty = 0,
                             QtyQ1 = 0,
                             QtyQ2 = 0,
                             QtyQ3 = 0,
@@ -215,8 +222,14 @@ namespace ReachingOutDB.Migrations
                     b.Property<bool>("BpUpdate")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("CustomBP")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal?>("DmCost")
+                        .HasColumnType("numeric");
 
                     b.Property<int?>("DmQty")
                         .HasColumnType("integer");
@@ -293,6 +306,7 @@ namespace ReachingOutDB.Migrations
                             OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"),
                             Archived = false,
                             BpUpdate = false,
+                            CustomBP = false,
                             CustomerId = 2000,
                             JobStatus = 1,
                             Qty = 0,

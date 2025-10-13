@@ -26,7 +26,7 @@ namespace ReachingOutDB.Migrations
                     QtyQ2 = table.Column<int>(type: "integer", nullable: false),
                     QtyQ3 = table.Column<int>(type: "integer", nullable: false),
                     QtyQ4 = table.Column<int>(type: "integer", nullable: false),
-                    VariableQty = table.Column<bool>(type: "boolean", nullable: false),
+                    VariableOrders = table.Column<bool>(type: "boolean", nullable: false),
                     NotesQ1 = table.Column<string>(type: "text", nullable: true),
                     NotesQ2 = table.Column<string>(type: "text", nullable: true),
                     NotesQ3 = table.Column<string>(type: "text", nullable: true),
@@ -273,7 +273,7 @@ namespace ReachingOutDB.Migrations
 
             migrationBuilder.InsertData(
                 table: "Customers",
-                columns: new[] { "CustomerId", "Active", "CustomBP", "CustomerName", "DmQty", "DmQtyQ1", "DmQtyQ2", "DmQtyQ3", "DmQtyQ4", "IntlQty", "IntlQtyQ1", "IntlQtyQ2", "IntlQtyQ3", "IntlQtyQ4", "Location", "LtlQty", "LtlQtyQ1", "LtlQtyQ2", "LtlQtyQ3", "LtlQtyQ4", "MailingNotes", "NotesQ1", "NotesQ2", "NotesQ3", "NotesQ4", "PackageId", "PostalQty", "PostalQtyQ1", "PostalQtyQ2", "PostalQtyQ3", "PostalQtyQ4", "QtyQ1", "QtyQ2", "QtyQ3", "QtyQ4", "SpecialNoteUPS", "UpsQty", "UpsQtyQ1", "UpsQtyQ2", "UpsQtyQ3", "UpsQtyQ4", "VariableQty", "YearlyBillingQuarter" },
+                columns: new[] { "CustomerId", "Active", "CustomBP", "CustomerName", "DmQty", "DmQtyQ1", "DmQtyQ2", "DmQtyQ3", "DmQtyQ4", "IntlQty", "IntlQtyQ1", "IntlQtyQ2", "IntlQtyQ3", "IntlQtyQ4", "Location", "LtlQty", "LtlQtyQ1", "LtlQtyQ2", "LtlQtyQ3", "LtlQtyQ4", "MailingNotes", "NotesQ1", "NotesQ2", "NotesQ3", "NotesQ4", "PackageId", "PostalQty", "PostalQtyQ1", "PostalQtyQ2", "PostalQtyQ3", "PostalQtyQ4", "QtyQ1", "QtyQ2", "QtyQ3", "QtyQ4", "SpecialNoteUPS", "UpsQty", "UpsQtyQ1", "UpsQtyQ2", "UpsQtyQ3", "UpsQtyQ4", "VariableOrders", "YearlyBillingQuarter" },
                 values: new object[] { 2000, true, false, "Mennonite Church", null, null, null, null, null, null, null, null, null, null, "PA", null, null, null, null, null, "test", null, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, false, null, null, null, null, null, false, null });
 
             migrationBuilder.InsertData(

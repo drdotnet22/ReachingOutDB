@@ -525,7 +525,8 @@ else
             ExcelExportProperties ExportProperties = new ExcelExportProperties
             {
                 IncludeTemplateColumn = true,
-                IncludeHiddenColumn = true
+                IncludeHiddenColumn = true,
+                IncludeCommandColumn = false
             };
             await Grid.ExportToCsvAsync(ExportProperties);
         }

@@ -85,26 +85,7 @@ namespace ReachingOutDB.Data
                     order.Customer = customer;
                     order.Quarter = quarter;
                     order.JobStatus = JobStatus.ReadyToPlate;
-                    if (quarter == Quarter.Q1)
-                    { 
-                        order.Qty = customer.QtyQ1;
-                        order.SpecialNotes = customer.NotesQ1;
-                    }
-                    else if (quarter == Quarter.Q2)
-                    {
-                        order.Qty = customer.QtyQ2;
-                        order.SpecialNotes = customer.NotesQ2;
-                    }
-                    else if(quarter == Quarter.Q3)
-                    {
-                        order.Qty = customer.QtyQ3;
-                        order.SpecialNotes = customer.NotesQ3;
-                    }
-                    else if (quarter == Quarter.Q4)
-                    {
-                        order.Qty = customer.QtyQ4;
-                        order.SpecialNotes = customer.NotesQ4;
-                    }
+                    
                     if (customer.YearlyBillingQuarter != null)
                     {
                         order.YearlyBilling = (customer.YearlyBillingQuarter == quarter) ? true : null;
@@ -116,10 +97,12 @@ namespace ReachingOutDB.Data
                     order.BpUpdate = false;
                     order.CustomBP = customer.CustomBP;
                     order.Archived = false;
-                    if (customer.VariableQty)
+                    if (customer.VariableOrders)
                     {
                         if (quarter == Quarter.Q1)
                         {
+                            order.Qty = (int)customer.QtyQ1;
+                            order.SpecialNotes = customer.NotesQ1;
                             order.DmQty = customer.DmQtyQ1;
                             order.UpsQty = customer.UpsQtyQ1;
                             order.PostalQty = customer.PostalQtyQ1;
@@ -128,6 +111,8 @@ namespace ReachingOutDB.Data
                         }
                         else if (quarter == Quarter.Q2)
                         {
+                            order.Qty = (int)customer.QtyQ2;
+                            order.SpecialNotes = customer.NotesQ2;
                             order.DmQty = customer.DmQtyQ2;
                             order.UpsQty = customer.UpsQtyQ2;
                             order.PostalQty = customer.PostalQtyQ2;
@@ -136,6 +121,8 @@ namespace ReachingOutDB.Data
                         }
                         else if (quarter == Quarter.Q3)
                         {
+                            order.Qty = (int)customer.QtyQ3;
+                            order.SpecialNotes = customer.NotesQ3;
                             order.DmQty = customer.DmQtyQ3;
                             order.UpsQty = customer.UpsQtyQ3;
                             order.PostalQty = customer.PostalQtyQ3;
@@ -144,6 +131,8 @@ namespace ReachingOutDB.Data
                         }
                         else if (quarter == Quarter.Q4)
                         {
+                            order.Qty = (int)customer.QtyQ4;
+                            order.SpecialNotes = customer.NotesQ4;
                             order.DmQty = customer.DmQtyQ4;
                             order.UpsQty = customer.UpsQtyQ4;
                             order.PostalQty = customer.PostalQtyQ4;
@@ -153,6 +142,8 @@ namespace ReachingOutDB.Data
                     }
                     else
                     {
+                        order.Qty = (int)customer.Qty;
+                        order.SpecialNotes = customer.Notes;
                         order.DmQty = customer.DmQty;
                         order.UpsQty = customer.UpsQty;
                         order.PostalQty = customer.PostalQty;
@@ -186,6 +177,10 @@ namespace ReachingOutDB.Data
                 {
                     throw new InvalidOperationException($"Order with ID {updatedOrder.OrderId} not found.");
                 }
+
+                //Calculate quantity
+                updatedOrder.Qty = (updatedOrder.UpsQty ?? 0) + (updatedOrder.PostalQty ?? 0) + 
+                    (updatedOrder.LtlQty ?? 0) + (updatedOrder.IntlQty ?? 0) + (updatedOrder.DmQty ?? 0);
 
                 // Check if any shipping cost fields changed
                 if (originalOrder.UpsCost != updatedOrder.UpsCost ||
