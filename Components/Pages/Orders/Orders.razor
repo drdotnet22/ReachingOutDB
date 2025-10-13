@@ -20,18 +20,17 @@
             @if (userService.CurrentUser.Role == UserRole.Admin)
             {
                 <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
-                <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" />
-                <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" />
-                <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" />
-                <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem>
                     <Template>
                         <div class="myflexrow">
-                            <span>Billing mode:</span>
-                            <SfSwitch @bind-Checked="billingColumnsVisible" />
+                            <span>Admin mode:</span>
+                            <SfSwitch @bind-Checked="superAdmin" />
                         </div>
                     </Template>
                 </ToolbarItem>
+                <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" Visible="@superAdmin" />
+                <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" Visible="@superAdmin" />
+                <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" Visible="@superAdmin" />
                 <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem>
                     <Template>
@@ -154,7 +153,7 @@
             </GridColumn>
             <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" FilterSettings="new FilterSettings{ Operator = Operator.Contains }" />
             <GridColumn Field="@nameof(Order.CustomBP)" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
-            <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="100" Visible="@billingColumnsVisible">
+            <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
                 <Template>
                     @{
                         var order = (context as Order);
@@ -163,7 +162,7 @@
                     }
                 </Template>
             </GridColumn>
-            <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="100" Visible="@billingColumnsVisible">
+            <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
                 <Template>
                     @{
                         var order = (context as Order);
@@ -172,14 +171,14 @@
                     }
                 </Template>
             </GridColumn>
-            <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@billingColumnsVisible" />
-            <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@billingColumnsVisible" />
-            <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="60" TextAlign="TextAlign.Right" />
+            <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
+            <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
+            <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="70" TextAlign="TextAlign.Right" />
             <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />
-            <GridColumn Field="Customer.Location" HeaderText="Customer Location" Visible="false" />
-            <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@billingColumnsVisible" />
+            <GridColumn Field="Customer.Location" HeaderText="Location" Visible="@superAdmin" />
+            <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@superAdmin" />
             <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
-            <GridColumn Width="60" Visible="@billingColumnsVisible">
+            <GridColumn Width="60" Visible="@superAdmin">
                 <GridCommandColumns>
                     <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
                 </GridCommandColumns>
@@ -274,7 +273,7 @@ else
     public IEnumerable<Order> filteredOrders { get; set; }
     public IEnumerable<Customer> customers { get; set; }
     public string[] jobStatValues = JobStatus.GetNames(typeof(JobStatus));
-    public bool billingColumnsVisible = false;
+    public bool superAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
