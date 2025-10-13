@@ -116,12 +116,12 @@
                 </CardContent>
             </SfCard>
         </div>
-        <div class="myflexrow">
-            <div style="display:flex; gap: 0px; width:300px;">
+        <div class="myflexrow" style="gap:25px">
+            <div style="display:flex; gap: 0px; width:300px; align-items: flex-end;">
                 <SfNumericTextBox @bind-Value="ThisOrder.PubShipping" Readonly="true" Placeholder="Calculated Shipping Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
                 <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" Appearance="Appearance.Outline" OnClick="@RecalculateShipping" />
             </div>
-            <div style="display:flex; gap: 0px; width:300px;">
+            <div style="display:flex; gap: 0px; width:300px; align-items: flex-end;">
                 <SfNumericTextBox @bind-Value="ThisOrder.PubUsps" Placeholder="Calculated Postage Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
                 <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" Appearance="Appearance.Outline" OnClick="@RecalculatePostage" />
             </div>

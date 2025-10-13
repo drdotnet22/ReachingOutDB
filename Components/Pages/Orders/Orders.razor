@@ -315,24 +315,25 @@ else
         if (selectedShipMethods?.Length > 0)
         {
             gridFiltered = true;
+            var localShipMethods = selectedShipMethods; //Important because Where is a deferred Linq query that can be run at a later time and if ship methods changes to null it misses that check.
             filteredOrders = filteredOrders.Where(o =>
             {
-                bool matches = false;
+                bool matches = true;
 
-                if (selectedShipMethods.Contains("DM") && o.DmQty.HasValue && o.DmQty > 0)
-                    matches = true;
+                if (localShipMethods.Contains("DM"))
+                    matches = matches && o.DmQty.HasValue && o.DmQty > 0;
 
-                if (selectedShipMethods.Contains("UPS") && o.UpsQty.HasValue && o.UpsQty > 0)
-                    matches = true;
+                if (localShipMethods.Contains("UPS"))
+                    matches = matches && o.UpsQty.HasValue && o.UpsQty > 0;
 
-                if (selectedShipMethods.Contains("USPS") && o.PostalQty.HasValue && o.PostalQty > 0)
-                    matches = true;
+                if (localShipMethods.Contains("USPS"))
+                    matches = matches && o.PostalQty.HasValue && o.PostalQty > 0;
 
-                if (selectedShipMethods.Contains("INTL") && o.IntlQty.HasValue && o.IntlQty > 0)
-                    matches = true;
+                if (localShipMethods.Contains("INTL"))
+                    matches = matches && o.IntlQty.HasValue && o.IntlQty > 0;
 
-                if (selectedShipMethods.Contains("LTL") && o.LtlQty.HasValue && o.LtlQty > 0)
-                    matches = true;
+                if (localShipMethods.Contains("LTL"))
+                    matches = matches && o.LtlQty.HasValue && o.LtlQty > 0;
 
                 return matches;
             });
