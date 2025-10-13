@@ -1,9 +1,9 @@
 ﻿@using ReachingOutDB.Data
 @using Syncfusion.Blazor.MultiColumnComboBox
+@inject OrderServices orderService
 
-
-<div class="flexcolumn">
-    <div class="flexrow">
+<div class="myflexcolumn">
+    <div class="myflexrow">
         <SfNumericTextBox @bind-Value="ThisOrder.Year" Readonly="@(!Editable)" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="####" ShowSpinButton="false" />
         <SfDropDownList TItem="string" TValue="Quarter" 
             @bind-Value="ThisOrder.Quarter"
@@ -58,7 +58,7 @@
 
     @if (ThisOrder.OrderId != Guid.Empty)
     {
-        <div class="flexrow">
+        <div class="myflexrow">
             <SfTextArea @bind-Value="ThisOrder.SpecialNotes" Placeholder="Special Notes" Readonly="@(!Editable)" RowCount="1" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
             <SfTextArea @bind-Value="ThisOrder.NotesForInvoicing" Placeholder="Notes for invoicing" Readonly="@(!Editable)" RowCount="1" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
             @if (ThisOrder.JobStatus == JobStatus.OnHold)
@@ -69,20 +69,20 @@
         <SfCheckBox @bind-Checked="ThisOrder.YearlyBilling" Label="Yearly Billing" Disabled="@(!Editable)" />
         <SfCheckBox @bind-Checked="ThisOrder.BpUpdate" Label="Backpage Update" Disabled="@(!Editable)" />
         <SfCheckBox @bind-Checked="ThisOrder.CustomBP" Label="Custom back page" Disabled="@(!Editable)" />
-        <div class="flexrow">
+        <div class="myflexrow">
             <SfCard>
                 <CardHeader Title="Direct Mail Details" />
                 <CardContent>
-                    <div class="flexcolumn">
+                    <div class="myflexcolumn">
                         <SfNumericTextBox @bind-Value="ThisOrder.DmQty" Readonly="@(!Editable)" Placeholder="Direct Mail Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
-                        <SfNumericTextBox @bind-Value="ThisOrder.PubUsps" Readonly="@(!Editable)" Placeholder="DM calculated amount" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
+                        <SfNumericTextBox @bind-Value="ThisOrder.DmCost" Readonly="@(!Editable)" Placeholder="DM calculated amount" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
                     </div>
                 </CardContent>
             </SfCard>
             <SfCard>
                 <CardHeader Title="UPS Details" />
                 <CardContent>
-                    <div class="flexcolumn">
+                    <div class="myflexcolumn">
                         <SfNumericTextBox @bind-Value="ThisOrder.UpsQty" Readonly="@(!Editable)" Placeholder="UPS Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
                         <SfNumericTextBox @bind-Value="ThisOrder.UpsCost" Readonly="@(!Editable)" Placeholder="UPS Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
                     </div>
@@ -91,7 +91,7 @@
             <SfCard>
                 <CardHeader Title="Postal Package Details" />
                 <CardContent>
-                    <div class="flexcolumn">
+                    <div class="myflexcolumn">
                         <SfNumericTextBox @bind-Value="ThisOrder.PostalQty" Readonly="@(!Editable)" Placeholder="Postal Package Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
                         <SfNumericTextBox @bind-Value="ThisOrder.PostalCost" Readonly="@(!Editable)" Placeholder="Postal Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
                     </div>
@@ -100,7 +100,7 @@
             <SfCard>
                 <CardHeader Title="LTL Details" />
                 <CardContent>
-                    <div class="flexcolumn">
+                    <div class="myflexcolumn">
                         <SfNumericTextBox @bind-Value="ThisOrder.LtlQty" Readonly="@(!Editable)" Placeholder="LTL Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
                         <SfNumericTextBox @bind-Value="ThisOrder.LTLCost" Readonly="@(!Editable)" Placeholder="LTL Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
                     </div>
@@ -109,18 +109,24 @@
             <SfCard>
                 <CardHeader Title="INTL Details" />
                 <CardContent>
-                    <div class="flexcolumn">
+                    <div class="myflexcolumn">
                         <SfNumericTextBox @bind-Value="ThisOrder.IntlQty" Readonly="@(!Editable)" Placeholder="INTL Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
                         <SfNumericTextBox @bind-Value="ThisOrder.IntlCost" Readonly="@(!Editable)" Placeholder="INTL Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
                     </div>
                 </CardContent>
             </SfCard>
         </div>
-        <div class="flexrow">
-            <SfNumericTextBox @bind-Value="ThisOrder.PubShipping" Readonly="true" Placeholder="Calculated Shipping Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
-            <SfNumericTextBox @bind-Value="ThisOrder.PubUsps" Placeholder="Calculated Postage Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+        <div class="myflexrow">
+            <div style="display:flex; gap: 0px; width:300px;">
+                <SfNumericTextBox @bind-Value="ThisOrder.PubShipping" Readonly="true" Placeholder="Calculated Shipping Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+                <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" Appearance="Appearance.Outline" OnClick="@RecalculateShipping" />
+            </div>
+            <div style="display:flex; gap: 0px; width:300px;">
+                <SfNumericTextBox @bind-Value="ThisOrder.PubUsps" Placeholder="Calculated Postage Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+                <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" Appearance="Appearance.Outline" OnClick="@RecalculatePostage" />
+            </div>
         </div>
-        <div class="flexrow">
+        <div class="myflexrow">
             <SfNumericTextBox @bind-Value="ThisOrder.PpOrderNumber" Readonly="@(!Editable)" Placeholder="Printers Plan Order Number" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="#####" ShowSpinButton="false" ShowClearButton="true" Width="200px" />
         </div>
         <SfCheckBox @bind-Checked="ThisOrder.Archived" Label="Archived" Disabled="@(!Editable)" />
@@ -136,20 +142,14 @@
 
     public string[] quarterValues = Quarter.GetNames(typeof(Quarter));
     public string[] jobStatusValues = JobStatus.GetNames(typeof(JobStatus));
+
+    private async Task RecalculatePostage()
+    {
+        ThisOrder = await orderService.CalculatePublishedPostageAsync(ThisOrder);
+    }
+
+    private async Task RecalculateShipping()
+    {
+        ThisOrder = await orderService.CalculatePublishedShippingAsync(ThisOrder);
+    }
 }
-
-<style>
-    .flexrow {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 15px;
-    }
-
-    .flexcolumn {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-</style>

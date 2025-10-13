@@ -76,6 +76,7 @@ namespace ReachingOutDB.Data
         public bool CustomBP {  get; set; }
         //DM
         public int? DmQty { get; set; }
+        public decimal? DmCost { get; set; }
         //UPS
         public int? UpsQty { get; set; }
         public decimal? UpsCost { get; set; }

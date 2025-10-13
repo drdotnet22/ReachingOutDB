@@ -193,9 +193,14 @@ namespace ReachingOutDB.Data
                     originalOrder.LTLCost != updatedOrder.LTLCost)
                 {
                     // Recalculate shipping (this now only updates the order object, doesn't save)
-                    await CalculatePublishedShippingAsync(updatedOrder);
+                    updatedOrder = await CalculatePublishedShippingAsync(updatedOrder);
                 }
 
+                if (originalOrder.PostalCost != updatedOrder.PostalCost ||
+                    originalOrder.DmCost != updatedOrder.DmCost)
+                {
+                    updatedOrder = await CalculatePublishedPostageAsync(updatedOrder);
+                }
                 await auditLogServices.LogOrderChangesAsync(originalOrder, updatedOrder);
                 dbContext.Orders.Update(updatedOrder);
                 await dbContext.SaveChangesAsync();
@@ -228,23 +233,39 @@ namespace ReachingOutDB.Data
             }
         }
 
-        private async Task CalculatePublishedPostageAsync(Order order)
+        public async Task<Order> CalculatePublishedPostageAsync(Order order)
         {
-            if (!order.DmQty.HasValue ||  order.DmQty.Value < 1)
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            var originalVal = order.PubUsps;
+            decimal? pubUsps = 0m;
+            try
             {
-                var dbContext = await contextFactory.CreateDbContextAsync();
-                var originalVal = order.PubUsps;
-                var uspsShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "USPS");
-                int numberOfBoxes = (order.PostalQty.Value + uspsShipSettings.QuantityPerBox - 1) / uspsShipSettings.QuantityPerBox;
-                order.PubUsps = order.PostalCost + (order.PostalCost * uspsShipSettings.MarkupPercentage) + (uspsShipSettings.PerBoxFee * numberOfBoxes);
-                if (order.PubUsps != originalVal)
+                if (!order.DmCost.HasValue)
                 {
-                    await UpdateOrderAsync(order);
+                    var uspsShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "USPS");
+                    int numberOfBoxes = (order.PostalQty.Value + uspsShipSettings.QuantityPerBox - 1) / uspsShipSettings.QuantityPerBox;
+                    pubUsps = order.PostalCost + (order.PostalCost * uspsShipSettings.MarkupPercentage) + (uspsShipSettings.PerBoxFee * numberOfBoxes);
                 }
+                else
+                {
+                    pubUsps = order.DmCost;
+                }
+
+                if (pubUsps != originalVal)
+                {
+                    order.PubUsps = pubUsps;
+                }
+
+                return order;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return order;
             }
         }
 
-        private async Task CalculatePublishedShippingAsync(Order order)
+        public async Task<Order> CalculatePublishedShippingAsync(Order order)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
 
@@ -252,7 +273,7 @@ namespace ReachingOutDB.Data
             {
                 decimal pubShip = 0m;
 
-                if (order.UpsCost != null)
+                if (order.UpsCost.HasValue)
                 {
                     var upsShipSettings = await dbContext.ShippingSettings
                         .FirstOrDefaultAsync(s => s.Name == "UPS");
@@ -269,7 +290,7 @@ namespace ReachingOutDB.Data
                     }
                 }
 
-                if (order.IntlCost != null)
+                if (order.IntlCost.HasValue)
                 {
                     var intlShipSettings = await dbContext.ShippingSettings
                         .FirstOrDefaultAsync(s => s.Name == "INTL");
@@ -280,7 +301,7 @@ namespace ReachingOutDB.Data
                               (intlShipSettings.PerBoxFee * numberOfBoxes);
                 }
 
-                if (order.LTLCost != null)
+                if (order.LTLCost.HasValue)
                 {
                     var ltlShipSettings = await dbContext.ShippingSettings
                         .FirstOrDefaultAsync(s => s.Name == "LTL");
@@ -293,10 +314,12 @@ namespace ReachingOutDB.Data
 
                 // Just update the property, don't save
                 order.PubShipping = pubShip;
+                return order;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                return order;
             }
         }
 
@@ -325,7 +348,7 @@ namespace ReachingOutDB.Data
                         var customerId = int.Parse(row["Order Number"].ToString());
                         var order = orders.FirstOrDefault(o => o.CustomerId == customerId);
                         order.PostalCost = (order.PostalCost ?? 0) + Convert.ToDecimal(row["Cost"].ToString());
-                        await CalculatePublishedPostageAsync(order);
+                        await UpdateOrderAsync(order);
                         successMessage += $"Added postage cost for {order.Customer.CustomerName} - {customerId}{Environment.NewLine}";
                         successCt++;
                     }

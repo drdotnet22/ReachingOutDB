@@ -204,3 +204,8 @@ code {
     gap: 15px;
 }
 
+.row-nospacing {
+    display: flex;
+    gap: 0;
+}
+
