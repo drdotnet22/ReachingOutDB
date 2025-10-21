@@ -5,13 +5,8 @@
 
 @inject PlateServices plateService
 @inject OrderServices orderService
-
-
-<div class="myflexrow">
-    <YearQuarterSelector @bind-SelectedYear="selectedYear" @bind-SelectedQuarter="selectedQuarter" />
-    <SfButton IconCss="e-icons e-refresh" CssClass="e-small e-round" OnClick="RefreshPlates"></SfButton>
-</div>
-<br />
+@inject YearQuarterService yearQuarterService
+@implements IDisposable
 
 
 @if (filteredPlates != null)
@@ -132,18 +127,17 @@ else
     <span>No plates to list.</span>
 }
 @code {
-    public int selectedYear { get; set; }
     public int blankSheets { get; set; }
     public int blanksNeeded { get; set; }
     public int platedOrderTotal { get; set; }
     public double efficiency { get; set; }
-    public Quarter selectedQuarter { get; set; }
     public IEnumerable<Plate> filteredPlates { get; set; }
     public IEnumerable<Order> unplatedOrders { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshPlates();
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
         await base.OnInitializedAsync();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -157,7 +151,7 @@ else
 
     public async Task RefreshPlates()
     {
-        IEnumerable<Order> orders = await orderService.GetOrdersIncludePlateAssignmentsAsync(selectedYear, selectedQuarter);
+        IEnumerable<Order> orders = await orderService.GetOrdersIncludePlateAssignmentsAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         blanksNeeded = orders
             .Where(o => o.Qty < 1000)
             .Where(o => !o.PlateAssignments.Any())
@@ -167,8 +161,7 @@ else
             .Where(o => o.PlateAssignments.Any())
             .Sum(o => o.Qty);
 
-
-        filteredPlates = await plateService.GetFilteredPlatesAsync(selectedYear, selectedQuarter);
+        filteredPlates = await plateService.GetFilteredPlatesAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         blankSheets = filteredPlates
             .SelectMany(p => p.PlateAssignments)
             .Where(pa => pa.IsBlank == true)
@@ -190,6 +183,16 @@ else
     {
         await plateService.DeletePlateAsync(plate);
         await RefreshPlates();
+    }
+
+    private async void YearQuarterChanged()
+    {
+        await RefreshPlates();
+    }
+
+    public void Dispose()
+    {
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
     }
 }
 
