@@ -9,7 +9,6 @@ namespace ReachingOutDB.Data
     {
         #region Private members
         private IDbContextFactory<AppDbContext> contextFactory;
-        private OrderAuditLogServices auditLogServices;
         #endregion
 
         #region Constructor
@@ -22,7 +21,14 @@ namespace ReachingOutDB.Data
         public async Task<IEnumerable<Customer>> GetCustomersAsync()
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
-            return await dbContext.Customers.OrderBy(c => c.CustomerName).ToListAsync();
+            try
+            {
+                return await dbContext.Customers.OrderBy(c => c.CustomerName).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task AddCustomerAsync(Customer customer)

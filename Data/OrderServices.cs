@@ -9,13 +9,15 @@ namespace ReachingOutDB.Data
         #region Private members
         private IDbContextFactory<AppDbContext> contextFactory;
         private OrderAuditLogServices auditLogServices;
+        private CustomerServices customerServices;
         #endregion
 
         #region Constructor
-        public OrderServices(IDbContextFactory<AppDbContext> contextFactory, OrderAuditLogServices auditLogServices)
+        public OrderServices(IDbContextFactory<AppDbContext> contextFactory, OrderAuditLogServices auditLogServices, CustomerServices customerServices)
         {
             this.contextFactory = contextFactory;
             this.auditLogServices = auditLogServices;
+            this.customerServices = customerServices;
         }
         #endregion
 
@@ -196,6 +198,16 @@ namespace ReachingOutDB.Data
                 {
                     updatedOrder = await CalculatePublishedPostageAsync(updatedOrder);
                 }
+
+                if (originalOrder.DmQty != updatedOrder.DmQty)
+                {
+                    if (!updatedOrder.Customer.VariableOrders)
+                    {
+                        Customer customer = updatedOrder.Customer;
+                        customer.DmQty = updatedOrder.DmQty;
+                        await customerServices.UpdateCustomerAsync(customer);
+                    }
+                }
                 await auditLogServices.LogOrderChangesAsync(originalOrder, updatedOrder);
                 dbContext.Orders.Update(updatedOrder);
                 await dbContext.SaveChangesAsync();
@@ -280,7 +292,7 @@ namespace ReachingOutDB.Data
 
                     if (numberOfBoxes > upsShipSettings.BoxDiscountThreshold.Value)
                     {
-                        pubShip -= (numberOfBoxes / upsShipSettings.BoxDiscountThreshold.Value - 1) *
+                        pubShip -= ((decimal)numberOfBoxes / upsShipSettings.BoxDiscountThreshold.Value - 1) *
                                   upsShipSettings.BoxDiscountPercentage.Value * order.UpsCost.Value;
                     }
                 }
