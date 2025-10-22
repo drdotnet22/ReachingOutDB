@@ -7,10 +7,12 @@
 
 <PageTitle>Customers - Reaching Out</PageTitle>
 
-<h3>Customers</h3>
-<div>
-    <label style="padding: 10px 10px 10px 0">Show Archived Customers</label>
-    <SfSwitch @bind-Checked="showArchivedCustomers" ValueChange="ChangeCustomerFilter" TChecked="bool" />
+<div class="flexrow" >
+    <h3 style="width:200px">Customers</h3>
+    <div>
+        <label style="padding: 10px 10px 10px 0">Show Archived Customers</label>
+        <SfSwitch @bind-Checked="showArchivedCustomers" ValueChange="ChangeCustomerFilter" TChecked="bool" />
+    </div>
 </div>
 <SfGrid @ref="Grid" DataSource="@filteredCustomers" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30" >
     <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Customer" />
@@ -31,6 +33,7 @@
         <GridColumn HeaderText="Location" Field="Location" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Variable Qty" Field="VariableOrders" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" />
         <GridColumn HeaderText="Customer BP" Field="CustomBP" TextAlign="TextAlign.Center" DisplayAsCheckBox="true"/>
+        <GridColumn HeaderText="Active" Field="Active" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" Visible="@showArchivedCustomers" />
 
         @if (userService.CurrentUser.Role == UserRole.Admin)
         {
