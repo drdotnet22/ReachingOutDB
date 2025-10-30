@@ -6,6 +6,7 @@
 @inject PlateServices plateService
 @inject OrderServices orderService
 @inject YearQuarterService yearQuarterService
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 
@@ -15,8 +16,13 @@
     <span>Blank plates needed: @blanksNeeded</span>
     <span>Blank sheets plated: @blankSheets</span><br/>
     <span>Efficiency: @efficiency.ToString("P1")</span>
-    <h3>PlateList</h3>
-    <div class="card-container">
+    <div class="myflexrow" style="align-items:center">
+        <h3>PlateList</h3>
+        <FluentButton Title="Print Plate List" OnClick="Print">
+            <FluentIcon Value="@(new Icons.Regular.Size20.Print())" Color="Color.Neutral" />
+        </FluentButton>
+    </div>
+    <div class="card-container" id="printArea">
         @foreach (var plate in filteredPlates)
         {
             bool onHold = plate.PlateAssignments?.Any(assignment =>
@@ -188,6 +194,11 @@ else
     private async void YearQuarterChanged()
     {
         await RefreshPlates();
+    }
+
+    private async Task Print()
+    {
+        await JSRuntime.InvokeVoidAsync("printElement", "printArea");
     }
 
     public void Dispose()
