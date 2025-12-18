@@ -19,30 +19,30 @@
 
        <FormTemplate>
             <div class="myflexcolumn">
-                <SfMultiColumnComboBox TItem="Customer" TValue="int" AllowFiltering="true"
-                                       FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
-                                       @bind-Value="ThisPackage.CustomerId"
-                                       DataSource="CustomerList"
-                                       ValueField="CustomerId"
-                                       TextField="CustomerName"
-                                       Width="400px"
-                                       ShowClearButton="false"
-                                       Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
-                    <MultiColumnComboboxColumns>
-                        <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
-                        <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
-                    </MultiColumnComboboxColumns>
-                </SfMultiColumnComboBox>
                 <div class="myflexrow">
+                    <SfMultiColumnComboBox TItem="Customer" TValue="int" AllowFiltering="true"
+                                           FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
+                                           @bind-Value="ThisPackage.CustomerId"
+                                           DataSource="CustomerList"
+                                           ValueField="CustomerId"
+                                           TextField="CustomerName"
+                                           Width="600px"
+                                           ShowClearButton="false"
+                                           Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+                        <MultiColumnComboboxColumns>
+                            <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
+                            <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
+                        </MultiColumnComboboxColumns>
+                    </SfMultiColumnComboBox>
                     <SfTextBox @bind-Value="ThisPackage.ContactName"
                                FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
                                Placeholder="Contact name" />
+                </div>
+                <div class="myflexrow">
 
                     <SfTextBox @bind-Value="ThisPackage.Address"
                                FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
                                Placeholder="Address" />
-                </div>
-                <div class="myflexrow">
                     <SfTextBox @bind-Value="ThisPackage.City"
                                FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
                                Placeholder="City" />
@@ -60,7 +60,13 @@
                     <SfTextBox @bind-Value="ThisPackage.MailClass"
                                FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
                                Placeholder="Mail class" />
-
+                    <SfDropDownList TItem="PackageTypeItem" TValue="PackageType"
+                            @bind-Value="ThisPackage.PackageType"
+                            DataSource="@PackageTypeItems"
+                            FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always"
+                            Placeholder="Package Type">
+                        <DropDownListFieldSettings Text="DisplayName" Value="Value"></DropDownListFieldSettings>
+                    </SfDropDownList>
                     <SfDropDownList TItem="PackageOption" TValue="Guid"
                                     @bind-Value="ThisPackage.PackageOptionId"
                                     DataSource="@PackageOptionList"
@@ -84,6 +90,7 @@
 
     private IEnumerable<Customer> CustomerList { get; set; }
     private IEnumerable<PackageOption> PackageOptionList { get; set; }
+    private List<PackageTypeItem> PackageTypeItems { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,6 +100,15 @@
         {
             ThisPackage = new Package();
         }
+
+        PackageTypeItems = Enum.GetValues(typeof(PackageType))
+            .Cast<PackageType>()
+            .Select(pt => new PackageTypeItem
+            {
+                Value = pt,
+                DisplayName = GetPackageTypeDisplayName(pt)
+            })
+            .ToList();
     }
 
     public async Task OnValidSubmitHandler()
@@ -101,5 +117,20 @@
         ThisPackage.PackageOption = null;
         await packageService.UpdatePackageAsync(ThisPackage);
         CloseDialog.InvokeAsync();
+    }
+
+    public class PackageTypeItem
+    {
+        public PackageType Value { get; set; }
+        public string DisplayName { get; set; }
+    }
+
+    private string GetPackageTypeDisplayName(PackageType packageType)
+    {
+        var displayAttribute = packageType.GetType()
+            .GetField(packageType.ToString())
+            ?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+            .FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+        return displayAttribute?.Name ?? packageType.ToString();
     }
 }

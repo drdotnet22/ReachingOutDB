@@ -149,6 +149,9 @@ namespace ReachingOutDB.Data
         public Guid PackageOptionId { get; set; }
         public PackageOption PackageOption { get; set; }
 
+        [Required(ErrorMessage = "Package type is required")]
+        public PackageType PackageType { get; set; } = PackageType.LowBulk;
+
         [Range(2000, 2999, ErrorMessage = "Please select a customer")]
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
@@ -234,6 +237,21 @@ namespace ReachingOutDB.Data
         Admin = 1,
         Duplo = 2,
         Shipping = 3
+    }
+
+    public enum PackageType
+    {
+        [Display(Name = "Low Bulk")]
+        LowBulk,
+
+        [Display(Name = "DM Extras")]
+        ExtrasDM,
+
+        [Display(Name = "UPS Extras")]
+        ExtrasUPS,
+
+        [Display(Name = "International")]
+        INTL
     }
     #endregion
 

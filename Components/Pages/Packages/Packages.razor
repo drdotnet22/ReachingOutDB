@@ -8,8 +8,20 @@
 <PageTitle>Packages</PageTitle>
 
 <h3>Package Management</h3>
+<div class="myflexrow" style="margin-bottom: 20px;">
+    <h4>Filter by Package Type:</h4>
+    @foreach (PackageType type in Enum.GetValues(typeof(PackageType)))
+    {
+        <div style="display: inline-block; margin-right: 15px;">
+            <SfCheckBox Label="@GetPackageTypeDisplayName(type)"
+                @bind-Checked="@SelectedPackageTypes[type]"
+                @onchange="OnPackageTypeFilterChanged">
+            </SfCheckBox>
+        </div>
+    }
+</div>
 
-<SfGrid @ref="Grid" DataSource="@packages" AllowSorting="true" AllowResizing="true" RowHeight="30" Toolbar="@ToolbarItems" AllowExcelExport="true" AllowSelection="true">
+<SfGrid @ref="Grid" DataSource="@filteredPackages" AllowSorting="true" AllowResizing="true" RowHeight="30" Toolbar="@ToolbarItems" AllowExcelExport="true" AllowSelection="true">
     <GridEvents TValue="Package" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" OnToolbarClick="ToolbarClickHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" CommandClicked="CommandClickedHandler"></GridEvents>
     <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
     <GridSortSettings>
@@ -41,6 +53,7 @@
             </Template>
         </GridColumn>
         <GridColumn Field="@nameof(Package.MailClass)" HeaderText="Mail Class" Width="100" />
+        <GridColumn Field="@nameof(Package.PackageType)" HeaderText="Package Type" />
         <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="PackageDescription" ForeignDataSource="@packageOptions" HeaderText="Packaging" />
         <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="Length" ForeignDataSource="@packageOptions" HeaderText="PackageLength" Visible="exportColumnsVisible" />
         <GridForeignColumn Field="@nameof(Package.PackageOptionId)" ForeignKeyValue="Width" ForeignDataSource="@packageOptions" HeaderText="PackageWidth" Visible="exportColumnsVisible" />
@@ -54,7 +67,7 @@
     </GridColumns>
 </SfGrid>
 
-<SfDialog @ref="packageEditDialog" Width="700" Visible=false ShowCloseIcon="true" >
+<SfDialog @ref="packageEditDialog" Width="900" Visible=false ShowCloseIcon="true" >
     <DialogTemplates>
         <Header>
             <span>@GetHeader(selectedPackage)</span>
@@ -68,15 +81,22 @@
 @code {
     private SfGrid<Package> Grid;
     private IEnumerable<Package> packages { get; set; }
+    private IEnumerable<Package> filteredPackages { get; set; }
     private IEnumerable<Customer> customers { get; set; }
     private IEnumerable<PackageOption> packageOptions { get; set; }
     private List<Object> ToolbarItems = new List<Object>() { "Add", "CsvExport", "Search" };
     private bool exportColumnsVisible = false;
     public MiscSetting miscSetting;
     public Package selectedPackage = new Package();
+    private Dictionary<PackageType, bool> SelectedPackageTypes { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        foreach (PackageType packageType in Enum.GetValues(typeof(PackageType)))
+        {
+            SelectedPackageTypes[packageType] = true; // Start with all selected
+        }
+
         customers = await customerService.GetCustomersAsync();
         packageOptions = await packageService.GetPackageOptionsAsync();
         miscSetting = await miscSettingsService.GetMiscSettingsAsync();
@@ -87,7 +107,42 @@
     private async Task RefreshPackages()
     {
         packages = await packageService.GetPackagesAsync();
+        ApplyPackageTypeFilter();
         StateHasChanged();
+    }
+
+    private string GetPackageTypeDisplayName(PackageType packageType)
+    {
+        var displayAttribute = packageType.GetType()
+            .GetField(packageType.ToString())
+            ?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+            .FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+        return displayAttribute?.Name ?? packageType.ToString();
+    }
+
+    private void OnPackageTypeFilterChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        ApplyPackageTypeFilter();
+        StateHasChanged();
+    }
+
+    private void ApplyPackageTypeFilter()
+    {
+        var selectedPackageTypesList = SelectedPackageTypes
+            .Where(kvp => kvp.Value)
+            .Select(kvp => kvp.Key)
+            .ToList();
+
+        if (selectedPackageTypesList.Any())
+        {
+            filteredPackages = packages
+                .Where(p => selectedPackageTypesList.Contains(p.PackageType))
+                .ToList();
+        }
+        else
+        {
+            filteredPackages = new List<Package>();
+        }
     }
 
     private async Task ActionBeginHandler(ActionEventArgs<Package> args)
