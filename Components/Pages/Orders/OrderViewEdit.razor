@@ -46,14 +46,17 @@
             </MultiColumnComboboxColumns>
         </SfMultiColumnComboBox>
 
-        <div id="customer-tooltip">
-            <SfButton CssClass="e-flat" IconCss="e-icons e-eye" id="customer-info" Disabled="@(ThisOrder.Customer == null || ThisOrder.CustomerId == 0)" tabindex="-1" />
-        </div>
-        <SfTooltip Position="Syncfusion.Blazor.Popups.Position.BottomCenter" Target="#customer-info" WindowCollision="true" TargetContainer="#customer-tooltip" OpensOn="Hover" Width="1200" Height="400">
-            <ContentTemplate>
-                <ReachingOutDB.Components.Pages.Customers.CustomerViewEdit Editable="false" ThisCustomer="ThisOrder.Customer" />
-            </ContentTemplate>
-        </SfTooltip>
+        @if (ThisOrder.OrderId != Guid.Empty)
+        {
+            <div id="customer-tooltip">
+                <SfButton CssClass="e-flat" IconCss="e-icons e-eye" id="customer-info" Disabled="@(ThisOrder.Customer == null || ThisOrder.CustomerId == 0)" tabindex="-1" />
+            </div>
+            <SfTooltip Position="Syncfusion.Blazor.Popups.Position.BottomCenter" Target="#customer-info" WindowCollision="true" TargetContainer="#customer-tooltip" OpensOn="Hover" Width="1200" Height="400">
+                <ContentTemplate>
+                    <ReachingOutDB.Components.Pages.Customers.CustomerViewEdit Editable="false" ThisCustomer="ThisOrder.Customer" />
+                </ContentTemplate>
+            </SfTooltip>
+        }
     </div>
 
     @if (ThisOrder.OrderId != Guid.Empty)

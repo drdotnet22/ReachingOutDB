@@ -15,6 +15,7 @@
 
     <span>Blank plates needed: @blanksNeeded</span>
     <span>Blank sheets plated: @blankSheets</span><br/>
+    <span>Total press sheets printed: @pressSheetsPrinted</span><br />
     <span>Efficiency: @efficiency.ToString("P1")</span>
     <div class="myflexrow" style="align-items:center">
         <h3>PlateList</h3>
@@ -136,6 +137,7 @@ else
     public int blankSheets { get; set; }
     public int blanksNeeded { get; set; }
     public int platedOrderTotal { get; set; }
+    public int pressSheetsPrinted { get; set; }
     public double efficiency { get; set; }
     public IEnumerable<Plate> filteredPlates { get; set; }
     public IEnumerable<Order> unplatedOrders { get; set; }
@@ -172,6 +174,8 @@ else
             .SelectMany(p => p.PlateAssignments)
             .Where(pa => pa.IsBlank == true)
             .Sum(pa => pa.Plate.Quantity);
+
+        pressSheetsPrinted = filteredPlates.Sum(p => p.Quantity);
 
         int platedQty = filteredPlates.Sum(p => p.Quantity);
 
