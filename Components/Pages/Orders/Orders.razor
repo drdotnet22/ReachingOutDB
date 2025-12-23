@@ -115,7 +115,15 @@
                     </SfDropDownList>
                 </FilterTemplate>
             </GridColumn>
-            <GridColumn HeaderText="Ship Methods" Width="200">
+            <GridColumn Width="200">
+                <HeaderTemplate>
+                    <div class="myflexrow">
+                        <span>Ship Methods</span>
+                        <SfTooltip Position="Position.TopCenter" OpenDelay="800" Content="Sets filter to exclusive to only include selected methods. Default is inclusive.">
+                            <SfSwitch @bind-Checked="ShipMethodFilterExclusive" ValueChange="OnShipMethodFilterExclusiveChange" TChecked="bool" />
+                        </SfTooltip>
+                    </div>
+                </HeaderTemplate>
                 <Template>
 
                     @{
@@ -295,6 +303,7 @@ else
     #region Custom Shipping methods filter
     private string[] ShipMethodOptions = new[] { "DM", "UPS", "USPS", "INTL", "LTL" };
     public bool IsFilterValueChange { get; set; }
+    private bool ShipMethodFilterExclusive { get; set; } = false;
 
     public Syncfusion.Blazor.Grids.FilteringEventArgs filteringEvent { get; set; }
 
@@ -302,6 +311,11 @@ else
     private async Task ShipMethodOnChange(MultiSelectChangeEventArgs<string[]> args)
     {
         selectedShipMethods = args.Value ?? Array.Empty<string>();
+        ApplyShipMethodFilter();
+    }
+
+    private async Task OnShipMethodFilterExclusiveChange(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> args)
+    {
         ApplyShipMethodFilter();
     }
 
@@ -315,27 +329,66 @@ else
         {
             gridFiltered = true;
             var localShipMethods = selectedShipMethods; //Important because Where is a deferred Linq query that can be run at a later time and if ship methods changes to null it misses that check.
-            filteredOrders = filteredOrders.Where(o =>
+
+            if (!ShipMethodFilterExclusive)
             {
-                bool matches = true;
+                filteredOrders = filteredOrders.Where(o =>
+                {
+                    bool matches = true;
 
-                if (localShipMethods.Contains("DM"))
-                    matches = matches && o.DmQty.HasValue && o.DmQty > 0;
+                    if (localShipMethods.Contains("DM"))
+                        matches = matches && o.DmQty.HasValue && o.DmQty > 0;
 
-                if (localShipMethods.Contains("UPS"))
-                    matches = matches && o.UpsQty.HasValue && o.UpsQty > 0;
+                    if (localShipMethods.Contains("UPS"))
+                        matches = matches && o.UpsQty.HasValue && o.UpsQty > 0;
 
-                if (localShipMethods.Contains("USPS"))
-                    matches = matches && o.PostalQty.HasValue && o.PostalQty > 0;
+                    if (localShipMethods.Contains("USPS"))
+                        matches = matches && o.PostalQty.HasValue && o.PostalQty > 0;
 
-                if (localShipMethods.Contains("INTL"))
-                    matches = matches && o.IntlQty.HasValue && o.IntlQty > 0;
+                    if (localShipMethods.Contains("INTL"))
+                        matches = matches && o.IntlQty.HasValue && o.IntlQty > 0;
 
-                if (localShipMethods.Contains("LTL"))
-                    matches = matches && o.LtlQty.HasValue && o.LtlQty > 0;
+                    if (localShipMethods.Contains("LTL"))
+                        matches = matches && o.LtlQty.HasValue && o.LtlQty > 0;
 
-                return matches;
-            });
+                    return matches;
+                });
+            }
+            else
+            {
+                filteredOrders = filteredOrders.Where(o =>
+                {
+                    bool matches = true;
+
+                    // Check that selected methods HAVE quantities
+                    if (localShipMethods.Contains("DM"))
+                        matches = matches && o.DmQty.HasValue && o.DmQty > 0;
+                    else
+                        matches = matches && (!o.DmQty.HasValue || o.DmQty == 0);
+
+                    if (localShipMethods.Contains("UPS"))
+                        matches = matches && o.UpsQty.HasValue && o.UpsQty > 0;
+                    else
+                        matches = matches && (!o.UpsQty.HasValue || o.UpsQty == 0);
+
+                    if (localShipMethods.Contains("USPS"))
+                        matches = matches && o.PostalQty.HasValue && o.PostalQty > 0;
+                    else
+                        matches = matches && (!o.PostalQty.HasValue || o.PostalQty == 0);
+
+                    if (localShipMethods.Contains("INTL"))
+                        matches = matches && o.IntlQty.HasValue && o.IntlQty > 0;
+                    else
+                        matches = matches && (!o.IntlQty.HasValue || o.IntlQty == 0);
+
+                    if (localShipMethods.Contains("LTL"))
+                        matches = matches && o.LtlQty.HasValue && o.LtlQty > 0;
+                    else
+                        matches = matches && (!o.LtlQty.HasValue || o.LtlQty == 0);
+
+                    return matches;
+                });
+            }
         }
     }
     #endregion
@@ -506,6 +559,7 @@ else
         selectedShipMethods = Array.Empty<string>();
         filteredOrders = orders;
         gridFiltered = false;
+        ShipMethodFilterExclusive = false;
     }
     private async Task GridFiltered()
     {
