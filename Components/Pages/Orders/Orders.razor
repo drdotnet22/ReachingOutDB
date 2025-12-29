@@ -119,9 +119,12 @@
                 <HeaderTemplate>
                     <div class="myflexrow">
                         <span>Ship Methods</span>
-                        <SfTooltip Position="Position.TopCenter" OpenDelay="800" Content="Sets filter to exclusive to only include selected methods. Default is inclusive.">
-                            <SfSwitch @bind-Checked="ShipMethodFilterExclusive" ValueChange="OnShipMethodFilterExclusiveChange" TChecked="bool" />
-                        </SfTooltip>
+                        @if (selectedShipMethods?.Length > 0)
+                        {
+                            <SfTooltip Position="Position.TopCenter" OpenDelay="800" Content="Sets filter to exclusive to only include selected methods. Default is inclusive.">
+                                <SfSwitch @bind-Checked="ShipMethodFilterExclusive" ValueChange="OnShipMethodFilterExclusiveChange" TChecked="bool" />
+                            </SfTooltip>
+                        }
                     </div>
                 </HeaderTemplate>
                 <Template>
