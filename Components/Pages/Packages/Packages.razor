@@ -96,6 +96,7 @@
         {
             SelectedPackageTypes[packageType] = true; // Start with all selected
         }
+        SelectedPackageTypes[PackageType.INTL] = false; // Deselect INTL by default
 
         customers = await customerService.GetCustomersAsync();
         packageOptions = await packageService.GetPackageOptionsAsync();
