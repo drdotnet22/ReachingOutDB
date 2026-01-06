@@ -31,6 +31,18 @@
         <GridColumn HeaderText="ID" Field="CustomerId" IsPrimaryKey="true" Type="ColumnType.Integer" Width="100" TextAlign="TextAlign.Right"/>
         <GridColumn HeaderText="Customer Name" Field="CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Location" Field="Location" Type="ColumnType.String" TextAlign="TextAlign.Left" />
+        <GridColumn HeaderText="Quantity" Field="Qty" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="90">
+            <Template>
+                @if ((context as Customer).VariableOrders == false)
+                {
+                    @((context as Customer).Qty?.ToString("N0"))
+                }
+                else
+                {
+                    <text>--</text>
+                }
+            </Template>
+        </GridColumn>
         <GridColumn HeaderText="Variable Qty" Field="VariableOrders" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" />
         <GridColumn HeaderText="Customer BP" Field="CustomBP" TextAlign="TextAlign.Center" DisplayAsCheckBox="true"/>
         <GridColumn HeaderText="Active" Field="Active" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" Visible="@showArchivedCustomers" />
