@@ -1,0 +1,44 @@
+﻿@using ReachingOutDB.Data
+
+@inject PlateServices plateService
+@inject OrderServices orderService
+@inject YearQuarterService yearQuarterService
+
+
+@code {
+    private ICollection<Order> orders { get; set; }
+    private ICollection<Order> ordersNeedingPlates { get; set; }
+    private List<Plate> plates = new List<Plate>();
+    private List<PlateAssignment> plateAssignments = new List<PlateAssignment>();
+    private int blankSheetsNeeded;
+    private int blankSheetsAssigned = 0;
+    public SfGrid<Order> Grid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
+        RefreshOrders();
+        blankSheetsNeeded = orders.Where(o => o.Qty < 1000)
+                                 .Sum(o => o.Qty) + 1000;
+    }
+
+    private async Task RefreshOrders()
+    {
+        orders = await orderService.GetOrdersIncludePlateAssignmentsAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        ordersNeedingPlates = orders.Where(o => o.PlateAssignments.Count == 0)
+                                    .Where(o => o.Qty > 900)
+                                    .Where(o => o.JobStatus < JobStatus.Plated)
+                                    .ToList();
+        StateHasChanged();
+    }
+
+    private async void YearQuarterChanged()
+    {
+        await RefreshOrders();
+    }
+
+    public void Dispose()
+    {
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
+    }
+}

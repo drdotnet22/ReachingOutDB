@@ -79,9 +79,9 @@ namespace ReachingOutDB.Data
                 .ToList();
             List<List<PlateAssignment>> plateAssignmentLists = new();
 
-            for (var i = 700; i > 149; i-=50)
+            for (var i = 1; i < 800; i++)
             {
-                plateAssignmentLists.Add(await AssignJobsToPlatesHelperTestAsync(sortedOrders.ToList(), year, quarter, i));
+                plateAssignmentLists.Add(await AssignJobsToPlatesHelperRandomAsync(sortedOrders.ToList(), year, quarter));
             }
 
             // Find the minimum number of distinct plates if plate assignment isn't null
@@ -91,7 +91,7 @@ namespace ReachingOutDB.Data
 
             // Step 2: Get all lists with that minimum count, then pick the one with lowest total quantity
             List<PlateAssignment> bestAssignment = plateAssignmentLists
-                .Where(list => list != null && list.Select(pa => pa.Plate).Distinct().Count() == minPlateCount)
+                .Where(list => list != null && list.Select(pa => pa.Plate).Distinct().Count() <= minPlateCount)
                 .OrderBy(list => list.Sum(pa => pa.Plate.Quantity))
                 .First();
 
@@ -514,6 +514,228 @@ namespace ReachingOutDB.Data
                     }
                 }
                 
+                if (totalBlanksNeeded > 200)
+                {
+                    Console.WriteLine($"Threshold: {threshold}, Plates Used: {plateAssignments.Select(pa => pa.Plate).Distinct().Count()}, Blanks Still Needed: {totalBlanksNeeded}");
+                    return null;
+                }
+                else
+                {
+                    Console.WriteLine($"Threshold: {threshold}, Plates Used: {plateAssignments.Select(pa => pa.Plate).Distinct().Count()}, Blanks Still Needed: {totalBlanksNeeded}, Press sheets used: {plateAssignments.Select(pa => pa.Plate).Distinct().Sum(p => p.Quantity)}");
+                    return plateAssignments;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+
+        private async Task<List<PlateAssignment>> AssignJobsToPlatesHelperRandomAsync(IList<Order> sortedOrders, int year, Quarter quarter)
+        {
+            Random random = new();
+            try
+            {
+                var plateAssignments = new List<PlateAssignment>();
+                int plateNumber = 0;
+
+                // Calculate number of blanks needed
+                var lowQtyOrders = sortedOrders.Where(o => o.Qty <= 980).ToList();
+                int totalBlanksNeeded = lowQtyOrders.Sum(o => o.Qty) + 1000;
+                int threshold = random.Next(4, 20) * 50;
+
+                while (sortedOrders[0].Qty > 980)
+                {
+                    var plate = new Plate()
+                    {
+                        Year = year,
+                        Quarter = quarter,
+                        Number = plateNumber++
+                    };
+
+                    int platePosition = 0;
+                    // If largest quantity is <threshold> x2 more than 2nd order: do first job 2 up
+                    if (sortedOrders[0].Qty > sortedOrders[1].Qty + threshold * 2)
+                    {
+                        plate.Quantity = sortedOrders[0].Qty / 2;
+                        var plateAssignment1 = new PlateAssignment()
+                        {
+                            Plate = plate,
+                            Position = 1,
+                            OrderId = sortedOrders[0].OrderId,
+                            IsBlank = false
+                        };
+                        plateAssignments.Add(plateAssignment1);
+
+                        var plateAssignment2 = new PlateAssignment()
+                        {
+                            Plate = plate,
+                            Position = 2,
+                            OrderId = sortedOrders[0].OrderId,
+                            IsBlank = false
+                        };
+                        sortedOrders.Remove(sortedOrders[0]);
+                        plateAssignments.Add(plateAssignment2);
+
+                        var candidates = sortedOrders.Where(o => o.Qty <= plate.Quantity).Take(2).ToList();
+                        threshold = random.Next(4, 20) * 50;
+                        foreach (var order in candidates)
+                        {
+                            if (order.Qty > plate.Quantity - threshold)
+                            {
+                                var plateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 3 + candidates.IndexOf(order),
+                                    OrderId = order.OrderId,
+                                    IsBlank = false
+                                };
+                                sortedOrders.Remove(order);
+                                plateAssignments.Add(plateAssignment);
+                            }
+                            else
+                            {
+                                var blankPlateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = candidates.IndexOf(order) + 3,
+                                    IsBlank = true
+                                };
+                                plateAssignments.Add(blankPlateAssignment);
+                                totalBlanksNeeded -= plate.Quantity;
+                            }
+                        }
+                    }
+
+                    // Blanks still needed but not urgent
+                    else if (sortedOrders[0].Qty > 4000 && sortedOrders[0].Qty < totalBlanksNeeded + 2500)
+                    {
+                        plate.Quantity = sortedOrders[0].Qty;
+                        var candidates = sortedOrders.Take(4).ToList();
+
+                        threshold = random.Next(4, 20) * 50;
+                        foreach (var order in candidates)
+                        {
+                            int remaingOrdersQty = sortedOrders.Sum(o => o.Qty);
+                            if (order.Qty > plate.Quantity - threshold ||
+                                remaingOrdersQty > totalBlanksNeeded + 1000)
+                            {
+                                var plateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 1 + candidates.IndexOf(order),
+                                    OrderId = order.OrderId,
+                                    IsBlank = false
+                                };
+                                sortedOrders.Remove(order);
+                                plateAssignments.Add(plateAssignment);
+                            }
+                            else
+                            {
+                                var blankPlateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 1 + candidates.IndexOf(order),
+                                    IsBlank = true
+                                };
+                                plateAssignments.Add(blankPlateAssignment);
+                                totalBlanksNeeded -= plate.Quantity;
+                            }
+                        }
+                    }
+
+                    // Blanks still needed and more urgent
+                    else if (sortedOrders[0].Qty > 2500 && totalBlanksNeeded > 0)
+                    {
+                        plate.Quantity = sortedOrders[0].Qty;
+                        var candidates = sortedOrders.Take(4).ToList();
+
+                        threshold = random.Next(4, 20) * 50;
+                        foreach (var order in candidates)
+                        {
+                            int remaingOrdersQty = sortedOrders.Sum(o => o.Qty);
+                            if (order.Qty > plate.Quantity - threshold ||
+                                remaingOrdersQty > totalBlanksNeeded + 1500)
+                            {
+                                var plateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 1 + candidates.IndexOf(order),
+                                    OrderId = order.OrderId,
+                                    IsBlank = false
+                                };
+                                sortedOrders.Remove(order);
+                                plateAssignments.Add(plateAssignment);
+                            }
+                            else
+                            {
+                                var blankPlateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 2 + candidates.IndexOf(order),
+                                    IsBlank = true
+                                };
+                                plateAssignments.Add(blankPlateAssignment);
+                                totalBlanksNeeded -= plate.Quantity;
+                            }
+                        }
+                    }
+
+                    // Blanks still needed and very urgent
+                    else if (totalBlanksNeeded > 0)
+                    {
+                        plate.Quantity = sortedOrders[0].Qty;
+                        var candidates = sortedOrders.Take(4).ToList();
+
+                        threshold = random.Next(4, 20) * 50;
+                        foreach (var order in candidates)
+                        {
+                            if (order.Qty > plate.Quantity - (threshold / 2) ||
+                                totalBlanksNeeded < 1)
+                            {
+                                var plateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 1 + candidates.IndexOf(order),
+                                    OrderId = order.OrderId,
+                                    IsBlank = false
+                                };
+                                sortedOrders.Remove(order);
+                                plateAssignments.Add(plateAssignment);
+                            }
+                            else
+                            {
+                                var blankPlateAssignment = new PlateAssignment()
+                                {
+                                    Plate = plate,
+                                    Position = 2 + candidates.IndexOf(order),
+                                    IsBlank = true
+                                };
+                                plateAssignments.Add(blankPlateAssignment);
+                                totalBlanksNeeded -= plate.Quantity;
+                            }
+                        }
+                    }
+                    else //just add 4 jobs to plate
+                    {
+                        plate.Quantity = sortedOrders[0].Qty;
+                        var candidates = sortedOrders.Take(4).ToList();
+                        foreach (var order in candidates)
+                        {
+                            var plateAssignment = new PlateAssignment()
+                            {
+                                Plate = plate,
+                                Position = 1 + candidates.IndexOf(order),
+                                OrderId = order.OrderId,
+                                IsBlank = false
+                            };
+                            plateAssignments.Add(plateAssignment);
+                            sortedOrders.Remove(order);
+                        }
+                    }
+                }
+
                 if (totalBlanksNeeded > 200)
                 {
                     Console.WriteLine($"Threshold: {threshold}, Plates Used: {plateAssignments.Select(pa => pa.Plate).Distinct().Count()}, Blanks Still Needed: {totalBlanksNeeded}");

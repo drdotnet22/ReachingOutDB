@@ -42,10 +42,10 @@ namespace ReachingOutDB.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
-            migrationBuilder.RenameColumn(
-                name: "VariableQty",
-                table: "Customers",
-                newName: "VariableOrders");
+            //migrationBuilder.RenameColumn(
+            //    name: "VariableQty",
+            //    table: "Customers",
+            //    newName: "VariableOrders");
 
             migrationBuilder.AddColumn<string>(
                 name: "Notes",

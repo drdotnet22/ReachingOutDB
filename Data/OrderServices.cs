@@ -21,7 +21,7 @@ namespace ReachingOutDB.Data
         }
         #endregion
 
-        public async Task<IEnumerable<Order>> GetOrdersAsync(int? year, Quarter? quarter)
+        public async Task<ICollection<Order>> GetOrdersAsync(int? year, Quarter? quarter)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
             if (year != null &&  quarter != null)
@@ -52,7 +52,7 @@ namespace ReachingOutDB.Data
             }
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersIncludePlateAssignmentsAsync(int year, Quarter quarter)
+        public async Task<ICollection<Order>> GetOrdersIncludePlateAssignmentsAsync(int year, Quarter quarter)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.Orders
@@ -62,6 +62,15 @@ namespace ReachingOutDB.Data
                     .Where(o => o.Year == year)
                     .Where(o => o.Quarter == quarter)
                     .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            return await dbContext.Orders
+                .Include(o => o.Customer)
+                .Where(o => o.CustomerId == customerId)
+                .ToListAsync();
         }
 
         public async Task<int> GenerateOrders(int? customerId, int year, Quarter quarter)

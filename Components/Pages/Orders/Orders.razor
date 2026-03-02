@@ -115,7 +115,7 @@
                     </SfDropDownList>
                 </FilterTemplate>
             </GridColumn>
-            <GridColumn Width="200">
+            <GridColumn Field="ShipMethods" Width="200" AllowSorting="false" AllowEditing="false">
                 <HeaderTemplate>
                     <div class="myflexrow">
                         <span>Ship Methods</span>
@@ -477,7 +477,7 @@ else
 
     public void ExcelQueryCellInfoHandler(ExcelQueryCellInfoEventArgs<Order> args)
     {
-        if (args.Column.HeaderText == "Ship Methods")
+        if (args.Column.Field == "ShipMethods")
         {
             string shipMethodsString = "";
             if (args.Data.DmQty.HasValue && args.Data.DmQty > 0)

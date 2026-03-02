@@ -1,0 +1,156 @@
+﻿@page "/customers-orders/{CusNo}"
+
+@using ReachingOutDB.Data
+@using Microsoft.EntityFrameworkCore
+
+@inject OrderServices orderServices
+@inject CustomerServices customerServices
+
+<h3>List of orders: @customer?.CustomerId.ToString() - @customer?.CustomerName</h3>
+<span>List of all past and current orders for @customer?.CustomerName</span>
+
+<SfGrid DataSource="@customersOrders" >
+    <GridEvents CommandClicked="CommandClickedHandler" TValue="Order" />
+    <GridColumns>
+        <GridColumn Field=@nameof(Order.Year) HeaderText="Year" Format="####" TextAlign="TextAlign.Right" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(Order.Quarter) HeaderText="Quarter" TextAlign="TextAlign.Left" Width="120"></GridColumn>
+        <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120"/>
+        <GridColumn Field="Ship Methods" HeaderText="Ship Methods" Width="200" AllowSorting="false">
+            <Template>
+
+                @{
+                    var order = (context as Order);
+                    {
+                        @if (order.DmQty.HasValue && order.DmQty > 0)
+                        {
+                            <span class="chip-shipping chip-dm">DM</span>
+                        }
+                        if (order.UpsQty.HasValue && order.UpsQty > 0)
+                        {
+                            <span class="chip-shipping chip-ups">UPS</span>
+                        }
+                        if (order.PostalQty.HasValue && order.PostalQty > 0)
+                        {
+                            <span class="chip-shipping chip-usps">USPS</span>
+                        }
+                        if (order.IntlQty.HasValue && order.IntlQty > 0)
+                        {
+                            <span class="chip-shipping chip-intl">INTL</span>
+                        }
+                        if (order.LtlQty.HasValue && order.LtlQty > 0)
+                        {
+                            <span class="chip-shipping chip-ltl">LTL</span>
+                        }
+                    }
+                }
+
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions"/>
+        <GridColumn Field="@nameof(Order.CustomBP)" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
+        <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="100">
+            <Template>
+                @{
+                    var order = (context as Order);
+
+                    <SfCheckBox Checked="order.BpUpdate" CssClass="e-alert" Disabled="true" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="100">
+            <Template>
+                @{
+                    var order = (context as Order);
+
+                    <SfCheckBox Checked="order.YearlyBilling" EnableTriState="true" CssClass="e-alert" Disabled="true" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" />
+        <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
+        <GridColumn Width="60">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="orderViewDialog" Visible="false" ShowCloseIcon="true" Width="50%" Header="@orderViewDialogHeader">
+    <DialogTemplates>
+        <Content>
+            <OrderViewEdit ThisOrder="orderViewDialogRecord" Editable="false" CustomerList="customers" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<style>
+    .chip-shipping {
+        display: inline-block;
+        padding: 10px 5px;
+        height: 20px;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .chip-ups {
+        background: blue;
+    }
+
+    .chip-dm {
+        background: darkgrey;
+    }
+
+    .chip-usps {
+        background: orange;
+    }
+
+    .chip-ltl {
+        background: lightgreen;
+    }
+
+    .chip-intl {
+        background: red;
+    }
+
+    .e-checkbox-wrapper.e-alert .e-frame.e-check { /* csslint allow: adjoining-classes */
+        background-color: #ffff00;
+        color: black
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string CusNo { get; set; }
+
+    public IEnumerable<Order> customersOrders { get; set; }
+    public IEnumerable<Customer> customers { get; set; }
+    public Customer customer { get; set; }
+    public SfGrid<Order> Grid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await customerServices.GetCustomersAsync();
+        customer = customers.FirstOrDefault(c => c.CustomerId == int.Parse(CusNo));
+        customersOrders = await orderServices.GetOrdersByCustomerIdAsync(customer.CustomerId);
+        await base.OnInitializedAsync();
+    }
+
+    public async void CommandClickedHandler(CommandClickEventArgs<Order> args)
+    {
+        if (args.CommandColumn.ID == "view-order")
+        {
+            orderViewDialogRecord = args.RowData;
+            orderViewDialogHeader = "Order details of " + orderViewDialogRecord.Year.ToString() + " " + orderViewDialogRecord.Quarter;
+            orderViewDialog.ShowAsync();
+        }
+    }
+
+    #region Dialog handlers
+    private SfDialog orderViewDialog;
+    private string orderViewDialogHeader;
+    private Order orderViewDialogRecord;
+    #endregion
+}

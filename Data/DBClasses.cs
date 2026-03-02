@@ -68,6 +68,8 @@ namespace ReachingOutDB.Data
         public Customer Customer { get; set; }
         public Quarter Quarter { get; set; }
         public JobStatus JobStatus { get; set; }
+        [NotMapped] // This property is not stored in the database, it's just to enable editing an order when the datagrid has a custom column for ShipMethods.
+        public string? ShipMethods { get; set; }
         public int Qty { get; set; }
         public string? SpecialNotes { get; set; }
         public string? NotesForInvoicing { get; set; }
