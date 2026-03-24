@@ -252,24 +252,17 @@ namespace ReachingOutDB.Data
         public async Task<Order> CalculatePublishedPostageAsync(Order order)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
-            var originalVal = order.PubUsps;
-            decimal? pubUsps = 0m;
             try
             {
                 if (!order.DmCost.HasValue)
                 {
                     var uspsShipSettings = await dbContext.ShippingSettings.FirstOrDefaultAsync(s => s.Name == "USPS");
                     int numberOfBoxes = (order.PostalQty.Value + uspsShipSettings.QuantityPerBox - 1) / uspsShipSettings.QuantityPerBox;
-                    pubUsps = order.PostalCost + (order.PostalCost * uspsShipSettings.MarkupPercentage) + (uspsShipSettings.PerBoxFee * numberOfBoxes);
+                    order.PubUsps = order.PostalCost + (order.PostalCost * uspsShipSettings.MarkupPercentage) + (uspsShipSettings.PerBoxFee * numberOfBoxes);
                 }
                 else
                 {
-                    pubUsps = order.DmCost;
-                }
-
-                if (pubUsps != originalVal)
-                {
-                    order.PubUsps = pubUsps;
+                    order.PubUsps = order.DmCost;
                 }
 
                 return order;
