@@ -2,6 +2,7 @@
 @using ReachingOutDB.Data
 @using Microsoft.EntityFrameworkCore
 @inject ShippingSettingsServices shippingSettingsService
+@inject OrderServices orderService
 
 
 <h3>Shipping Settings Management</h3>
@@ -67,10 +68,64 @@
         </GridColumn>
     </GridColumns>
 </SfGrid>
+<br />
+<h3>Shipping Calculator</h3>
+<div class="myflexcolumn">
+    <div class="myflexrow">
+        <SfCard>
+            <CardHeader Title="UPS Details" />
+            <CardContent>
+                <div class="myflexcolumn">
+                    <SfNumericTextBox @bind-Value="calculatorOrder.UpsQty" Placeholder="UPS Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                    <SfNumericTextBox @bind-Value="calculatorOrder.UpsCost" Placeholder="UPS Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
+                </div>
+            </CardContent>
+        </SfCard>
+        <SfCard>
+            <CardHeader Title="Postal Package Details" />
+            <CardContent>
+                <div class="myflexcolumn">
+                    <SfNumericTextBox @bind-Value="calculatorOrder.PostalQty" Placeholder="Postal Package Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                    <SfNumericTextBox @bind-Value="calculatorOrder.PostalCost" Placeholder="Postal Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
+                </div>
+            </CardContent>
+        </SfCard>
+        <SfCard>
+            <CardHeader Title="LTL Details" />
+            <CardContent>
+                <div class="myflexcolumn">
+                    <SfNumericTextBox @bind-Value="calculatorOrder.LtlQty" Placeholder="LTL Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                    <SfNumericTextBox @bind-Value="calculatorOrder.LTLCost" Placeholder="LTL Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
+                </div>
+            </CardContent>
+        </SfCard>
+        <SfCard>
+            <CardHeader Title="INTL Details" />
+            <CardContent>
+                <div class="myflexcolumn">
+                    <SfNumericTextBox @bind-Value="calculatorOrder.IntlQty" Placeholder="INTL Quantity" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" />
+                    <SfNumericTextBox @bind-Value="calculatorOrder.IntlCost" Placeholder="INTL Cost" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" ShowClearButton="true" Format="C2" />
+                </div>
+            </CardContent>
+        </SfCard>
+    </div>
+    <div class="myflexrow" style="gap:25px">
+        <div style="display:flex; gap: 0px; width:300px; align-items: flex-end;">
+            <SfNumericTextBox @bind-Value="calculatorOrder.PubShipping" Readonly="true" Placeholder="Calculated Shipping Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" Appearance="Appearance.Outline" OnClick="@RecalculateShipping" />
+        </div>
+        <div style="display:flex; gap: 0px; width:300px; align-items: flex-end;">
+            <SfNumericTextBox @bind-Value="calculatorOrder.PubUsps" Readonly="true" Placeholder="Calculated Postage Price" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="C2" ShowSpinButton="false" />
+            <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowClockwise())" Appearance="Appearance.Outline" OnClick="@RecalculatePostage" />
+        </div>
+    </div>
+</div>
+
 
 @code {
     public IEnumerable<ShippingSetting> shippingSettings { get; set; } = new List<ShippingSetting>();
     public SfGrid<ShippingSetting> Grid { get; set; }
+    private Order calculatorOrder = new Order();
     private List<Object> ToolbarItems = new List<Object>() { "Add", "Search" };
 
     protected override async Task OnInitializedAsync()
@@ -83,6 +138,18 @@
     {
         shippingSettings = await shippingSettingsService.GetShippingSettingsAsync();
     }
+
+    #region Calculator handlers
+    private async Task RecalculatePostage()
+    {
+        calculatorOrder = await orderService.CalculatePublishedPostageAsync(calculatorOrder);
+    }
+
+    private async Task RecalculateShipping()
+    {
+        calculatorOrder = await orderService.CalculatePublishedShippingAsync(calculatorOrder);
+    }
+    #endregion
 
     #region Datagrid handlers
     private async Task ActionBeginHandler(ActionEventArgs<ShippingSetting> args)
@@ -132,5 +199,16 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+    }
+
+    .control-wrapper {
+        max-width: 250px;
+        margin: 0 auto;
+        padding: 50px 0px 0px;
+    }
+
+    .label {
+        font-size: 14px;
+        margin-bottom: 6px;
     }
 </style>
