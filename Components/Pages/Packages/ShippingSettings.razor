@@ -7,7 +7,7 @@
 
 <h3>Shipping Settings Management</h3>
 
-<SfGrid @ref="Grid" DataSource="@shippingSettings" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30">
+<SfGrid @ref="Grid" DataSource="@shippingSettings" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30" Width="1110px">
     <GridEvents OnActionBegin="ActionBeginHandler" TValue="ShippingSetting" />
     <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog">
         <HeaderTemplate>
@@ -52,15 +52,15 @@
         </Template>
     </GridEditSettings>
     <GridColumns>
-        <GridColumn HeaderText="Shipping Method" Field="Name" Type="ColumnType.String" TextAlign="TextAlign.Left" Width="120" />
-        <GridColumn HeaderText="Qty/Box" Field="QuantityPerBox" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Shipping Method" Field="Name" Type="ColumnType.String" TextAlign="TextAlign.Left" Width="150" />
+        <GridColumn HeaderText="Qty/Box" Field="QuantityPerBox" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="85" />
         <GridColumn HeaderText="Markup %" Field="MarkupPercentage" Type="ColumnType.Number" Format="p0" TextAlign="TextAlign.Right" Width="100" />
         <GridColumn HeaderText="Handling Fee" Field="HandlingFee" Type="ColumnType.Number" Format="c" TextAlign="TextAlign.Right" Width="130" />
         <GridColumn HeaderText="Per Box Fee" Field="PerBoxFee" Type="ColumnType.Number" Format="c" TextAlign="TextAlign.Right" Width="120" />
-        <GridColumn HeaderText="Disc. Threshold" Field="BoxDiscountThreshold" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="130" />
+        <GridColumn HeaderText="Disc. Threshold" Field="BoxDiscountThreshold" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="140" />
         <GridColumn HeaderText="Disc. %" Field="BoxDiscountPercentage" Type="ColumnType.Number" Format="p0" TextAlign="TextAlign.Right" Width="80" />
         <GridColumn HeaderText="Updated" Field="UpdatedAt" Type="ColumnType.DateTime" Format="d" TextAlign="TextAlign.Center" Width="100" />
-        <GridColumn>
+        <GridColumn >
             <GridCommandColumns>
                 <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
                 <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() {IconCss="e-icons e-delete", CssClass="e-flat" })"/>
