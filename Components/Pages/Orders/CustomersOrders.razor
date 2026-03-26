@@ -1,4 +1,4 @@
-﻿@page "/customers-orders/{CusNo}"
+﻿@page "/customers/{CusNo}/orders"
 
 @using ReachingOutDB.Data
 @using Microsoft.EntityFrameworkCore
@@ -135,6 +135,7 @@
         customers = await customerServices.GetCustomersAsync();
         customer = customers.FirstOrDefault(c => c.CustomerId == int.Parse(CusNo));
         customersOrders = await orderServices.GetOrdersByCustomerIdAsync(customer.CustomerId);
+        customersOrders = customersOrders.OrderByDescending(o => o.Year).ThenByDescending(o => o.Quarter);
         await base.OnInitializedAsync();
     }
 

@@ -4,6 +4,7 @@
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @inject UserServices userService
+@inject NavigationManager navigationManager
 
 <PageTitle>Customers - Reaching Out</PageTitle>
 
@@ -51,6 +52,7 @@
         {
             <GridColumn>
                 <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-list-unordered", CssClass = "e-flat" })" ID="list-orders" />
                     <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
                     <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
                 </GridCommandColumns>
@@ -60,6 +62,7 @@
         {
             <GridColumn>
                 <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-list-unordered", CssClass = "e-flat" })" ID="list-orders" />
                     <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
                 </GridCommandColumns>
             </GridColumn>
@@ -148,8 +151,15 @@
         }
         else if (args.CommandColumn.Type == CommandButtonType.None)
         {
-            selectedCustomer = args.RowData;
-            customerViewDialog.ShowAsync();
+            if (args.CommandColumn.ID == "list-orders")
+            {
+                navigationManager.NavigateTo("/customers/" + args.RowData.CustomerId + "/orders");
+            }
+            else if (args.CommandColumn.ID == "view-order")
+            {
+                selectedCustomer = args.RowData;
+                customerViewDialog.ShowAsync();
+            }
         }
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
