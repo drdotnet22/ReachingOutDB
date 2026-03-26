@@ -9,7 +9,7 @@
 <h3>List of orders: @customer?.CustomerId.ToString() - @customer?.CustomerName</h3>
 <span>List of all past and current orders for @customer?.CustomerName</span>
 
-<SfGrid DataSource="@customersOrders" >
+<SfGrid DataSource="@customersOrders" RowHeight="25">
     <GridEvents CommandClicked="CommandClickedHandler" TValue="Order" />
     <GridColumns>
         <GridColumn Field=@nameof(Order.Year) HeaderText="Year" Format="####" TextAlign="TextAlign.Right" Width="150"></GridColumn>
