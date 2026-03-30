@@ -15,6 +15,7 @@
                 <FluentNavLink Href="/mailingnotes" Icon="@(new Icons.Regular.Size20.MailEdit())">Mailing Notes</FluentNavLink>
                 <FluentNavLink Href="users" Icon="@(new Icons.Regular.Size20.PeopleSettings())" IconColor="Color.Accent">Manage Users</FluentNavLink>
                 <FluentNavLink Href="shippingadmin" Icon="@(new Icons.Regular.Size20.BoxEdit())" IconColor="Color.Accent">Shipping Settings</FluentNavLink>
+                <FluentNavLink Href="/shipping-calculator" Icon="@(new Icons.Regular.Size20.Calculator())" IconColor="Color.Accent">Shipping Calculator</FluentNavLink>
             }
             else if (userService.CurrentUser.Role == UserRole.Shipping)
             {
