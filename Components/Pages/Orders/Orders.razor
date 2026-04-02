@@ -107,11 +107,29 @@
         </GridAggregates>
         <GridColumns>
             <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
-            <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Width="120">
+            <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Type="ColumnType.Number" Width="120">
                 <FilterTemplate>
-                    <SfDropDownList @ref="jobStatusFilter" ID="JobStatus" DataSource="@jobStatValues" TValue="JobStatus" TItem="string" ShowClearButton="true">
-                        <DropDownListEvents TItem="string" TValue="JobStatus" ValueChange="ChangeJobStatusFilter" />
-                        <DropDownListFieldSettings Value="JobStatus" Text="JobStatus" />
+                    <SfDropDownList @ref="jobStatusFilter"
+                                    ID="JobStatus"
+                                    DataSource="@jobStatusValues"
+                                    TValue="string"
+                                    TItem="string"
+                                    Placeholder="Status"
+                                    ShowClearButton="true"
+                                    Value="@selectedStatus"
+                                    PopupWidth="240">
+                        <DropDownListTemplates TItem="string">
+                            <HeaderTemplate>
+                                <div style="display:flex; justify-content:space-around; padding:4px;">
+                                    <button style="@GetOperatorStyle("<")" @onclick="@(() => SetOperator("<"))"> &lt; </button>
+                                    <button style="@GetOperatorStyle("<=")" @onclick="@(() => SetOperator("<="))"> &lt;= </button>
+                                    <button style="@GetOperatorStyle("=")" @onclick="@(() => SetOperator("="))"> = </button>
+                                    <button style="@GetOperatorStyle(">=")" @onclick="@(() => SetOperator(">="))"> &gt;= </button>
+                                    <button style="@GetOperatorStyle(">")" @onclick="@(() => SetOperator(">"))"> &gt; </button>
+                                </div>
+                            </HeaderTemplate>
+                        </DropDownListTemplates>
+                        <DropDownListEvents TItem="string" TValue="string" ValueChange="ChangeJobStatusFilter" />
                     </SfDropDownList>
                 </FilterTemplate>
             </GridColumn>
@@ -275,7 +293,6 @@ else
     public IEnumerable<Order> orders { get; set; }
     public IEnumerable<Order> filteredOrders { get; set; }
     public IEnumerable<Customer> customers { get; set; }
-    public string[] jobStatValues = JobStatus.GetNames(typeof(JobStatus));
     public bool superAdmin = false;
 
     protected override async Task OnInitializedAsync()
@@ -291,9 +308,67 @@ else
     {
         orders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         ApplyShipMethodFilter();
+        await ApplyJobStatusFilter();
         StateHasChanged();
     }
 
+    #region Job Status filter
+    private SfDropDownList<string, string> jobStatusFilter;
+    private SfDropDownList<string, string> jobStatusOperatorFilter;
+
+    // Populates the status dropdown from the enum
+    private List<string> jobStatusValues = Enum.GetNames(typeof(JobStatus)).ToList();
+
+    private string selectedOperator = "=";
+    private string selectedStatus = null;
+
+    private async Task SetOperator(string op)
+    {
+        selectedOperator = op;
+        if (string.IsNullOrEmpty(selectedStatus) || string.IsNullOrEmpty(selectedOperator))
+            return;
+        ApplyShipMethodFilter();
+        await ApplyJobStatusFilter();
+    }
+
+    private async Task ChangeJobStatusFilter(ChangeEventArgs<string, string> args)
+    {
+        selectedStatus = args.Value;
+        ApplyShipMethodFilter();
+        await ApplyJobStatusFilter();
+    }
+
+    private string GetOperatorStyle(string op)
+    {
+        var active = op == selectedOperator
+            ? "background-color: #0078d4; color: white;"
+            : "background-color: #f0f0f0; color: black;";
+        return $"border:1px solid #ccc; border-radius:4px; padding:2px 6px; cursor:pointer; font-size:12px; {active}";
+    }
+
+    private async Task ApplyJobStatusFilter()
+    {
+        // Don't filter if either dropdown is empty
+        if (string.IsNullOrEmpty(selectedStatus) || string.IsNullOrEmpty(selectedOperator))
+            return;
+
+        // Convert the selected string name back to its int value
+        var statusValue = (int)Enum.Parse<JobStatus>(selectedStatus);
+
+        // Map your operator string to Syncfusion's Operator enum
+        filteredOrders = selectedOperator switch
+        {
+            "<" => filteredOrders.Where(o => (int)o.JobStatus < statusValue),
+            "<=" => filteredOrders.Where(o => (int)o.JobStatus <= statusValue),
+            "=" => filteredOrders.Where(o => (int)o.JobStatus == statusValue),
+            ">=" => filteredOrders.Where(o => (int)o.JobStatus >= statusValue),
+            ">" => filteredOrders.Where(o => (int)o.JobStatus > statusValue),
+            _ => filteredOrders
+        };
+
+        gridFiltered = true;
+    }
+    #endregion
 
     #region Custom Shipping methods filter
     private string[] ShipMethodOptions = new[] { "DM", "UPS", "USPS", "INTL", "LTL" };
@@ -307,11 +382,13 @@ else
     {
         selectedShipMethods = args.Value ?? Array.Empty<string>();
         ApplyShipMethodFilter();
+        await ApplyJobStatusFilter();
     }
 
     private async Task OnShipMethodFilterExclusiveChange(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> args)
     {
         ApplyShipMethodFilter();
+        await ApplyJobStatusFilter();
     }
 
     private void ApplyShipMethodFilter()
@@ -524,20 +601,6 @@ else
         }
     }
 
-    public async Task ChangeJobStatusFilter(ChangeEventArgs<JobStatus, string> args)
-    {
-        if (args.Value == 0)
-        {
-            await this.Grid.ClearFilteringAsync();
-        }
-        else
-        {
-            gridFiltered = true;
-            await this.Grid.FilterByColumnAsync("JobStatus", "contains", args.Value);
-        }
-    }
-
-
     public string GetHeader(Order arg)
     {
         return arg.OrderId == Guid.Empty
@@ -545,13 +608,15 @@ else
             : "Edit the " + arg.Year + " " + arg.Quarter + " order of " + arg.Customer.CustomerName;
     }
 
-    private SfDropDownList<JobStatus, string> jobStatusFilter;
     private bool gridFiltered = false;
     private async Task ClearGridFiltering()
     {
         Grid.ClearFilteringAsync();
-        jobStatusFilter.ClearAsync();
         selectedShipMethods = Array.Empty<string>();
+        //Job status filters
+        selectedOperator = "=";
+        selectedStatus = null;
+
         filteredOrders = orders;
         gridFiltered = false;
         ShipMethodFilterExclusive = false;
