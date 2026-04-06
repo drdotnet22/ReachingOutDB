@@ -1,0 +1,112 @@
+﻿@page "/regular-backpage-updates"
+
+@using ReachingOutDB.Components.Pages.Orders
+@using ReachingOutDB.Data
+@inject OrderServices orderService
+@inject CustomerServices customerService
+@inject YearQuarterService yearQuarterService
+
+<h3>RegularBackpageUpdates</h3>
+
+<SfGrid DataSource="@regularBackpageUpdates" >
+    <GridColumns>
+        <GridEvents CommandClicked="CommandClickedHandler" TValue="RegularBackpageUpdate" />
+        <GridColumn HeaderText="Customer Name" Field="Customer.CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
+        <GridColumn HeaderText="Already Updated This Quarter" Field="AlreadyUpdated" TextAlign="TextAlign.Center">
+            <Template>
+                @{
+                    var backpage = (context as RegularBackpageUpdate);
+                    if (backpage.AlreadyUpdated)
+                    {
+                        <SfCheckBox Checked="backpage.AlreadyUpdated" EnableTriState="true" Disabled="true" />
+                    }
+                    else
+                    {
+                        <SfCheckBox Checked="backpage.AlreadyUpdated" EnableTriState="true" CssClass="e-noupdate" Disabled="true" />
+                    }
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="List Orders">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-list-unordered", CssClass = "e-flat" })" ID="list-orders" />
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="ordersListDialog" Visible="false" ShowCloseIcon="true" Width="70%">
+    <DialogTemplates>
+        <Content>
+            <CustomersOrders CusNo="@ordersListDialogCustomerId" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<style>
+    .e-checkbox-wrapper.e-noupdate .e-frame { /* csslint allow: adjoining-classes */
+        background-color: red;
+        border-color: red;
+        color: red;
+    }
+</style>
+
+@code {
+    public IEnumerable<Customer> customers { get; set; }
+    public IEnumerable<Order> currentOrders { get; set; }
+    public IEnumerable<RegularBackpageUpdate> regularBackpageUpdates { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await customerService.GetCustomersAsync();
+        customers = customers.Where(c => c.BackpageUpdates == true);
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
+        await RefreshOrders();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshOrders()
+    {
+        currentOrders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        regularBackpageUpdates = customers.Select(c => new RegularBackpageUpdate
+        {
+            CustomerId = c.CustomerId,
+            Customer = c,
+            AlreadyUpdated = currentOrders.Any(o => o.CustomerId == c.CustomerId && o.BpUpdate)
+        }).ToList();
+    }
+
+    public async void CommandClickedHandler(CommandClickEventArgs<RegularBackpageUpdate> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.None)
+        {
+            if (args.CommandColumn.ID == "list-orders")
+            {
+                ordersListDialogCustomerId = args.RowData.CustomerId.ToString();
+                ordersListDialog.ShowAsync();
+            }
+        }
+    }
+
+    // Dialog handlers
+    private SfDialog ordersListDialog;
+    private string ordersListDialogCustomerId = string.Empty;
+
+    private async void YearQuarterChanged()
+    {
+        //await RefreshOrders();
+    }
+
+    public void Dispose()
+    {
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
+    }
+
+    public class RegularBackpageUpdate
+    {
+        public int RegularBackpageUpdateId { get; set; }
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
+        public bool AlreadyUpdated { get; set; }
+    }
+}

@@ -17,6 +17,7 @@ namespace ReachingOutDB.Data
         public int? QtyQ3 { get; set; }
         public int? QtyQ4 { get; set; }
         public bool VariableOrders { get; set; }
+        public bool BackpageUpdates { get; set; } = false;
         public string? Notes { get; set; }
         public string? NotesQ1 { get; set; }
         public string? NotesQ2 { get; set; }

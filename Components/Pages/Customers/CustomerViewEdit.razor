@@ -49,6 +49,7 @@
     <SfCheckBox @bind-Checked="@(ThisCustomer.Active)" Label="Active Customer" Disabled="@(!Editable)"/>
     <SfCheckBox @bind-Checked="@(ThisCustomer.VariableOrders)" Label="Variable Quantity" Disabled="@(!Editable)" />
     <SfCheckBox @bind-Checked="@(ThisCustomer.CustomBP)" Label="Custom Back Page" Disabled="@(!Editable)" />
+    <SfCheckBox @bind-Checked="@(ThisCustomer.BackpageUpdates)" Label="Regular backpage updates" Disabled="@(!Editable)" />
     <SfCheckBox @bind-Checked="@(ThisCustomer.SpecialNoteUPS)" Label="Special Notes for UPS shipping" Disabled="@(!Editable)" />
     <SfDropDownList TItem="string" TValue="Quarter?"
                     @bind-Value="@ThisCustomer.YearlyBillingQuarter"

@@ -46,6 +46,7 @@
         </GridColumn>
         <GridColumn HeaderText="Variable Qty" Field="VariableOrders" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" />
         <GridColumn HeaderText="Customer BP" Field="CustomBP" TextAlign="TextAlign.Center" DisplayAsCheckBox="true"/>
+        <GridColumn HeaderText="Backpage Updates" Field="BackpageUpdates" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" />
         <GridColumn HeaderText="Active" Field="Active" TextAlign="TextAlign.Center" DisplayAsCheckBox="true" Visible="@showArchivedCustomers" />
 
         @if (userService.CurrentUser.Role == UserRole.Admin)

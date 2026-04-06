@@ -124,8 +124,7 @@
 </style>
 
 @code {
-    [Parameter]
-    public string CusNo { get; set; }
+    [Parameter] public string CusNo { get; set; }
 
     public IEnumerable<Order> customersOrders { get; set; }
     public IEnumerable<Customer> customers { get; set; }
