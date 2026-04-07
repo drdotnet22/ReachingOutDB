@@ -13,215 +13,219 @@
 
 @if (userService.CurrentUser.Role != UserRole.UnAssigned)
 {
-    //Custom toolbar for each type of user
-    <SfToolbar>
-        <ToolbarEvents Clicked="ToolbarClickHandler" />
-        <ToolbarItems>
-            @if (userService.CurrentUser.Role == UserRole.Admin)
-            {
-                <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
-                <ToolbarItem>
-                    <Template>
-                        <div class="myflexrow">
-                            <span>Admin mode:</span>
-                            <SfSwitch @bind-Checked="superAdmin" />
-                        </div>
-                    </Template>
-                </ToolbarItem>
-                <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" Visible="@superAdmin" />
-                <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" Visible="@superAdmin" />
-                <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" Visible="@superAdmin" />
+    <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+        //Custom toolbar for each type of user
+        <SfToolbar>
+            <ToolbarEvents Clicked="ToolbarClickHandler" />
+            <ToolbarItems>
+                @if (userService.CurrentUser.Role == UserRole.Admin)
+                {
+                    <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
+                    <ToolbarItem>
+                        <Template>
+                            <div class="myflexrow">
+                                <span>Admin mode:</span>
+                                <SfSwitch @bind-Checked="superAdmin" />
+                            </div>
+                        </Template>
+                    </ToolbarItem>
+                    <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" Visible="@superAdmin" />
+                    <ToolbarItem Text="Assign Plates" TooltipText="Assign plates to all orders for this quarter" Visible="@superAdmin" />
+                    <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" Visible="@superAdmin" />
+                    <ToolbarItem Type="ItemType.Spacer" />
+                    <ToolbarItem>
+                        <Template>
+                            <DuploProgress Orders="orders" />
+                        </Template>
+                    </ToolbarItem>
+                }
+                else if (userService.CurrentUser.Role == UserRole.Duplo)
+                {
+                    <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
+                    <ToolbarItem Type="ItemType.Spacer" />
+                    <ToolbarItem>
+                        <Template>
+                            <DuploProgress Orders="orders" />
+                        </Template>
+                    </ToolbarItem>
+                }
                 <ToolbarItem Type="ItemType.Spacer" />
-                <ToolbarItem>
+                <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
                     <Template>
-                        <DuploProgress Orders="orders" />
+                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
                     </Template>
                 </ToolbarItem>
-            }
-            else if (userService.CurrentUser.Role == UserRole.Duplo)
-            {
-                <ToolbarItem Text="Saddle Stitched" TooltipText="Mark selected rows as saddlestitched." PrefixIcon="e-circle-check icon" />
-                <ToolbarItem Type="ItemType.Spacer" />
-                <ToolbarItem>
+                <ToolbarItem TooltipText="Clear all grid filters" PrefixIcon="e-close icon" Visible="gridFiltered" OnClick="ClearGridFiltering" />
+            </ToolbarItems>
+        </SfToolbar>
+        <div style="flex: 1; overflow: hidden; min-height: 0;">
+            <SfGrid @ref="Grid" ID="orders-grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" Height="100%" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" EnableVirtualization="false">
+                <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
+                <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" Filtered="GridFiltered" TValue="Order" />
+                <GridSortSettings>
+                    <GridSortColumns>
+                        <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
+                    </GridSortColumns>
+                </GridSortSettings>
+                <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin"
+                                  AllowEditing="userService.CurrentUser.Role == UserRole.Admin"
+                                  AllowEditOnDblClick="false"
+                                  AllowDeleting="userService.CurrentUser.Role == UserRole.Admin"
+                                  Mode="Syncfusion.Blazor.Grids.EditMode.Dialog"
+                                  Context="thisOrder">
+                    <HeaderTemplate>
+                        <span>@GetHeader((thisOrder as Order))</span>
+                    </HeaderTemplate>
                     <Template>
-                        <DuploProgress Orders="orders" />
+                        <OrderViewEdit ThisOrder="(thisOrder as Order)" Editable="@true" CustomerList="customers" />
                     </Template>
-                </ToolbarItem>
-            }
-            <ToolbarItem Type="ItemType.Spacer" />
-            <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
-                <Template>
-                    <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
-                </Template>
-            </ToolbarItem>
-            <ToolbarItem TooltipText="Clear all grid filters" PrefixIcon="e-close icon" Visible="gridFiltered" OnClick="ClearGridFiltering"/>
-        </ToolbarItems>
-    </SfToolbar>
-    <SfGrid @ref="Grid" ID="orders-grid" DataSource="filteredOrders" AllowFiltering="true" AllowSorting="true" AllowSelection="true" RowHeight="25" AllowResizing="true" AutoFit="true" AllowExcelExport="true" EnableVirtualization="false" >
-        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
-        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.FilterBar" Mode="FilterBarMode.Immediate" />
-        <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" ExcelQueryCellInfoEvent="ExcelQueryCellInfoHandler" Filtered="GridFiltered" TValue="Order" />
-        <GridSortSettings>
-            <GridSortColumns>
-                <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending" />
-            </GridSortColumns>
-        </GridSortSettings>
-        <GridEditSettings AllowAdding="userService.CurrentUser.Role == UserRole.Admin" 
-                    AllowEditing="userService.CurrentUser.Role == UserRole.Admin"
-                    AllowEditOnDblClick="false"
-                    AllowDeleting="userService.CurrentUser.Role == UserRole.Admin" 
-                    Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" 
-                    Context="thisOrder">
-            <HeaderTemplate>
-                <span>@GetHeader((thisOrder as Order))</span>
-            </HeaderTemplate>
-            <Template>
-                <OrderViewEdit ThisOrder="(thisOrder as Order)" Editable="@true" CustomerList="customers" />
-            </Template>
-        </GridEditSettings>
-        <GridAggregates>
-            <GridAggregate>
-                <GridAggregateColumns>
-                    <GridAggregateColumn Field="@nameof(Order.CustomerId)" Type="AggregateType.Count">
-                        <FooterTemplate>
+                </GridEditSettings>
+                <GridAggregates>
+                    <GridAggregate>
+                        <GridAggregateColumns>
+                            <GridAggregateColumn Field="@nameof(Order.CustomerId)" Type="AggregateType.Count">
+                                <FooterTemplate>
+                                    @{
+                                        var CountValue = (context as AggregateTemplateContext);
+                                        <div>
+                                            Count: @CountValue.Count
+                                        </div>
+                                    }
+                                </FooterTemplate>
+                            </GridAggregateColumn>
+                            <GridAggregateColumn Field="@nameof(Order.Qty)" Type="AggregateType.Sum">
+                                <FooterTemplate>
+                                    @{
+                                        var SumValue = (context as AggregateTemplateContext);
+                                        <div>
+                                            Sum: @($"{int.Parse(SumValue.Sum):N0}")
+                                        </div>
+                                    }
+                                </FooterTemplate>
+                            </GridAggregateColumn>
+                        </GridAggregateColumns>
+                    </GridAggregate>
+                </GridAggregates>
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Type="ColumnType.Number" Width="120">
+                        <FilterTemplate>
+                            <SfDropDownList @ref="jobStatusFilter"
+                                            ID="JobStatus"
+                                            DataSource="@jobStatusValues"
+                                            TValue="string"
+                                            TItem="string"
+                                            Placeholder="Status"
+                                            ShowClearButton="true"
+                                            Value="@selectedStatus"
+                                            PopupWidth="240">
+                                <DropDownListTemplates TItem="string">
+                                    <HeaderTemplate>
+                                        <div style="display:flex; justify-content:space-around; padding:4px;">
+                                            <button style="@GetOperatorStyle("<")" @onclick="@(() => SetOperator("<"))"> &lt; </button>
+                                            <button style="@GetOperatorStyle("<=")" @onclick="@(() => SetOperator("<="))"> &lt;= </button>
+                                            <button style="@GetOperatorStyle("=")" @onclick="@(() => SetOperator("="))"> = </button>
+                                            <button style="@GetOperatorStyle(">=")" @onclick="@(() => SetOperator(">="))"> &gt;= </button>
+                                            <button style="@GetOperatorStyle(">")" @onclick="@(() => SetOperator(">"))"> &gt; </button>
+                                        </div>
+                                    </HeaderTemplate>
+                                </DropDownListTemplates>
+                                <DropDownListEvents TItem="string" TValue="string" ValueChange="ChangeJobStatusFilter" />
+                            </SfDropDownList>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="ShipMethods" Width="200" AllowSorting="false" AllowEditing="false">
+                        <HeaderTemplate>
+                            <div class="myflexrow">
+                                <span>Ship Methods</span>
+                                @if (selectedShipMethods?.Length > 0)
+                                {
+                                    <SfTooltip Position="Position.TopCenter" OpenDelay="800" Content="Sets filter to exclusive to only include selected methods. Default is inclusive.">
+                                        <SfSwitch @bind-Checked="ShipMethodFilterExclusive" ValueChange="OnShipMethodFilterExclusiveChange" TChecked="bool" />
+                                    </SfTooltip>
+                                }
+                            </div>
+                        </HeaderTemplate>
+                        <Template>
+
                             @{
-                                var CountValue = (context as AggregateTemplateContext);
-                                <div>
-                                    Count: @CountValue.Count
-                                </div>
+                                var order = (context as Order);
+                                {
+                                    @if (order.DmQty.HasValue && order.DmQty > 0)
+                                    {
+                                        <span class="chip-shipping chip-dm">DM</span>
+                                    }
+                                    if (order.UpsQty.HasValue && order.UpsQty > 0)
+                                    {
+                                        <span class="chip-shipping chip-ups">UPS</span>
+                                    }
+                                    if (order.PostalQty.HasValue && order.PostalQty > 0)
+                                    {
+                                        <span class="chip-shipping chip-usps">USPS</span>
+                                    }
+                                    if (order.IntlQty.HasValue && order.IntlQty > 0)
+                                    {
+                                        <span class="chip-shipping chip-intl">INTL</span>
+                                    }
+                                    if (order.LtlQty.HasValue && order.LtlQty > 0)
+                                    {
+                                        <span class="chip-shipping chip-ltl">LTL</span>
+                                    }
+                                }
                             }
-                        </FooterTemplate>
-                    </GridAggregateColumn>
-                    <GridAggregateColumn Field="@nameof(Order.Qty)" Type="AggregateType.Sum">
-                        <FooterTemplate>
+
+                        </Template>
+                        <FilterTemplate>
+                            <SfMultiSelect TValue="string[]" TItem="string" @bind-Value="selectedShipMethods" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
+                                <MultiSelectEvents TValue="string[]" TItem="string" ValueChange="@ShipMethodOnChange" />
+                            </SfMultiSelect>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" FilterSettings="new FilterSettings { Operator = Operator.Contains }" />
+                    <GridColumn Field="@nameof(Order.CustomBP)" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
+                    <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
+                        <Template>
                             @{
-                                var SumValue = (context as AggregateTemplateContext);
-                                <div>
-                                    Sum: @($"{int.Parse(SumValue.Sum):N0}")
-                                </div>
-                            }
-                        </FooterTemplate>
-                    </GridAggregateColumn>
-                </GridAggregateColumns>
-            </GridAggregate>
-        </GridAggregates>
-        <GridColumns>
-            <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
-            <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Type="ColumnType.Number" Width="120">
-                <FilterTemplate>
-                    <SfDropDownList @ref="jobStatusFilter"
-                                    ID="JobStatus"
-                                    DataSource="@jobStatusValues"
-                                    TValue="string"
-                                    TItem="string"
-                                    Placeholder="Status"
-                                    ShowClearButton="true"
-                                    Value="@selectedStatus"
-                                    PopupWidth="240">
-                        <DropDownListTemplates TItem="string">
-                            <HeaderTemplate>
-                                <div style="display:flex; justify-content:space-around; padding:4px;">
-                                    <button style="@GetOperatorStyle("<")" @onclick="@(() => SetOperator("<"))"> &lt; </button>
-                                    <button style="@GetOperatorStyle("<=")" @onclick="@(() => SetOperator("<="))"> &lt;= </button>
-                                    <button style="@GetOperatorStyle("=")" @onclick="@(() => SetOperator("="))"> = </button>
-                                    <button style="@GetOperatorStyle(">=")" @onclick="@(() => SetOperator(">="))"> &gt;= </button>
-                                    <button style="@GetOperatorStyle(">")" @onclick="@(() => SetOperator(">"))"> &gt; </button>
-                                </div>
-                            </HeaderTemplate>
-                        </DropDownListTemplates>
-                        <DropDownListEvents TItem="string" TValue="string" ValueChange="ChangeJobStatusFilter" />
-                    </SfDropDownList>
-                </FilterTemplate>
-            </GridColumn>
-            <GridColumn Field="ShipMethods" Width="200" AllowSorting="false" AllowEditing="false">
-                <HeaderTemplate>
-                    <div class="myflexrow">
-                        <span>Ship Methods</span>
-                        @if (selectedShipMethods?.Length > 0)
-                        {
-                            <SfTooltip Position="Position.TopCenter" OpenDelay="800" Content="Sets filter to exclusive to only include selected methods. Default is inclusive.">
-                                <SfSwitch @bind-Checked="ShipMethodFilterExclusive" ValueChange="OnShipMethodFilterExclusiveChange" TChecked="bool" />
-                            </SfTooltip>
-                        }
-                    </div>
-                </HeaderTemplate>
-                <Template>
+                                var order = (context as Order);
 
-                    @{
-                        var order = (context as Order);
-                        {
-                            @if (order.DmQty.HasValue && order.DmQty > 0)
-                            {
-                                <span class="chip-shipping chip-dm">DM</span>
+                                <SfCheckBox Checked="order.BpUpdate" CssClass="e-alert" Disabled="true" />
                             }
-                            if (order.UpsQty.HasValue && order.UpsQty > 0)
-                            {
-                                <span class="chip-shipping chip-ups">UPS</span>
-                            }
-                            if (order.PostalQty.HasValue && order.PostalQty > 0)
-                            {
-                                <span class="chip-shipping chip-usps">USPS</span>
-                            }
-                            if (order.IntlQty.HasValue && order.IntlQty > 0)
-                            {
-                                <span class="chip-shipping chip-intl">INTL</span>
-                            }
-                            if (order.LtlQty.HasValue && order.LtlQty > 0)
-                            {
-                                <span class="chip-shipping chip-ltl">LTL</span>
-                            }
-                        }
-                    }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
+                        <Template>
+                            @{
+                                var order = (context as Order);
 
-                </Template>
-                <FilterTemplate>
-                    <SfMultiSelect TValue="string[]" TItem="string" @bind-Value="selectedShipMethods" Placeholder="Select Ship Methods" DataSource="@ShipMethodOptions">
-                        <MultiSelectEvents TValue="string[]" TItem="string" ValueChange="@ShipMethodOnChange" />
-                    </SfMultiSelect>
-                </FilterTemplate>
-            </GridColumn>
-            <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" FilterSettings="new FilterSettings{ Operator = Operator.Contains }" />
-            <GridColumn Field="@nameof(Order.CustomBP)" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
-            <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
-                <Template>
-                    @{
-                        var order = (context as Order);
+                                <SfCheckBox Checked="order.YearlyBilling" EnableTriState="true" CssClass="e-alert" Disabled="true" />
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
+                    <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
+                    <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="90" TextAlign="TextAlign.Right" />
+                    <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />
+                    <GridColumn Field="Customer.Location" HeaderText="Location" Visible="@superAdmin" />
+                    <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@superAdmin" />
+                    <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
+                    <GridColumn Width="155" Visible="@superAdmin">
+                        <GridCommandColumns>
+                            <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
+                            <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                            <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+                        </GridCommandColumns>
+                    </GridColumn>
 
-                        <SfCheckBox Checked="order.BpUpdate" CssClass="e-alert" Disabled="true" />
-                    }
-                </Template>
-            </GridColumn>
-            <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
-                <Template>
-                    @{
-                        var order = (context as Order);
-
-                        <SfCheckBox Checked="order.YearlyBilling" EnableTriState="true" CssClass="e-alert" Disabled="true" />
-                    }
-                </Template>
-            </GridColumn>
-            <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
-            <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
-            <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="90" TextAlign="TextAlign.Right" />
-            <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />
-            <GridColumn Field="Customer.Location" HeaderText="Location" Visible="@superAdmin" />
-            <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@superAdmin" />
-            <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
-            <GridColumn Width="155" Visible="@superAdmin">
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
-                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
-                    <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
-                </GridCommandColumns>
-            </GridColumn>
-
-            <GridColumn Width="60" Visible="!superAdmin">
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
-                </GridCommandColumns>
-            </GridColumn>
-        </GridColumns>
-    </SfGrid>
+                    <GridColumn Width="60" Visible="!superAdmin">
+                        <GridCommandColumns>
+                            <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+                        </GridCommandColumns>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+    </div>
 }
 else
 {
