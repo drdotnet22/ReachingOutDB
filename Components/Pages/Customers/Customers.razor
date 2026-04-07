@@ -1,4 +1,5 @@
 ﻿@page "/customers"
+@using ReachingOutDB.Components.Pages.Orders
 @using ReachingOutDB.Data
 @using Microsoft.EntityFrameworkCore
 @inject OrderServices orderService
@@ -70,6 +71,14 @@
         }
     </GridColumns>
 </SfGrid>
+
+<SfDialog @ref="ordersListDialog" Visible="false" ShowCloseIcon="true" Width="70%">
+    <DialogTemplates>
+        <Content>
+            <CustomersOrders CusNo="@ordersListDialogCustomerId" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
 
 <SfDialog @ref="customerViewDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%" >
     <DialogTemplates>
@@ -154,7 +163,8 @@
         {
             if (args.CommandColumn.ID == "list-orders")
             {
-                navigationManager.NavigateTo("/customers/" + args.RowData.CustomerId + "/orders");
+                ordersListDialogCustomerId = args.RowData.CustomerId.ToString();
+                ordersListDialog.ShowAsync();
             }
             else if (args.CommandColumn.ID == "view-order")
             {
@@ -180,6 +190,8 @@
     #region Dialog handlers
     private SfDialog customerViewDialog;
 
+    private SfDialog ordersListDialog;
+    private string ordersListDialogCustomerId = string.Empty;
     #endregion
 
     private async void OnUserChanged()
