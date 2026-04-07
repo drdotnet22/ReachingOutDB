@@ -6,11 +6,14 @@
 @inject CustomerServices customerService
 @inject YearQuarterService yearQuarterService
 
-<h3>RegularBackpageUpdates</h3>
+<h3>Regular Backpage Updates</h3>
+
+<span>These customers normally do a backpage update with an announcment or article. Double check before printing to make sure there isn't an old announcement.'</span>
 
 <SfGrid DataSource="@regularBackpageUpdates" >
     <GridColumns>
         <GridEvents CommandClicked="CommandClickedHandler" TValue="RegularBackpageUpdate" />
+        <GridColumn HeaderText="ID" Field="CustomerId" Type="ColumnType.Integer" TextAlign="TextAlign.Right" Width="100" />
         <GridColumn HeaderText="Customer Name" Field="Customer.CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Already Updated This Quarter" Field="AlreadyUpdated" TextAlign="TextAlign.Center">
             <Template>
@@ -27,9 +30,10 @@
                 }
             </Template>
         </GridColumn>
-        <GridColumn HeaderText="List Orders">
+        <GridColumn>
             <GridCommandColumns>
                 <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-list-unordered", CssClass = "e-flat" })" ID="list-orders" />
+                <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
             </GridCommandColumns>
         </GridColumn>
     </GridColumns>
@@ -39,6 +43,14 @@
     <DialogTemplates>
         <Content>
             <CustomersOrders CusNo="@ordersListDialogCustomerId" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<SfDialog @ref="customerViewDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%">
+    <DialogTemplates>
+        <Content>
+            <CustomerViewEdit ThisCustomer="selectedCustomer" Editable="false" />
         </Content>
     </DialogTemplates>
 </SfDialog>
@@ -55,6 +67,7 @@
     private IEnumerable<Customer> customers { get; set; }
     private IEnumerable<Order> currentOrders { get; set; }
     private IEnumerable<RegularBackpageUpdate> regularBackpageUpdates { get; set; }
+    private Customer selectedCustomer { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,12 +99,19 @@
                 ordersListDialogCustomerId = args.RowData.CustomerId.ToString();
                 ordersListDialog.ShowAsync();
             }
+            else if (args.CommandColumn.ID == "view-order")
+            {
+                selectedCustomer = args.RowData.Customer;
+                customerViewDialog.ShowAsync();
+            }
         }
     }
 
     // Dialog handlers
     private SfDialog ordersListDialog;
     private string ordersListDialogCustomerId = string.Empty;
+
+    private SfDialog customerViewDialog;
 
     private async void YearQuarterChanged()
     {
