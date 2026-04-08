@@ -14,7 +14,7 @@
 @if (userService.CurrentUser.Role != UserRole.UnAssigned)
 {
     <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
-        //Custom toolbar for each type of user
+        @* Custom toolbar for each type of user *@
         <SfToolbar>
             <ToolbarEvents Clicked="ToolbarClickHandler" />
             <ToolbarItems>
@@ -289,6 +289,14 @@ else
     .e-checkbox-wrapper.e-alert .e-frame.e-check { /* csslint allow: adjoining-classes */
         background-color: #ffff00;
         color: black
+    }
+
+    .e-gridfooter {
+        height: 25px; /* adjust to whatever looks right */
+    }
+
+    .e-gridfooter.e-summarycontent{
+        height: 25px; /* adjust to whatever looks right */
     }
 </style>
 
