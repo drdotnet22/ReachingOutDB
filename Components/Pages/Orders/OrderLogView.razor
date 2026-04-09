@@ -1,5 +1,5 @@
 ﻿@using ReachingOutDB.Data
-@inject OrderAuditLogServices orderAuditLogServices
+@inject AuditLogServices auditLogServices
 
 
 <SfGrid DataSource="@auditLogs" TValue="OrderAuditLog">
@@ -23,7 +23,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        auditLogs = await orderAuditLogServices.GetLogsOfOrder(ThisOrder);
+        auditLogs = await auditLogServices.GetLogsOfOrder(ThisOrder);
         await base.OnInitializedAsync();
     }
 

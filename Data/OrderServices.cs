@@ -8,12 +8,12 @@ namespace ReachingOutDB.Data
     {
         #region Private members
         private IDbContextFactory<AppDbContext> contextFactory;
-        private OrderAuditLogServices auditLogServices;
+        private AuditLogServices auditLogServices;
         private CustomerServices customerServices;
         #endregion
 
         #region Constructor
-        public OrderServices(IDbContextFactory<AppDbContext> contextFactory, OrderAuditLogServices auditLogServices, CustomerServices customerServices)
+        public OrderServices(IDbContextFactory<AppDbContext> contextFactory, AuditLogServices auditLogServices, CustomerServices customerServices)
         {
             this.contextFactory = contextFactory;
             this.auditLogServices = auditLogServices;

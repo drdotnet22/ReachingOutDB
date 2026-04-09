@@ -1,26 +1,19 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using System.Security.Claims;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ReachingOutDB.Data
 {
-    public class OrderAuditLogServices
+    public class AuditLogServices
     {
         #region Private members
         private IDbContextFactory<AppDbContext> contextFactory;
-        private AuthenticationStateProvider authenticationStateProvider;
         private UserServices userService;
         #endregion
 
         #region Constructor
-        public OrderAuditLogServices(IDbContextFactory<AppDbContext> contextFactory, AuthenticationStateProvider authenticationStateProvider, UserServices userService  )
+        public AuditLogServices(IDbContextFactory<AppDbContext> contextFactory, UserServices userService  )
         {
             this.contextFactory = contextFactory;
-            this.authenticationStateProvider = authenticationStateProvider;
             this.userService = userService;
         }
         #endregion
