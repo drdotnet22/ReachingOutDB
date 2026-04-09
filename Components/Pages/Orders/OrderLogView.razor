@@ -4,7 +4,11 @@
 
 <SfGrid DataSource="@auditLogs" TValue="OrderAuditLog">
     <GridColumns>
-        <GridColumn Field="@nameof(OrderAuditLog.Timestamp)" />
+        <GridColumn Field="@nameof(OrderAuditLog.Timestamp)" >
+            <Template>
+                @ToNewYorkTime((context as OrderAuditLog).Timestamp)
+            </Template>
+        </GridColumn>
         <GridColumn Field="@nameof(OrderAuditLog.UserName)" />
         <GridColumn Field="@nameof(OrderAuditLog.Action)" />
         <GridColumn Field="@nameof(OrderAuditLog.PropertyName)" />
@@ -21,5 +25,12 @@
     {
         auditLogs = await orderAuditLogServices.GetLogsOfOrder(ThisOrder);
         await base.OnInitializedAsync();
+    }
+
+    private string ToNewYorkTime(DateTime utcTime)
+    {
+        var tz = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
+        var nyTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tz);
+        return nyTime.ToString("M/d/yyyy hh:mm tt");
     }
 }
