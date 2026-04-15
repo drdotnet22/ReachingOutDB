@@ -160,10 +160,6 @@
                                     {
                                         <span class="chip-shipping chip-ups">UPS</span>
                                     }
-                                    if (order.PostalQty.HasValue && order.PostalQty > 0)
-                                    {
-                                        <span class="chip-shipping chip-usps">USPS</span>
-                                    }
                                     if (order.IntlQty.HasValue && order.IntlQty > 0)
                                     {
                                         <span class="chip-shipping chip-intl">INTL</span>
@@ -171,6 +167,10 @@
                                     if (order.LtlQty.HasValue && order.LtlQty > 0)
                                     {
                                         <span class="chip-shipping chip-ltl">LTL</span>
+                                    }
+                                    if (order.PostalQty.HasValue && order.PostalQty > 0)
+                                    {
+                                        <span class="chip-shipping chip-usps">USPS</span>
                                     }
                                 }
                             }
