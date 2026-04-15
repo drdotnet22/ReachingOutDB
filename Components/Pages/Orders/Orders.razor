@@ -152,23 +152,23 @@
                             @{
                                 var order = (context as Order);
                                 {
-                                    @if (order.DmQty.HasValue && order.DmQty > 0)
+                                    if (order.DmQty > 0)
                                     {
                                         <span class="chip-shipping chip-dm">DM</span>
                                     }
-                                    if (order.UpsQty.HasValue && order.UpsQty > 0)
+                                    if (order.UpsQty > 0)
                                     {
                                         <span class="chip-shipping chip-ups">UPS</span>
                                     }
-                                    if (order.IntlQty.HasValue && order.IntlQty > 0)
+                                    if (order.IntlQty > 0)
                                     {
                                         <span class="chip-shipping chip-intl">INTL</span>
                                     }
-                                    if (order.LtlQty.HasValue && order.LtlQty > 0)
+                                    if (order.LtlQty > 0)
                                     {
                                         <span class="chip-shipping chip-ltl">LTL</span>
                                     }
-                                    if (order.PostalQty.HasValue && order.PostalQty > 0)
+                                    if (order.PostalQty > 0)
                                     {
                                         <span class="chip-shipping chip-usps">USPS</span>
                                     }
