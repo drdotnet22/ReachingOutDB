@@ -2,6 +2,10 @@
 
 @inject YearQuarterService yearQuarterService
 
+<SfButtonGroup>
+    <ButtonGroupButton IconCss="e-icons e-chevron-left" @onclick="PreviousQuarter" />
+    <ButtonGroupButton IconCss="e-icons e-chevron-right" @onclick="NextQuarter" />
+</SfButtonGroup>
 
 <SfNumericTextBox @bind-Value="yearQuarterService.SelectedYear"
         Format="####"
@@ -31,6 +35,32 @@
         if (firstRender)
         {
             yearQuarterService.CalculateYearQuarterAsync();
+        }
+    }
+
+    private void NextQuarter()
+    {
+        if (yearQuarterService.SelectedQuarter == Quarter.Q4)
+        {
+            yearQuarterService.SelectedYear++;
+            yearQuarterService.SelectedQuarter = Quarter.Q1;
+        }
+        else
+        {
+            yearQuarterService.SelectedQuarter++;
+        }
+    }
+
+    private void PreviousQuarter()
+    {
+        if (yearQuarterService.SelectedQuarter == Quarter.Q1)
+        {
+            yearQuarterService.SelectedYear--;
+            yearQuarterService.SelectedQuarter = Quarter.Q4;
+        }
+        else
+        {
+            yearQuarterService.SelectedQuarter--;
         }
     }
 }
