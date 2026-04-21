@@ -52,7 +52,7 @@ CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
 
 var app = builder.Build();
 
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mzk2OTA1NEAzMzMwMmUzMDJlMzAzYjMzMzAzYlIvQ2R1NCtubEwwVGJtMHhQcUxlZ3RSa0dLYWZGdTk2RXRad2hjUE9IT1U9");
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JHaF5cWWdCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWXtccXVWQ2JYWUR2XENWYEo=");
 
 // Apply migrations automatically on startup
 using (var scope = app.Services.CreateScope())

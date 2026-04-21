@@ -35,10 +35,10 @@
     </GridEditSettings>
     <GridColumns>
         <GridColumn HeaderText="Description" Field="PackageDescription" Type="ColumnType.String" TextAlign="TextAlign.Left" Width="200" />
-        <GridColumn HeaderText="Weight (lbs)" Field="PackagingWeight" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="120" />
-        <GridColumn HeaderText="Length (in)" Field="Length" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="100" />
-        <GridColumn HeaderText="Width (in)" Field="Width" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="100" />
-        <GridColumn HeaderText="Height (in)" Field="Height" Type="ColumnType.Number" Format="n2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Weight (lbs)" Field="PackagingWeight" Type="ColumnType.Decimal" Format="n2" TextAlign="TextAlign.Right" Width="120" />
+        <GridColumn HeaderText="Length (in)" Field="Length" Type="ColumnType.Decimal" Format="n2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Width (in)" Field="Width" Type="ColumnType.Decimal" Format="n2" TextAlign="TextAlign.Right" Width="100" />
+        <GridColumn HeaderText="Height (in)" Field="Height" Type="ColumnType.Decimal" Format="n2" TextAlign="TextAlign.Right" Width="100" />
         <GridColumn>
             <GridCommandColumns>
                 <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>

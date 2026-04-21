@@ -20,18 +20,19 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Sylvan.Data.Csv" Version="1.4.2" />
-    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Cards" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.DataForm" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.LinearGauge" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.MultiColumnComboBox" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Popups" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="30.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="30.2.4" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.DataForm" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.LinearGauge" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.MultiColumnComboBox" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.SplitButtons" Version="33.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="33.2.3" />
   </ItemGroup>
 
   <ItemGroup>

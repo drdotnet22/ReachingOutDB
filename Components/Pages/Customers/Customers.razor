@@ -33,7 +33,7 @@
         <GridColumn HeaderText="ID" Field="CustomerId" IsPrimaryKey="true" Type="ColumnType.Integer" Width="100" TextAlign="TextAlign.Right"/>
         <GridColumn HeaderText="Customer Name" Field="CustomerName" Type="ColumnType.String" TextAlign="TextAlign.Left" />
         <GridColumn HeaderText="Location" Field="Location" Type="ColumnType.String" TextAlign="TextAlign.Left" />
-        <GridColumn HeaderText="Quantity" Field="Qty" Type="ColumnType.Number" TextAlign="TextAlign.Right" Width="90">
+        <GridColumn HeaderText="Quantity" Field="Qty" Type="ColumnType.Integer" TextAlign="TextAlign.Right" Width="90">
             <Template>
                 @if ((context as Customer).VariableOrders == false)
                 {

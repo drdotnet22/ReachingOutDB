@@ -30,7 +30,7 @@ namespace ReachingOutDB.Data
                 dbContext.ShippingSettings.Add(shippingSetting);
                 await dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -45,7 +45,7 @@ namespace ReachingOutDB.Data
                 dbContext.Update(shippingSetting);
                 await dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -59,7 +59,7 @@ namespace ReachingOutDB.Data
                 dbContext.ShippingSettings.Remove(shippingSetting);
                 await dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

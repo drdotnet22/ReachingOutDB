@@ -14,7 +14,7 @@
         <GridColumns>
             <GridColumn Field="@nameof(UserProfile.UserProfileId)" HeaderText="ID" AllowEditing="false" />
             <GridColumn Field="@nameof(UserProfile.Name)" />
-            <GridColumn Field="@nameof(UserProfile.Role)" Type="ColumnType.Number">
+            <GridColumn Field="@nameof(UserProfile.Role)" Type="ColumnType.Integer">
                 <EditTemplate>
                     @{
                         var user = (context as UserProfile);

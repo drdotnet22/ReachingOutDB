@@ -109,7 +109,7 @@
                 </GridAggregates>
                 <GridColumns>
                     <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
-                    <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Type="ColumnType.Number" Width="120">
+                    <GridColumn Field="@nameof(Order.JobStatus)" HeaderText="Job Status" Type="ColumnType.Integer" Width="120">
                         <FilterTemplate>
                             <SfDropDownList @ref="jobStatusFilter"
                                             ID="JobStatus"
