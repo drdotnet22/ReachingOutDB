@@ -1,0 +1,63 @@
+﻿@using ReachingOutDB.Data
+@using Syncfusion.Blazor.MultiColumnComboBox
+@inject OrderServices orderService
+@inject YearQuarterService yearQuarterService
+
+<div class="myflexcolumn">
+    <div class="myflexrow">
+        <SfNumericTextBox @bind-Value="year" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="####" />
+        <SfDropDownList TItem="string" TValue="Quarter"
+                        @bind-Value="quarter"
+                        DataSource="@quarterValues"
+                        Placeholder="Quarter" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+        </SfDropDownList>
+    </div>
+    <div class="myflexrow">
+        <FluentIcon Value="@(new Icons.Regular.Size20.Info())" Color="Color.Neutral" />
+        <span style="color:gray; font-size:small">Leave customer field blank to generate bulk orders.</span>
+    </div>
+    <SfMultiColumnComboBox TItem="Customer" TValue="Customer" AllowFiltering="true"
+                               FilterType="Syncfusion.Blazor.MultiColumnComboBox.FilterType.Contains"
+                               @bind-Value="selectedCustomer"
+                               DataSource="CustomerList"
+                               ValueField="CustomerId"
+                               TextField="CustomerName"
+                               Width="400px"
+                               Placeholder="Customer" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+        <MultiColumnComboboxColumns>
+            <MultiColumnComboboxColumn Field="CustomerId" Header="ID" Width="80px" />
+            <MultiColumnComboboxColumn Field="CustomerName" Header="Customer Name" />
+        </MultiColumnComboboxColumns>
+    </SfMultiColumnComboBox>
+    <SfButton IsPrimary="true" OnClick="SubmitOrder">Submit</SfButton>
+    <br />
+</div>
+
+@code {
+    [Parameter] public IEnumerable<Customer> CustomerList { get; set; }
+    [Parameter] public EventCallback OnOrdersGenerated { get; set; }
+    private Customer selectedCustomer { get; set; } = new Customer();
+    private int year;
+    private Quarter quarter;
+    private string[] quarterValues = Quarter.GetNames(typeof(Quarter));
+
+    protected override async Task OnInitializedAsync()
+    {
+        year = yearQuarterService.SelectedYear;
+        quarter = yearQuarterService.SelectedQuarter;
+    }
+
+    private async Task SubmitOrder()
+    {
+        if (selectedCustomer != null)
+        {
+            await orderService.GenerateOrders(selectedCustomer.CustomerId, year, quarter);
+        }
+        else
+        {
+            await orderService.GenerateOrders(null, year, quarter);
+        }
+        await OnOrdersGenerated.InvokeAsync();
+    }
+
+}

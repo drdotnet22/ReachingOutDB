@@ -253,6 +253,15 @@ else
     </DialogTemplates>
 </SfDialog>
 
+<SfDialog @ref="addOrdersDialog" Visible="false" ShowCloseIcon="true" Width="25%" Header="Add Orders">
+    <DialogEvents OnClose="RefreshOrders" />
+    <DialogTemplates>
+        <Content>
+            <AddOrders CustomerList="customers" OnOrdersGenerated="HideAddOrdersDialog" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
 <Syncfusion.Blazor.Popups.SfDialogProvider />
 
 <style>
@@ -482,20 +491,7 @@ else
     {
         if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
         {
-            if (args.Action == "Add")
-            {
-                args.Cancel = true;
-                if (args.Data.Customer == null)
-                {
-                    await orderService.GenerateOrders(null, args.Data.Year, args.Data.Quarter);
-                }
-                else
-                {
-                    await orderService.GenerateOrders(args.Data.Customer.CustomerId, args.Data.Year, args.Data.Quarter);
-                }
-                RefreshOrders();
-            }
-            else if (args.Action == "Edit")
+            if (args.Action == "Edit")
             {
                 args.Cancel = true;
                 await orderService.UpdateOrderAsync(args.Data);
@@ -644,7 +640,7 @@ else
     {
         if (args.Item.Text == "Add")
         {
-            Grid.AddRecordAsync();
+            addOrdersDialog.ShowAsync();
         }
         else if (args.Item.Text == "CSV Export")
         {
@@ -693,6 +689,12 @@ else
     private Order orderViewDialogRecord;
 
     private SfDialog endiciaImportDialog;
+
+    private SfDialog addOrdersDialog;
+    private void HideAddOrdersDialog()
+    {
+        addOrdersDialog.HideAsync();
+    }
     #endregion
 
     private async void OnUserChanged()
