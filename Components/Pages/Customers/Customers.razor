@@ -16,8 +16,8 @@
         <SfSwitch @bind-Checked="showArchivedCustomers" ValueChange="ChangeCustomerFilter" TChecked="bool" />
     </div>
 </div>
-<SfGrid @ref="Grid" DataSource="@filteredCustomers" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30" >
-    <GridEvents OnActionBegin="ActionBeginHandler" CommandClicked="CommandClickedHandler" TValue="Customer" />
+<SfGrid @ref="Grid" DataSource="@filteredCustomers" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30">
+    <GridEvents OnActionBegin="ActionBeginHandler" TValue="Customer" />
     <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" >
         <HeaderTemplate>
             @{
@@ -52,21 +52,40 @@
 
         @if (userService.CurrentUser.Role == UserRole.Admin)
         {
-            <GridColumn>
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-list-unordered", CssClass = "e-flat" })" ID="list-orders" />
-                    <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
-                    <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
-                </GridCommandColumns>
+            <GridColumn Width="150">
+                <Template>
+                    @{
+                        var customer = context as Customer;
+                    }
+                    <div style="display: flex; gap: 5px;">
+                        <SfButton IconCss="e-icons e-list-unordered" CssClass="e-flat"
+                                  OnClick="@(() => ViewListOfCustomersOrders(customer))" />
+
+                        <SfButton IconCss="e-icons e-edit" CssClass="e-flat"
+                                  OnClick="@(() => ViewEditCustomer(customer))" />
+
+                        <SfButton IconCss="e-icons e-delete" CssClass="e-flat"
+                                  Disabled="@(!customer.Active)"
+                                  OnClick="@(() => ArchiveCustomerAsync(customer))" />
+                    </div>
+                </Template>
             </GridColumn>
         }
         else
         {
-            <GridColumn>
-                <GridCommandColumns>
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-list-unordered", CssClass = "e-flat" })" ID="list-orders" />
-                    <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
-                </GridCommandColumns>
+            <GridColumn Width="100">
+                <Template>
+                    @{
+                        var customer = context as Customer;
+                    }
+                    <div style="display: flex; gap: 5px;">
+                        <SfButton IconCss="e-icons e-list-unordered" CssClass="e-flat"
+                                  OnClick="@(() => ViewListOfCustomersOrders(customer))" />
+
+                        <SfButton IconCss="e-icons e-eye" CssClass="e-flat"
+                                  OnClick="@(() => ViewEditCustomer(customer))" />
+                    </div>
+                </Template>
             </GridColumn>
         }
     </GridColumns>
@@ -80,10 +99,17 @@
     </DialogTemplates>
 </SfDialog>
 
-<SfDialog @ref="customerViewDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%" >
+<SfDialog @ref="customerViewEditDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%" >
+    <DialogEvents Closed="@CustomerViewEditDialogClosed" />
     <DialogTemplates>
         <Content>
-            <CustomerViewEdit ThisCustomer="selectedCustomer" Editable="false"/>
+            <CustomerViewEdit ThisCustomer="selectedCustomer" Editable="@(userService.CurrentUser.Role == UserRole.Admin)"/>
+            @if (userService.CurrentUser.Role == UserRole.Admin)
+            {
+                <div style="display: flex; justify-content: flex-end; width: 100%; padding: 15px 0;">
+                    <SfButton IsPrimary="true" OnClick="SaveEditedCustomer">Save</SfButton>
+                </div>
+            }
         </Content>
     </DialogTemplates>
 </SfDialog>
@@ -151,32 +177,22 @@
         }
     }
 
-    public async void CommandClickedHandler(CommandClickEventArgs<Customer> args)
+    private async void ViewEditCustomer(Customer customer)
     {
-        if (args.CommandColumn.Type == CommandButtonType.Edit)
-        {
-            ActionEventArgs<Customer> actionEventArgs = new ActionEventArgs<Customer>();
-            actionEventArgs.Data = args.RowData;
-            ActionBeginHandler(actionEventArgs);
-        }
-        else if (args.CommandColumn.Type == CommandButtonType.None)
-        {
-            if (args.CommandColumn.ID == "list-orders")
-            {
-                ordersListDialogCustomerId = args.RowData.CustomerId.ToString();
-                ordersListDialog.ShowAsync();
-            }
-            else if (args.CommandColumn.ID == "view-order")
-            {
-                selectedCustomer = args.RowData;
-                customerViewDialog.ShowAsync();
-            }
-        }
-        else if (args.CommandColumn.Type == CommandButtonType.Delete)
-        {
-            await customerService.ArchiveCustomerAsync(args.RowData);
-            await RefreshCustomers();
-        }
+        selectedCustomer = customer;
+        customerViewEditDialog.ShowAsync();
+    }
+
+    private async void ArchiveCustomerAsync(Customer customer)
+    {
+        await customerService.ArchiveCustomerAsync(customer);
+        await RefreshCustomers();
+    }
+
+    private void ViewListOfCustomersOrders(Customer customer)
+    {
+        ordersListDialogCustomerId = customer.CustomerId.ToString();
+        ordersListDialog.ShowAsync();
     }
 
     public string GetHeader(Customer arg)
@@ -188,10 +204,26 @@
     #endregion
 
     #region Dialog handlers
-    private SfDialog customerViewDialog;
+    private SfDialog customerViewEditDialog;
 
     private SfDialog ordersListDialog;
     private string ordersListDialogCustomerId = string.Empty;
+
+    private async void SaveEditedCustomer()
+    {
+        await customerService.UpdateCustomerAsync(selectedCustomer);
+        await customerViewEditDialog.HideAsync();
+        await RefreshCustomers();
+    }
+
+    private async void CustomerViewEditDialogClosed()
+    {
+        selectedCustomer = null;
+        if (userService.CurrentUser.Role == UserRole.Admin)
+        {
+            await RefreshCustomers();
+        }
+    }
     #endregion
 
     private async void OnUserChanged()
