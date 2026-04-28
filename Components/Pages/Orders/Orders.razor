@@ -135,7 +135,7 @@
                             </SfDropDownList>
                         </FilterTemplate>
                     </GridColumn>
-                    <GridColumn Field="ShipMethods" Width="200" AllowSorting="false" AllowEditing="false">
+                    <GridColumn Field="ShipMethods" Width="170" AllowSorting="false" AllowEditing="false">
                         <HeaderTemplate>
                             <div class="myflexrow">
                                 <span>Ship Methods</span>
@@ -183,8 +183,8 @@
                         </FilterTemplate>
                     </GridColumn>
                     <GridColumn Field="@nameof(Order.SpecialNotes)" HeaderText="Special Instructions" FilterSettings="new FilterSettings { Operator = Operator.Contains }" />
-                    <GridColumn Field="@nameof(Order.CustomBP)" HeaderText="Custom BP" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="100" />
-                    <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
+                    <GridColumn Field="@nameof(Order.CustomBP)" HeaderText="Custom" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="95" />
+                    <GridColumn Field="@nameof(Order.BpUpdate)" HeaderText="BP Update" TextAlign="TextAlign.Center" Width="95" Visible="@superAdmin">
                         <Template>
                             @{
                                 var order = (context as Order);
@@ -193,7 +193,7 @@
                             }
                         </Template>
                     </GridColumn>
-                    <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="100" Visible="@superAdmin">
+                    <GridColumn Field="@nameof(Order.YearlyBilling)" HeaderText="Yearly" TextAlign="TextAlign.Center" Width="95" Visible="@superAdmin">
                         <Template>
                             @{
                                 var order = (context as Order);
@@ -202,13 +202,13 @@
                             }
                         </Template>
                     </GridColumn>
-                    <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
-                    <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="100" Visible="@superAdmin" />
-                    <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="90" TextAlign="TextAlign.Right" />
+                    <GridColumn Field="@nameof(Order.PubUsps)" HeaderText="USPS" Format="C2" TextAlign="TextAlign.Right" Width="95" Visible="@superAdmin" />
+                    <GridColumn Field="@nameof(Order.PubShipping)" HeaderText="Shipping" Format="C2" TextAlign="TextAlign.Right" Width="95" Visible="@superAdmin" />
+                    <GridColumn Field="@nameof(Order.CustomerId)" HeaderText="ID" Width="95" TextAlign="TextAlign.Right" />
                     <GridColumn Field="Customer.CustomerName" HeaderText="Customer" />
-                    <GridColumn Field="Customer.Location" HeaderText="Location" Visible="@superAdmin" />
+                    <GridColumn Field="Customer.Location" HeaderText="Location" Width="150" Visible="@superAdmin" />
                     <GridColumn Field="@nameof(Order.NotesForInvoicing)" HeaderText="Notes for invoicing" Visible="@superAdmin" />
-                    <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="100" TextAlign="TextAlign.Right" Format="#,###" />
+                    <GridColumn Field="@nameof(Order.Qty)" HeaderText="Quantity" Width="95" TextAlign="TextAlign.Right" Format="#,###" />
                     <GridColumn Width="155" Visible="@superAdmin">
                         <GridCommandColumns>
                             <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-chevron-right", CssClass = "e-flat" })" ID="advance-status" />
