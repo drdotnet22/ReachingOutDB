@@ -9,6 +9,7 @@ namespace ReachingOutDB.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderAuditLog> OrderAuditLogs { get; set; }
+        public DbSet<CustomerChangesLog> CustomerChangesLogs { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<PackageOption> PackageOptions { get; set; }
@@ -35,7 +36,12 @@ namespace ReachingOutDB.Data
                 .WithMany()
                 .HasForeignKey(o => o.CustomerId)
                 .IsRequired();
-            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CustomerChangesLog>()
+                .HasOne(c => c.Customer)
+                .WithMany()
+                .HasForeignKey(c => c.CustomerId)
+                .IsRequired();
 
             modelBuilder.Entity<Package>()
                 .HasOne(p => p.Customer)
@@ -58,6 +64,8 @@ namespace ReachingOutDB.Data
                 .HasOne(pa => pa.Order)
                 .WithMany(o => o.PlateAssignments)
                 .HasForeignKey(pa => pa.OrderId);
+
+            base.OnModelCreating(modelBuilder);
         }
 
         private List<Customer> GetCustomers()

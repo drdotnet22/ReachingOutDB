@@ -31,6 +31,19 @@ namespace ReachingOutDB.Data
             }
         }
 
+        public async Task<Customer> GetCustomerByIdAsync(int id)
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+            try
+            {
+                return await dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task AddCustomerAsync(Customer customer)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();

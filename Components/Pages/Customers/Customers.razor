@@ -5,6 +5,7 @@
 @inject OrderServices orderService
 @inject CustomerServices customerService
 @inject UserServices userService
+@inject CustomerChangesServices customerChangesServices
 @inject NavigationManager navigationManager
 
 <PageTitle>Customers - Reaching Out</PageTitle>
@@ -114,6 +115,17 @@
     </DialogTemplates>
 </SfDialog>
 
+<SfDialog @ref="addCustomerChangeLogDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%">
+    <DialogTemplates>
+        <Content>
+            <CustomerChangesLogViewEdit ThisLog="customerChanges" Editable="true" />
+            <div style="display: flex; justify-content: flex-end; width: 100%; padding: 15px 0;">
+                <SfButton IsPrimary="true" OnClick="SaveCustomerChangeLog">Save</SfButton>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
 @code {
     public IEnumerable<Customer> allCustomers { get; set; }
     public IEnumerable<Customer> filteredCustomers { get; set; }
@@ -205,7 +217,7 @@
 
     #region Dialog handlers
     private SfDialog customerViewEditDialog;
-
+    private SfDialog addCustomerChangeLogDialog;
     private SfDialog ordersListDialog;
     private string ordersListDialogCustomerId = string.Empty;
 
@@ -213,7 +225,9 @@
     {
         await customerService.UpdateCustomerAsync(selectedCustomer);
         await customerViewEditDialog.HideAsync();
-        await RefreshCustomers();
+        customerChanges.CustomerId = selectedCustomer.CustomerId;
+        customerChanges.Customer = selectedCustomer;
+        await addCustomerChangeLogDialog.ShowAsync();
     }
 
     private async void CustomerViewEditDialogClosed()
@@ -224,6 +238,16 @@
             await RefreshCustomers();
         }
     }
+
+    private CustomerChangesLog customerChanges = new();
+
+    private async void SaveCustomerChangeLog()
+    {
+        await addCustomerChangeLogDialog.HideAsync();
+        await customerChangesServices.AddCustomerChangesLogAsync(customerChanges);
+        await RefreshCustomers();
+    }
+
     #endregion
 
     private async void OnUserChanged()
