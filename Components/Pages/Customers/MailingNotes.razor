@@ -31,6 +31,7 @@
     <GridColumns>
         <GridColumn Field="@nameof(Customer.CustomerId)" HeaderText="Customer ID" />
         <GridColumn Field="@nameof(Customer.CustomerName)" HeaderText="Customer Name" />
+        <GridColumn Field="@nameof(Customer.MailingNotes)" HeaderText="Mailing Notes" Width="0"/>
         <GridColumn Width="152">
             <GridCommandColumns>
                 <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
