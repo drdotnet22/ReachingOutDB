@@ -38,6 +38,7 @@ builder.Services.AddScoped<CustomerServices>();
 builder.Services.AddScoped<OrderServices>();
 builder.Services.AddScoped<YearQuarterService>();
 builder.Services.AddScoped<AuditLogServices>();
+builder.Services.AddScoped<CustomerChangesServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<PackageServices>();
 builder.Services.AddScoped<ShippingSettingsServices>();

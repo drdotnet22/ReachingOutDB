@@ -115,6 +115,18 @@ namespace ReachingOutDB.Data
         public string Action { get; set; }
     }
 
+    public class CustomerChangesLog
+    {
+        public Guid CustomerChangesLogId { get; set; }
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public string UserName { get; set; }
+        public Customer Customer { get; set; }
+        public int CustomerId { get; set; }
+        public string? Notes { get; set; }
+        public string? Contact { get; set; }
+        public byte[]? ScanContent { get; set; }
+    }
+
     public class UserProfile
     {
         public int UserProfileId { get; set; }

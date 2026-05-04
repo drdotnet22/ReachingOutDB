@@ -1,0 +1,68 @@
+﻿@using ReachingOutDB.Data
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.SfPdfViewer
+@using Syncfusion.Blazor.Spinner
+
+<div class="myflexcolumn">
+    <SfCard>
+        <CardContent>
+            <div class="myflexcolumn">
+                <div class="myflexrow">
+                    <SfNumericTextBox @bind-Value="ThisLog.CustomerId" Readonly="true" Placeholder="Customer ID" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ShowSpinButton="false" Width="150px" />
+                    <SfTextBox @bind-Value="ThisLog.Customer.CustomerName" Readonly="true" Placeholder="Customer Name" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="300px" />
+                </div>
+                <div class="myflexrow">
+                    <SfTextBox @bind-Value="ThisLog.UserName" Readonly="@(!Editable)" Placeholder="Changed By" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="250px" />
+                    <SfDateTimePicker TValue="DateTime" @bind-Value="ThisLog.Timestamp" Readonly="@(!Editable)" Placeholder="Change Date" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="250px" />
+                </div>
+                <SfTextBox @bind-Value="ThisLog.Contact" Readonly="@(!Editable)" Placeholder="Contact Info" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="400px" />
+                <SfTextArea @bind-Value="ThisLog.Notes" Readonly="@(!Editable)" Placeholder="Change Notes" RowCount="4" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
+            </div>
+
+        </CardContent>
+    </SfCard>
+    @if (ThisLog.ScanContent == null)
+    {
+        <SfUploader AutoUpload="false" AllowedExtensions=".pdf" AllowMultiple="false" MaxFileSize="2097152" EnableHtmlSanitizer="true" Enabled="@Editable">
+            <UploaderEvents ValueChange="OnUploadChange"></UploaderEvents>
+        </SfUploader>
+    }
+    else
+    {
+        <SfSpinner Size="40" Type="SpinnerType.Fluent2" Visible="isSpinnerVisible"></SfSpinner>
+        <div class="pdf-viewer-shell @(pdfReady ? "visible" : "")">
+            <SfPdfViewer2 DocumentPath="@($"data:application/pdf;base64,{Convert.ToBase64String(ThisLog.ScanContent)}")" EnableToolbar="false" Height="600px">
+                <PdfViewerEvents DocumentLoaded="OnPdfLoaded" />
+            </SfPdfViewer2>
+        </div>
+    }
+</div>
+
+
+@code {
+    [Parameter] public CustomerChangesLog ThisLog { get; set; }
+    [Parameter] public bool Editable { get; set; }
+    
+    private bool isSpinnerVisible = true;
+    private bool pdfReady = false;
+
+    private async Task OnUploadChange(UploadChangeEventArgs args)
+    {
+        foreach (var file in args.Files)
+        {
+            // Read the file content into a byte array
+            using var memoryStream = new MemoryStream();
+            await file.Stream.CopyToAsync(memoryStream);
+            var content = memoryStream.ToArray();
+
+            // Update the ThisLog object with the file content
+            ThisLog.ScanContent = content;
+        }
+    }
+
+    private void OnPdfLoaded()
+    {
+        isSpinnerVisible = false;
+        pdfReady = true;
+    }
+}
