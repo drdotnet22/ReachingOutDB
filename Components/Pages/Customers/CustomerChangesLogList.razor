@@ -1,22 +1,49 @@
 ﻿@using ReachingOutDB.Data
 @inject CustomerChangesServices customerChangesServices
+@inject DateTimeUtilities utilities
 
 <SfGrid DataSource="@changeLogs" TValue="CustomerChangesLog">
+    <GridEvents TValue="CustomerChangesLog" CommandClicked="CommandClickedHandler"/>
     <GridColumns>
         <GridColumn Field="@nameof(CustomerChangesLog.Timestamp)">
             <Template>
-                @ToNewYorkTime((context as CustomerChangesLog).Timestamp)
+                @utilities.ToNewYorkTimeString((context as CustomerChangesLog).Timestamp)
             </Template>
         </GridColumn>
+        <GridColumn Field="@nameof(CustomerChangesLog.UserName)" />
+        <GridColumn Field="@nameof(CustomerChangesLog.Contact)" />
+        <GridColumn Field="@nameof(CustomerChangesLog.Notes)" />
+        <GridColumn Field="@nameof(CustomerChangesLog.ScanContent)" >
+            <Template>
+                @{
+                    var log = (context as CustomerChangesLog);
+                    bool hasScan = log.ScanContent != null && log.ScanContent.Length > 0;
+                    <SfCheckBox Checked="hasScan" Disabled="true" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Width="60">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-eye", CssClass = "e-flat" })" ID="view-order" />
+            </GridCommandColumns>
+        </GridColumn>
     </GridColumns>
-    <GridColumn Field="@nameof(CustomerChangesLog.UserName)"/>
-    <GridColumn Field="@nameof(CustomerChangesLog.Contact)" />
-    <GridColumn Field="@nameof(CustomerChangesLog.Notes)" />
 </SfGrid>
+
+<SfDialog @ref="customerChangeLogViewDialog" Visible="false" ShowCloseIcon="true" IsModal="true" Width="60%">
+    <DialogTemplates>
+        <Content>
+            <CustomerChangesLogViewEdit ThisLog="@selectedChangeLog" Editable="false" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
 
 @code {
     [Parameter] public Customer ThisCustomer { get; set; }
     public IEnumerable<CustomerChangesLog> changeLogs { get; set; }
+
+    private SfDialog customerChangeLogViewDialog;
+    private CustomerChangesLog selectedChangeLog;
 
     protected override async Task OnInitializedAsync()
     {
@@ -24,10 +51,17 @@
         await base.OnInitializedAsync();
     }
 
-    private string ToNewYorkTime(DateTime utcTime)
+    private async void CommandClickedHandler(CommandClickEventArgs<CustomerChangesLog> args)
     {
-        var tz = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
-        var nyTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tz);
-        return nyTime.ToString("M/d/yyyy hh:mm tt");
+        if (args.CommandColumn.ID == "view-order")
+        {
+            selectedChangeLog = args.RowData;
+            customerChangeLogViewDialog.ShowAsync();
+        }
+    }
+
+    private void CustomerLogViewDialogClosed()
+    {
+        selectedChangeLog = null;
     }
 }

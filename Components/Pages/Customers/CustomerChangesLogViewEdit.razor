@@ -2,6 +2,11 @@
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.SfPdfViewer
 @using Syncfusion.Blazor.Spinner
+@using System.IO
+
+@inject CustomerServices customerServices
+@inject UserServices userServices
+@inject DateTimeUtilities utilities
 
 <div class="myflexcolumn">
     <SfCard>
@@ -13,7 +18,7 @@
                 </div>
                 <div class="myflexrow">
                     <SfTextBox @bind-Value="ThisLog.UserName" Readonly="@(!Editable)" Placeholder="Changed By" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="250px" />
-                    <SfDateTimePicker TValue="DateTime" @bind-Value="ThisLog.Timestamp" Readonly="@(!Editable)" Placeholder="Change Date" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="250px" />
+                    <SfDateTimePicker TValue="DateTime" @bind-Value="DisplayTimestamp" Readonly="@(!Editable)" Placeholder="Change Date" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="250px" />
                 </div>
                 <SfTextBox @bind-Value="ThisLog.Contact" Readonly="@(!Editable)" Placeholder="Contact Info" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Width="400px" />
                 <SfTextArea @bind-Value="ThisLog.Notes" Readonly="@(!Editable)" Placeholder="Change Notes" RowCount="4" ColumnCount="100" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" ResizeMode="Syncfusion.Blazor.Inputs.Resize.Vertical" />
@@ -23,18 +28,16 @@
     </SfCard>
     @if (ThisLog.ScanContent == null)
     {
-        <SfUploader AutoUpload="false" AllowedExtensions=".pdf" AllowMultiple="false" MaxFileSize="2097152" EnableHtmlSanitizer="true" Enabled="@Editable">
+        <SfUploader AutoUpload="true" AllowedExtensions=".pdf" AllowMultiple="false" MaxFileSize="2097152" EnableHtmlSanitizer="true" Enabled="@Editable">
             <UploaderEvents ValueChange="OnUploadChange"></UploaderEvents>
         </SfUploader>
     }
     else
     {
         <SfSpinner Size="40" Type="SpinnerType.Fluent2" Visible="isSpinnerVisible"></SfSpinner>
-        <div class="pdf-viewer-shell @(pdfReady ? "visible" : "")">
-            <SfPdfViewer2 DocumentPath="@($"data:application/pdf;base64,{Convert.ToBase64String(ThisLog.ScanContent)}")" EnableToolbar="false" Height="600px">
-                <PdfViewerEvents DocumentLoaded="OnPdfLoaded" />
-            </SfPdfViewer2>
-        </div>
+        <SfPdfViewer2 DocumentPath="@($"data:application/pdf;base64,{Convert.ToBase64String(ThisLog.ScanContent)}")" EnableToolbar="false" Height="600px">
+            <PdfViewerEvents DocumentLoaded="OnPdfLoaded" />
+        </SfPdfViewer2>
     }
 </div>
 
@@ -42,27 +45,51 @@
 @code {
     [Parameter] public CustomerChangesLog ThisLog { get; set; }
     [Parameter] public bool Editable { get; set; }
-    
+
     private bool isSpinnerVisible = true;
-    private bool pdfReady = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ThisLog.UserName = userServices.CurrentUser.Name;
+        await base.OnInitializedAsync();
+    }
+
+    private DateTime DisplayTimestamp
+    {
+        get
+        {
+            // Convert the UTC timestamp to local time for display
+            return utilities.ToNewYorkTime(ThisLog.Timestamp);
+        }
+        set
+        {
+            // Convert the local time back to UTC before saving
+            ThisLog.Timestamp = utilities.ToUtcTime(value);
+        }
+    }
 
     private async Task OnUploadChange(UploadChangeEventArgs args)
     {
         foreach (var file in args.Files)
         {
-            // Read the file content into a byte array
-            using var memoryStream = new MemoryStream();
-            await file.Stream.CopyToAsync(memoryStream);
-            var content = memoryStream.ToArray();
+            if (file.FileInfo.Type == "pdf")
+            {
+                // Read the file content into a byte array
+                using var memoryStream = new MemoryStream();
+                await file.File.OpenReadStream(long.MaxValue).CopyToAsync(memoryStream);
 
-            // Update the ThisLog object with the file content
-            ThisLog.ScanContent = content;
+                // Update the ThisLog object with the file content
+                ThisLog.ScanContent = memoryStream.ToArray();
+            }
+            else
+            {
+                Console.WriteLine($"File '{file.FileInfo.Name}' is not a PDF and will be skipped.");
+            }
         }
     }
 
     private void OnPdfLoaded()
     {
         isSpinnerVisible = false;
-        pdfReady = true;
     }
 }

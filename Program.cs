@@ -15,6 +15,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddFluentUIComponents();
 
 //Custom code
+builder.Services.AddSignalR(o => { o.MaximumReceiveMessageSize = 102400000; });
+builder.Services.AddMemoryCache();
+
 builder.Services.AddSyncfusionBlazor();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -45,6 +48,7 @@ builder.Services.AddScoped<ShippingSettingsServices>();
 builder.Services.AddScoped<MiscSettingsServices>();
 builder.Services.AddScoped<PlateServices>();
 builder.Services.AddScoped<SfDialogService>();
+builder.Services.AddScoped<DateTimeUtilities>();
 
 // Set default culture
 var defaultCulture = new CultureInfo("en-US");

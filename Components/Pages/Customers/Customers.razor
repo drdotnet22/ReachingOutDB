@@ -243,8 +243,8 @@
 
     private async void SaveCustomerChangeLog()
     {
-        await customerChangesServices.AddCustomerChangesLogAsync(customerChanges);
         await addCustomerChangeLogDialog.HideAsync();
+        await customerChangesServices.AddCustomerChangesLogAsync(customerChanges);
         await RefreshCustomers();
     }
 
