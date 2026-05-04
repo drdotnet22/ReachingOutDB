@@ -148,7 +148,12 @@
         <SfButton OnClick="AddMailingNotes" Disabled="@(!Editable)">Add Mailing Notes</SfButton>
     }
 
-    <CustomerChangesLogList ThisCustomer="ThisCustomer" />
+    <SfCard>
+        <CardHeader Title="Customer change logs" />
+        <CardContent>
+            <CustomerChangesLogList ThisCustomer="ThisCustomer" />
+        </CardContent>
+    </SfCard>
 
 </div>
 
