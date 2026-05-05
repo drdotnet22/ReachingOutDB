@@ -51,7 +51,7 @@
     protected override async Task OnInitializedAsync()
     {
         ThisLog.UserName = userServices.CurrentUser.Name;
-        ThisLog.Timestamp = utilities.ToNewYorkTime(DateTime.UtcNow);
+        ThisLog.Timestamp = DateTime.UtcNow;
         await base.OnInitializedAsync();
     }
 
