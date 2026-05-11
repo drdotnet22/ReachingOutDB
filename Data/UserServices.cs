@@ -30,6 +30,8 @@ namespace ReachingOutDB.Data
             }
         }
 
+        public bool AdminMode { get; set; } = false;
+
         public async Task<List<UserProfile>> GetUserListAsync()
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
