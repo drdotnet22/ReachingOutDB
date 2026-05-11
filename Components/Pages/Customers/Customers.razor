@@ -245,6 +245,7 @@
     {
         await addCustomerChangeLogDialog.HideAsync();
         await customerChangesServices.AddCustomerChangesLogAsync(customerChanges);
+        customerChanges = new();
         await RefreshCustomers();
     }
 
