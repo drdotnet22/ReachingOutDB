@@ -50,6 +50,8 @@ builder.Services.AddScoped<PlateServices>();
 builder.Services.AddScoped<SfDialogService>();
 builder.Services.AddScoped<DateTimeUtilities>();
 
+builder.Services.AddSingleton<OrderStateServices>();
+
 // Set default culture
 var defaultCulture = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = defaultCulture;

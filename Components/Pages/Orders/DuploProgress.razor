@@ -1,6 +1,7 @@
 ﻿@using Syncfusion.Blazor.LinearGauge
 @using ReachingOutDB.Data
-
+@inject OrderStateServices orderStateServices
+@implements IDisposable
 
 <SfLinearGauge Orientation="Syncfusion.Blazor.LinearGauge.Orientation.Horizontal" Background="transparent" Width="500" >
     <LinearGaugeContainer Width="25" RoundedCornerRadius="20" Type="ContainerType.Normal">
@@ -14,12 +15,12 @@
                     <LinearGaugeAxisLabelFont Size="0"></LinearGaugeAxisLabelFont>
                 </LinearGaugeAxisLabelStyle>
                 <LinearGaugePointers>
-                    <LinearGaugePointer PointerValue="@progressPercentage" Height="25" Width="25" Type="Point.Bar" Color="#62CC87" />
+                    <LinearGaugePointer PointerValue="@orderStateServices.DuploProgressPercentage" Height="25" Width="25" Type="Point.Bar" Color="#62CC87" />
                 </LinearGaugePointers>
                 <LinearGaugeAnnotations>
                     <LinearGaugeAnnotation AxisIndex="0" AxisValue="12" X="0" Y="0" ZIndex="1">
                         <ContentTemplate>
-                            <div style="font-size: 13px;color: black;margin-top: 3px;">Assembled @assembledOrders.ToString("N0") of @totalOrders.ToString("N0") - @progressPercentage% complete</div>
+                            <div style="font-size: 13px;color: black;margin-top: 3px;">Assembled @orderStateServices.AssembledOrders.ToString("N0") of @orderStateServices.TotalOrders.ToString("N0") - @orderStateServices.DuploProgressPercentage% complete</div>
                         </ContentTemplate>
                     </LinearGaugeAnnotation>
                 </LinearGaugeAnnotations>
@@ -29,22 +30,20 @@
 </SfLinearGauge>
 
 @code {
-    [Parameter] public IEnumerable<Order> Orders { get; set; }
 
-    private int totalOrders { get; set; } = 0;
-    private int assembledOrders { get; set; } = 0;
-    private int progressPercentage { get; set; } = 0;
-
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        CalculateProgress();
-        await base.OnParametersSetAsync();
+        orderStateServices.OnDuploProgressUpdated += DuploProgressUpdated;
+        await base.OnInitializedAsync();
     }
 
-    public async Task CalculateProgress()
+    private async Task DuploProgressUpdated()
     {
-        totalOrders = Orders.Sum(o => o.Qty);
-        assembledOrders = Orders.Where(o => o.JobStatus >= JobStatus.ReadyToShip).ToList().Sum(o => o.Qty);
-        progressPercentage = (assembledOrders * 100) / totalOrders;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        orderStateServices.OnDuploProgressUpdated -= DuploProgressUpdated;
     }
 }

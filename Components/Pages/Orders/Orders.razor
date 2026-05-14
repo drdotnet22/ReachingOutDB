@@ -7,6 +7,7 @@
 @inject YearQuarterService yearQuarterService
 @inject PlateServices plateService
 @inject SfDialogService DialogService
+@inject OrderStateServices orderStateServices
 @implements IDisposable
 
 <PageTitle>Orders - Reaching Out</PageTitle>
@@ -35,7 +36,7 @@
                     <ToolbarItem Type="ItemType.Spacer" />
                     <ToolbarItem>
                         <Template>
-                            <DuploProgress Orders="orders" />
+                            <DuploProgress/>
                         </Template>
                     </ToolbarItem>
                 }
@@ -45,7 +46,7 @@
                     <ToolbarItem Type="ItemType.Spacer" />
                     <ToolbarItem>
                         <Template>
-                            <DuploProgress Orders="orders" />
+                            <DuploProgress/>
                         </Template>
                     </ToolbarItem>
                 }
@@ -661,7 +662,8 @@ else
                     order.JobStatus = JobStatus.ReadyToShip;
                     await orderService.UpdateOrderAsync(order);
                 }
-                RefreshOrders();
+                await RefreshOrders();
+                await orderStateServices.UpdateDuploProgress(orders);
             }
             Grid.ClearRowSelectionAsync();
         }
