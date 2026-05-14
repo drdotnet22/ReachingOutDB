@@ -1,0 +1,118 @@
+﻿@using ReachingOutDB.Data
+@inject PlateServices plateService
+
+<SfCard style="@(plate.IsPlated ? "background-color: #e9ecef;" : "")"
+        class="@(plate.IsPlated ? "plated-card e-card" : "e-card")">
+    <CardContent>
+        <div class="myflexrow" style="align-items:center">
+            <h5>Plate #: @(plate.Number + 1) with @plate.Quantity sheets needed.</h5>
+            @if (plate.IsPlated)
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size24.CheckmarkCircle())" Color="Color.Success" />
+            }
+            else
+            {
+                <FluentButton Title="Plate Order" OnClick="() => PlateOrder(plate)" Disabled="onHold">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Checkmark())" Color="Color.Accent" />
+                </FluentButton>
+                @* <FluentButton Title="Edit Plate (Not implemented)" >
+                                <FluentIcon Value="@(new Icons.Regular.Size24.Edit())" Color="Color.Neutral"  />
+                            </FluentButton> *@
+            }
+            <FluentButton Title="Delete Plate" OnClick="() => DeletePlate(plate)">
+                <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" Color="Color.Error" />
+            </FluentButton>
+        </div>
+        <SfGrid DataSource="plate.PlateAssignments" AllowSorting="true" RowHeight="20">
+            <GridSortSettings>
+                <GridSortColumns>
+                    <GridSortColumn Field="Position" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending" />
+                </GridSortColumns>
+            </GridSortSettings>
+            <GridColumns>
+                <GridColumn HeaderText="Position" Field="@nameof(PlateAssignment.Position)" TextAlign="TextAlign.Right" Width="100" />
+                <GridColumn TextAlign="TextAlign.Center" Width="40">
+                    <Template>
+                        @{
+                            var assignment = (context as PlateAssignment);
+                            if (assignment.OrderId != null)
+                            {
+                                if (assignment.Order.JobStatus == JobStatus.OnHold)
+                                {
+                                    <SfCheckBox Checked="true" CssClass="e-danger" Disabled="true" />
+                                }
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn HeaderText="Customer">
+                    <Template>
+                        @{
+                            var assignment = (context as PlateAssignment);
+                            {
+                                if (assignment.OrderId != null)
+                                {
+                                    <span>@assignment.Order.CustomerId.ToString() - @assignment.Order.Customer.CustomerName</span>
+                                }
+                                else
+                                {
+                                    <span>Blank</span>
+                                }
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn HeaderText="BP" TextAlign="TextAlign.Center" Width="40">
+                    <Template>
+                        @{
+                            var assignment = (context as PlateAssignment);
+                            if (assignment.OrderId != null)
+                            {
+                                if (assignment.Order.BpUpdate)
+                                {
+                                    <SfCheckBox Checked="true" CssClass="e-alert" Disabled="true" />
+                                }
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn HeaderText="Quantity" TextAlign="TextAlign.Right" Width="100">
+                    <Template>
+                        @{
+                            var assignment = (context as PlateAssignment);
+                            {
+                                if (assignment.OrderId != null)
+                                {
+                                    <span>@assignment.Order.Qty</span>
+                                }
+                                else
+                                {
+                                    <span>@plate.Quantity</span>
+                                }
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+            </GridColumns>
+        </SfGrid>
+    </CardContent>
+</SfCard>
+
+@code {
+    [Parameter] public Plate plate { get; set; }
+    [Parameter] public bool editable { get; set; } = false;
+    [Parameter] public bool onHold { get; set; } = false;
+    [Parameter] public EventCallback OnPlateUpdated { get; set; }
+
+    public async Task PlateOrder(Plate plate)
+    {
+        await plateService.MarkPlatedAsync(plate);
+        await OnPlateUpdated.InvokeAsync();
+    }
+
+    public async Task DeletePlate(Plate plate)
+    {
+        await plateService.DeletePlateAsync(plate);
+        await OnPlateUpdated.InvokeAsync();
+    }
+}
