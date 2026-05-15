@@ -30,7 +30,7 @@
             assignment.OrderId != null &&
             assignment.Order.JobStatus == JobStatus.OnHold) ?? false;
 
-            <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlates" editable="true" onHold="@onHold" />
+            <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlates" Editable="true" OnHold="@onHold" />
         }
     </div>
 }
@@ -121,38 +121,5 @@ else
         display: flex;
         flex-wrap: wrap;
         gap: 16px; /* Adjust spacing between cards as needed */
-    }
-
-    .card-container .e-card {
-        flex: 0 0 calc(50% - 8px); /* 50% width minus half the gap */
-        box-sizing: border-box;
-    }
-
-    .e-grid .e-row .e-rowcell {
-        background-color: #E8EEFA;
-    }
-
-    .e-grid .e-altrow .e-rowcell {
-        background-color: white;
-    }
-
-    .plated-card .e-grid .e-headercell,
-    .plated-card .e-grid .e-row .e-rowcell,
-    .plated-card .e-grid .e-altrow .e-rowcell {
-        background-color: #e9ecef !important;
-    }
-    
-    .e-grid .e-table {
-        margin-bottom: 0 !important;
-    }
-
-    .e-checkbox-wrapper.e-alert .e-frame.e-check { /* csslint allow: adjoining-classes */
-        background-color: #ffff00;
-        color: black
-    }
-
-    .e-checkbox-wrapper.e-danger .e-frame.e-check { /* csslint allow: adjoining-classes */
-        background-color: #fd0031;
-        color: #fd0031
     }
 </style>

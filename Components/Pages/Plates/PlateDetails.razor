@@ -100,8 +100,9 @@
 
 @code {
     [Parameter] public Plate plate { get; set; }
-    [Parameter] public bool editable { get; set; } = false;
-    [Parameter] public bool onHold { get; set; } = false;
+    [Parameter] public bool Editable { get; set; } = false;
+    [Parameter] public bool OnHold { get; set; } = false;
+    [Parameter] public bool Draft { get; set; } = false;
     [Parameter] public EventCallback OnPlateUpdated { get; set; }
 
     public async Task PlateOrder(Plate plate)
@@ -116,3 +117,38 @@
         await OnPlateUpdated.InvokeAsync();
     }
 }
+
+<style>
+    .e-card {
+        flex: 0 0 calc(50% - 8px); /* 50% width minus half the gap */
+        box-sizing: border-box;
+    }
+
+    .e-grid .e-row .e-rowcell {
+        background-color: #E8EEFA;
+    }
+
+    .e-grid .e-altrow .e-rowcell {
+        background-color: white;
+    }
+
+    .plated-card .e-grid .e-headercell,
+    .plated-card .e-grid .e-row .e-rowcell,
+    .plated-card .e-grid .e-altrow .e-rowcell {
+        background-color: #e9ecef !important;
+    }
+    
+    .e-grid .e-table {
+        margin-bottom: 0 !important;
+    }
+
+    .e-checkbox-wrapper.e-alert .e-frame.e-check { /* csslint allow: adjoining-classes */
+        background-color: #ffff00;
+        color: black
+    }
+
+    .e-checkbox-wrapper.e-danger .e-frame.e-check { /* csslint allow: adjoining-classes */
+        background-color: #fd0031;
+        color: #fd0031
+    }
+</style>
