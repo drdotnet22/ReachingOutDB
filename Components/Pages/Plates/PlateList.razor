@@ -30,7 +30,9 @@
             assignment.OrderId != null &&
             assignment.Order.JobStatus == JobStatus.OnHold) ?? false;
 
-            <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlates" Editable="true" OnHold="@onHold" />
+            int sequence = filteredPlates.IndexOf(plate) + 1;
+
+            <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlates" Sequence="@sequence" OnHold="@onHold" />
         }
     </div>
 }
@@ -44,7 +46,7 @@ else
     public int platedOrderTotal { get; set; }
     public int pressSheetsPrinted { get; set; }
     public double efficiency { get; set; }
-    public IEnumerable<Plate> filteredPlates { get; set; }
+    public List<Plate> filteredPlates { get; set; }
     public IEnumerable<Order> unplatedOrders { get; set; }
 
     protected override async Task OnInitializedAsync()

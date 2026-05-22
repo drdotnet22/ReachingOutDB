@@ -20,7 +20,7 @@ namespace ReachingOutDB.Data
         }
         #endregion
 
-        public async Task<IEnumerable<Plate>> GetFilteredPlatesAsync(int year, Quarter quarter)
+        public async Task<List<Plate>> GetFilteredPlatesAsync(int year, Quarter quarter)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();
             try
@@ -37,10 +37,43 @@ namespace ReachingOutDB.Data
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return Enumerable.Empty<Plate>();
+                return new List<Plate>();
             }
         }
-        
+
+        public async Task SavePlateAsync(Plate plate)
+        {
+            var dbContext = await contextFactory.CreateDbContextAsync();
+
+            // Detach orders to prevent duplicate key constraint errors
+            foreach (var assignment in plate.PlateAssignments)
+            {
+                if (assignment.Order != null)
+                {
+                    assignment.OrderId = assignment.Order.OrderId;
+                    assignment.Order = null;
+                }
+            }
+
+            try
+            {
+                if (plate.PlateId == Guid.Empty)
+                {
+                    dbContext.Add(plate);
+                }
+                else
+                {
+                    dbContext.Update(plate);
+                }
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw ex;
+            }
+        }
+
         public async Task MarkPlatedAsync(Plate plate)
         {
             var dbContext = await contextFactory.CreateDbContextAsync();

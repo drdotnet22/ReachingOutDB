@@ -1,40 +1,365 @@
-﻿@using ReachingOutDB.Data
+﻿@page "/manual-plating"
+
+@using ReachingOutDB.Data
+@using Syncfusion.Blazor.Layouts
 
 @inject PlateServices plateService
 @inject OrderServices orderService
 @inject YearQuarterService yearQuarterService
 
+<SfSplitter Height="100%" Width="100%" SeparatorSize="15" >
+    <SplitterPanes>
+        <SplitterPane Size="70%" Min="50%">
+            <div class="page-container">
+                <div class="compact-stats">
+                    <div class="stat">
+                        <span class="label">Blank Sheets</span>
+                        <span class="value">@blankSheets</span>
+                    </div>
+
+                    <div class="stat">
+                        <span class="label">Total Needed</span>
+                        <span class="value">@totalBlanksNeeded</span>
+                    </div>
+
+                    <div class="stat">
+                        <span class="label">Unplated</span>
+                        <span class="value">@blanksUnplated</span>
+                    </div>
+
+                    <div class="stat">
+                        <span class="label">Plated Total</span>
+                        <span class="value">@platedOrderTotal</span>
+                    </div>
+
+                    <div class="stat">
+                        <span class="label">Printed</span>
+                        <span class="value">@pressSheetsPrinted</span>
+                    </div>
+                </div>
+                <div class="scroll-area">
+                    @foreach (var plate in platesList)
+                    {
+                        bool onHold = plate.PlateAssignments?.Any(assignment =>
+                        assignment.OrderId != null &&
+                        assignment.Order.JobStatus == JobStatus.OnHold) ?? false;
+
+                        int sequence = platesList.IndexOf(plate) + 1;
+
+                        <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlatesAndOrders" OnHold="@onHold" Sequence="@sequence"/>
+                    }
+                </div>
+            </div>
+        </SplitterPane>
+        <SplitterPane Size="30%" Collapsible="true">
+            <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+                <SfToolbar>
+                    <ToolbarEvents Clicked="ToolbarClickHandler" />
+                    <ToolbarItems>
+                        <ToolbarItem Text="New plate" TooltipText="Add selected jobs to draft plate" PrefixIcon="e-duplicate icon" />
+                        <ToolbarItem Text="Select 4" PrefixIcon="e-checklist icon" />
+                    </ToolbarItems>
+                </SfToolbar>
+                <div style="flex: 1; overflow: hidden; min-height: 0;">
+                    <SfGrid @ref="UnplatedGrid" DataSource="unplatedOrders" AllowSelection="true">
+                        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+                        <GridColumns>
+                            <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                            <GridColumn Field="CustomerId" HeaderText="ID" Width="95" TextAlign="TextAlign.Right" />
+                            <GridColumn Field="Customer.CustomerName" HeaderText="Customer" TextAlign="TextAlign.Left" />
+                            <GridColumn Field="Qty" HeaderText="Quantity" Width="95" TextAlign="TextAlign.Right" Format="#,###" />
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+            </div>
+        </SplitterPane>
+    </SplitterPanes> 
+</SfSplitter>
+
+<!-- Custom Plate Configuration Dialog -->
+<SfDialog Width="450px" IsModal="true" @bind-Visible="IsCustomAssignmentDialogVisible" Header="Customize Draft Plate">
+    <DialogTemplates>
+        <Content>
+            <p class="mb-3">A standard plate has 4 slots. Select how many slots each order should occupy:</p>
+            
+            <div class="myflexcolumn" style="gap: 12px; margin-bottom: 16px;">
+                @foreach (var item in orderConfigs)
+                {
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                        <div>
+                            <strong>@item.Order.Customer?.CustomerName (ID: @item.Order.CustomerId)</strong>
+                            <div style="font-size: 12px; color: #666;">Qty: @item.Order.Qty.ToString("#,###")</div>
+                        </div>
+                        <div style="width: 120px;">
+                            <SfNumericTextBox TValue="int" Min="0" Max="4" @bind-Value="@item.Slots" Format="n0" Width="100%" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Validation/Info Alert banner -->
+            @if (TotalConfiguredSlots > 4)
+            {
+                <div style="color: #d92d20; font-weight: bold; font-size: 13px;">
+                    ⚠️ Error: Selected slots (@TotalConfiguredSlots) exceed the plate limit of 4.
+                </div>
+            }
+            else
+            {
+                <div style="color: #666; font-size: 13px;">
+                    Remaining slots to be filled with Blanks: <strong>@(4 - TotalConfiguredSlots)</strong>
+                </div>
+            }
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton Content="Cancel" OnClick="@(() => IsCustomAssignmentDialogVisible = false)" />
+        <DialogButton Content="Create Plate" IsPrimary="true" Disabled="@(TotalConfiguredSlots == 0 || TotalConfiguredSlots > 4)" OnClick="@ConfirmCustomizedPlate" />
+    </DialogButtons>
+</SfDialog>
 
 @code {
-    private ICollection<Order> orders { get; set; }
-    private ICollection<Order> ordersNeedingPlates { get; set; }
-    private List<Plate> plates = new List<Plate>();
-    private List<PlateAssignment> plateAssignments = new List<PlateAssignment>();
-    private int blankSheetsNeeded;
-    private int blankSheetsAssigned = 0;
-    public SfGrid<Order> Grid { get; set; }
+    private int blankSheets { get; set; } = 0;
+    private int totalBlanksNeeded { get; set; }
+    private int blanksUnplated { get; set; }
+    private int platedOrderTotal { get; set; }
+    private int pressSheetsPrinted { get; set; }
+    private double efficiency { get; set; }
+    private List<Plate> platesList { get; set; } = new();
+    private ICollection<Order> unplatedOrders { get; set; }
+    private SfGrid<Order> UnplatedGrid { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
-        RefreshOrders();
-        blankSheetsNeeded = orders.Where(o => o.Qty < 1000)
-                                 .Sum(o => o.Qty) + 1000;
+        await RefreshPlatesAndOrders();
     }
 
-    private async Task RefreshOrders()
+    private async Task RefreshPlatesAndOrders()
     {
-        orders = await orderService.GetOrdersIncludePlateAssignmentsAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
-        ordersNeedingPlates = orders.Where(o => o.PlateAssignments.Count == 0)
-                                    .Where(o => o.Qty > 900)
-                                    .Where(o => o.JobStatus < JobStatus.Plated)
-                                    .ToList();
+        var orders = await orderService.GetOrdersIncludePlateAssignmentsAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        totalBlanksNeeded = orders
+            .Where(o => o.Qty < 1000)
+            .Where(o => !o.PlateAssignments.Any())
+            .Sum(o => o.Qty);
+
+        unplatedOrders = orders
+            .Where(o => !o.PlateAssignments.Any())
+            .OrderByDescending(o => o.Qty)
+            .ToList();
+
+        platedOrderTotal = orders
+            .Where(o => o.PlateAssignments.Any())
+            .Sum(o => o.Qty);
+
+        platesList = await plateService.GetFilteredPlatesAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        platesList = platesList.OrderByDescending(p => p.Quantity).ToList();
+
+        blankSheets = platesList
+            .SelectMany(p => p.PlateAssignments)
+            .Where(pa => pa.IsBlank == true)
+            .Sum(pa => pa.Plate.Quantity);
+
+        pressSheetsPrinted = platesList.Sum(p => p.Quantity);
+
+        //Remove saved plated orders from unplated list
+        foreach (var plate in platesList)
+        {
+            foreach (var assignment in plate.PlateAssignments)
+            {
+                if (assignment.OrderId != null)
+                {
+                    unplatedOrders = unplatedOrders.Where(o => o.OrderId != assignment.OrderId).ToList();
+                }
+            }
+        }
+
         StateHasChanged();
     }
 
+    private async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "New plate")
+        {
+            var selectedOrders = await UnplatedGrid.GetSelectedRecordsAsync();
+            await CreatePlateWithSelectedOrders(selectedOrders);
+            await UnplatedGrid.ClearRowSelectionAsync();
+        }
+        else if (args.Item.Text == "Select 4")
+        {
+            // Select the top 4 unplated orders in UnplatedGrid
+            UnplatedGrid.SelectRowsByRangeAsync(0, Math.Min(3, unplatedOrders.Count() - 1));
+        }
+    }
+
+    private async Task CreatePlateWithSelectedOrders(List<Order> selectedOrders)
+    {
+        selectedOrders = selectedOrders.OrderByDescending(o => o.Qty).ToList();
+
+        if (selectedOrders.Count <= 2)
+        {
+            await CreateCustomizedPlate(selectedOrders);
+            return; // No orders selected, do nothing
+        }
+
+        var newPlate = new Plate
+        {
+            Year = yearQuarterService.SelectedYear,
+            Quarter = yearQuarterService.SelectedQuarter,
+            Quantity = selectedOrders.Max(o => o.Qty) // Set initial quantity to max order qty
+        };
+        int i = 0;
+        int platePosition = 1;
+        if (selectedOrders.Count == 4)
+        {
+            //create 4 new plate assignments for the selected orders and add to new plate
+            for (; i < 4; i++)
+            {
+                var order = selectedOrders[i];
+                var assignment = new PlateAssignment
+                {
+                    Order = order,
+                    Position = platePosition++,
+                    IsBlank = false
+                };
+                newPlate.PlateAssignments.Add(assignment);
+            }
+        }
+        else if (selectedOrders.Count < 4 && selectedOrders.Count > 0)
+        {
+            //if first selected order has qty at least double of second selected order, assign first order to 2 positions on the plate
+            if (selectedOrders.Count > 1 && selectedOrders[0].Qty >= 2 * selectedOrders[1].Qty)
+            {
+                var order = selectedOrders[0];
+                newPlate.Quantity = order.Qty / 2; // Set plate quantity to half of the first order qty
+                for (var k = 0; k < 2; k++)
+                {
+                    var assignment = new PlateAssignment
+                    {
+                        Order = order,
+                        Position = platePosition++,
+                        IsBlank = false
+                    };
+                    newPlate.PlateAssignments.Add(assignment);
+                }
+                i++;
+            }
+            //create plate assignments for selected orders and fill remaining positions with blanks
+            for (; i < selectedOrders.Count; i++)
+            {
+                var order = selectedOrders[i];
+                var assignment = new PlateAssignment
+                {
+                    Order = order,
+                    Position = platePosition++,
+                    IsBlank = false
+                };
+                newPlate.PlateAssignments.Add(assignment);
+            }
+            for (; platePosition <= 4; platePosition++)
+            {
+                var assignment = new PlateAssignment
+                {
+                    Position = platePosition,
+                    IsBlank = true
+                };
+                newPlate.PlateAssignments.Add(assignment);
+                blankSheets += newPlate.Quantity;
+                totalBlanksNeeded -= newPlate.Quantity;
+            }
+        }
+
+        await plateService.SavePlateAsync(newPlate);
+        await RefreshPlatesAndOrders();
+
+        foreach (var order in selectedOrders)
+        {
+            unplatedOrders = unplatedOrders.Where(o => o.OrderId != order.OrderId).ToList();
+        }
+    }
+
+    #region CustomAssignmentDialog
+    private bool IsCustomAssignmentDialogVisible { get; set; } = false;
+    private List<OrderMultiplier> orderConfigs { get; set; } = new();
+    private int TotalConfiguredSlots => orderConfigs.Sum(om => om.Slots);
+    private class OrderMultiplier
+    {
+        public Order Order { get; set; }
+        public int Slots { get; set; } = 1;
+    }
+
+    private async Task CreateCustomizedPlate(IList<Order> selectedOrders)
+    {
+        orderConfigs = selectedOrders.Select(o => new OrderMultiplier { Order = o }).ToList();
+        IsCustomAssignmentDialogVisible = true;
+    }
+
+    private async Task ConfirmCustomizedPlate()
+    {
+        if (TotalConfiguredSlots == 0 || TotalConfiguredSlots > 4)
+        {
+            // Show error message or validation
+            return;
+        }
+
+        IsCustomAssignmentDialogVisible = false;
+
+        var filteredConfigs = orderConfigs.Where(oc => oc.Slots > 0).ToList();
+        if (!filteredConfigs.Any()) return;
+
+        var newPlate = new Plate
+        {
+            Year = yearQuarterService.SelectedYear,
+            Quarter = yearQuarterService.SelectedQuarter,
+            // Automatically scale plate quantity using your existing math parameters
+            Quantity = filteredConfigs.Max(c => c.Slots > 1 ? (c.Order.Qty / c.Slots) : c.Order.Qty)
+        };
+
+        int platePosition = 1;
+
+        foreach (var config in filteredConfigs)
+        {
+            for (int i = 0; i < config.Slots; i++)
+            {
+                var assignment = new PlateAssignment
+                {
+                    Order = config.Order,
+                    Position = platePosition++,
+                    IsBlank = false
+                };
+                newPlate.PlateAssignments.Add(assignment);
+            }
+        }
+
+        for (; platePosition <= 4; platePosition++)
+        {
+            var assignment = new PlateAssignment
+            {
+                Position = platePosition,
+                IsBlank = true
+            };
+            newPlate.PlateAssignments.Add(assignment);
+            blankSheets += newPlate.Quantity;
+            totalBlanksNeeded -= newPlate.Quantity;
+        }
+
+        await plateService.SavePlateAsync(newPlate);
+        await RefreshPlatesAndOrders();
+
+        foreach (var config in filteredConfigs)
+        {
+            unplatedOrders = unplatedOrders.Where(o => o.OrderId != config.Order.OrderId).ToList();
+        }
+
+        StateHasChanged();
+    }
+
+    #endregion
+
     private async void YearQuarterChanged()
     {
-        await RefreshOrders();
+        await RefreshPlatesAndOrders();
+        StateHasChanged();
     }
 
     public void Dispose()
@@ -42,3 +367,47 @@
         yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
     }
 }
+
+<style>
+    .compact-stats {
+        display: flex;
+        gap: 1.25rem;
+        padding: 0.75rem 1rem;
+        background: white;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid;
+        border-color: gray;
+    }
+
+    .page-container {
+        display: block
+    }
+
+    .scroll-area {
+        flex: 1;
+        gap: 16px;
+    }
+
+    .stat {
+        display: flex;
+        flex-direction: column;
+        min-width: 90px;
+    }
+
+    .label {
+        font-size: 0.70rem;
+        color: var(--text-secondary-color);
+        margin-bottom: 2px;
+    }
+
+    .value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary-color);
+    }
+</style>
