@@ -1,4 +1,4 @@
-﻿@page "/manual-plating"
+﻿@page "/plating"
 
 @using ReachingOutDB.Data
 @using Syncfusion.Blazor.Layouts
@@ -7,34 +7,38 @@
 @inject OrderServices orderService
 @inject YearQuarterService yearQuarterService
 
+<PageTitle>Plating - Reaching Out</PageTitle>
 <SfSplitter Height="100%" Width="100%" SeparatorSize="15" >
     <SplitterPanes>
         <SplitterPane Size="70%" Min="50%">
             <div class="page-container">
                 <div class="compact-stats">
                     <div class="stat">
-                        <span class="label">Blank Sheets</span>
-                        <span class="value">@blankSheets</span>
+                        <span class="label">Blank sheets plated</span>
+                        <span class="value">@blankSheets.ToString("N0")</span>
                     </div>
 
                     <div class="stat">
-                        <span class="label">Total Needed</span>
-                        <span class="value">@totalBlanksNeeded</span>
+                        <span class="label">Total blanks needed</span>
+                        <span class="value">@totalBlanksNeeded.ToString("N0")</span> 
                     </div>
 
-                    <div class="stat">
-                        <span class="label">Unplated</span>
-                        <span class="value">@blanksUnplated</span>
-                    </div>
+                    @if (blanksUnplated > 0)
+                    {
+                        <div class="stat">
+                            <span class="label">Unplated blanks</span>
+                            <span class="value" style="color:red">@blanksUnplated.ToString("N0")</span>
+                        </div>
+                    }
 
                     <div class="stat">
                         <span class="label">Plated Total</span>
-                        <span class="value">@platedOrderTotal</span>
+                        <span class="value">@platedOrderTotal.ToString("N0")</span>
                     </div>
 
                     <div class="stat">
-                        <span class="label">Printed</span>
-                        <span class="value">@pressSheetsPrinted</span>
+                        <span class="label">Press sheets imprinted</span>
+                        <span class="value">@pressSheetsPrinted.ToString("N0")</span>
                     </div>
                 </div>
                 <div class="scroll-area">
@@ -53,11 +57,12 @@
         </SplitterPane>
         <SplitterPane Size="30%" Collapsible="true">
             <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
-                <SfToolbar>
+                <SfToolbar >
                     <ToolbarEvents Clicked="ToolbarClickHandler" />
                     <ToolbarItems>
                         <ToolbarItem Text="New plate" TooltipText="Add selected jobs to draft plate" PrefixIcon="e-duplicate icon" />
                         <ToolbarItem Text="Select 4" PrefixIcon="e-checklist icon" />
+                        <ToolbarItem Text="Auto assign plates" PrefixIcon="e-ai-chat icon" Visible="@(!platingComplete)" />
                     </ToolbarItems>
                 </SfToolbar>
                 <div style="flex: 1; overflow: hidden; min-height: 0;">
@@ -124,9 +129,10 @@
     private int blanksUnplated { get; set; }
     private int platedOrderTotal { get; set; }
     private int pressSheetsPrinted { get; set; }
+    private bool platingComplete { get; set; }
     private double efficiency { get; set; }
     private List<Plate> platesList { get; set; } = new();
-    private ICollection<Order> unplatedOrders { get; set; }
+    private List<Order> unplatedOrders { get; set; }
     private SfGrid<Order> UnplatedGrid { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -160,6 +166,11 @@
             .Where(pa => pa.IsBlank == true)
             .Sum(pa => pa.Plate.Quantity);
 
+        blanksUnplated = totalBlanksNeeded - blankSheets + 1000;
+
+        // If max unplated order qty is under 1000, then we can consider plating complete. Introduce check in case there are no unplated orders.
+        platingComplete = !unplatedOrders.Any() || unplatedOrders.Max(o => o.Qty) < 1000;
+
         pressSheetsPrinted = platesList.Sum(p => p.Quantity);
 
         //Remove saved plated orders from unplated list
@@ -189,6 +200,11 @@
         {
             // Select the top 4 unplated orders in UnplatedGrid
             UnplatedGrid.SelectRowsByRangeAsync(0, Math.Min(3, unplatedOrders.Count() - 1));
+        }
+        else if (args.Item.Text == "Auto assign plates")
+        {
+            await plateService.AutoAssignJobsToPlatesAsync(unplatedOrders, blanksUnplated, yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+            await RefreshPlatesAndOrders();
         }
     }
 
@@ -371,6 +387,7 @@
 <style>
     .compact-stats {
         display: flex;
+        flex-direction: row;
         gap: 1.25rem;
         padding: 0.75rem 1rem;
         background: white;
@@ -396,6 +413,7 @@
     .stat {
         display: flex;
         flex-direction: column;
+        align-items: center;
         min-width: 90px;
     }
 
