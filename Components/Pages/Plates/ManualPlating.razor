@@ -50,7 +50,7 @@
 
                         int sequence = platesList.IndexOf(plate) + 1;
 
-                        <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlatesAndOrders" OnHold="@onHold" Sequence="@sequence"/>
+                        <PlateDetails Plate="@plate" OnPlateUpdated="RefreshPlatesAndOrders" OnHold="@onHold" Sequence="@sequence" />
                     }
                 </div>
             </div>
@@ -406,8 +406,15 @@
     }
 
     .scroll-area {
+        display: grid;
+        /* Automatically creates as many 600px columns as will fit */
+        grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
         flex: 1;
         gap: 16px;
+    }
+
+    .scroll-area > * {
+        padding: 16px;
     }
 
     .stat {
