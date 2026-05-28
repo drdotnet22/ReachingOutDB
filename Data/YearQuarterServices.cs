@@ -31,6 +31,12 @@ namespace ReachingOutDB.Data
             }
         }
 
+        // Public string with year and quarter combined for a key
+        public string YearQuarterKey
+        {
+            get => _year.ToString() + _quarter.ToString();
+        }
+
         public async Task SelectYearAsync(int year)
         {
             SelectedYear = year;

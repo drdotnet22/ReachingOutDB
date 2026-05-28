@@ -35,7 +35,7 @@
                     <ToolbarItem Type="ItemType.Spacer" />
                     <ToolbarItem>
                         <Template>
-                            <DuploProgress/>
+                            <DuploProgress QuarterKey="@yearQuarterService.YearQuarterKey"/>
                         </Template>
                     </ToolbarItem>
                 }
@@ -45,7 +45,7 @@
                     <ToolbarItem Type="ItemType.Spacer" />
                     <ToolbarItem>
                         <Template>
-                            <DuploProgress/>
+                            <DuploProgress QuarterKey="@yearQuarterService.YearQuarterKey"/>
                         </Template>
                     </ToolbarItem>
                 }
@@ -662,7 +662,7 @@ else
                     await orderService.UpdateOrderAsync(order);
                 }
                 await RefreshOrders();
-                await orderStateServices.UpdateDuploProgress(orders);
+                await orderStateServices.UpdateDuploProgress(yearQuarterService.YearQuarterKey, orders);
             }
             Grid.ClearRowSelectionAsync();
         }

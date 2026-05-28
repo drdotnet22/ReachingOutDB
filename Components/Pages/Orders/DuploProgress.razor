@@ -15,12 +15,12 @@
                     <LinearGaugeAxisLabelFont Size="0"></LinearGaugeAxisLabelFont>
                 </LinearGaugeAxisLabelStyle>
                 <LinearGaugePointers>
-                    <LinearGaugePointer PointerValue="@orderStateServices.DuploProgressPercentage" Height="25" Width="25" Type="Point.Bar" Color="#62CC87" />
+                    <LinearGaugePointer PointerValue="@currentProgress.DuploProgressPercentage" Height="25" Width="25" Type="Point.Bar" Color="#62CC87" />
                 </LinearGaugePointers>
                 <LinearGaugeAnnotations>
                     <LinearGaugeAnnotation AxisIndex="0" AxisValue="12" X="0" Y="0" ZIndex="1">
                         <ContentTemplate>
-                            <div style="font-size: 13px;color: black;margin-top: 3px;">Assembled @orderStateServices.AssembledOrders.ToString("N0") of @orderStateServices.TotalOrders.ToString("N0") - @orderStateServices.DuploProgressPercentage% complete</div>
+                            <div style="font-size: 13px;color: black;margin-top: 3px;">Assembled @currentProgress.AssembledOrders.ToString("N0") of @currentProgress.TotalOrders.ToString("N0") - @currentProgress.DuploProgressPercentage% complete</div>
                         </ContentTemplate>
                     </LinearGaugeAnnotation>
                 </LinearGaugeAnnotations>
@@ -30,6 +30,10 @@
 </SfLinearGauge>
 
 @code {
+    [Parameter]
+    public string QuarterKey { get; set; } = string.Empty;
+
+    private QuarterlyProgress currentProgress;
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,9 +41,19 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task DuploProgressUpdated()
+    protected override async Task OnParametersSetAsync()
     {
-        await InvokeAsync(StateHasChanged);
+        currentProgress = orderStateServices.GetProgressForQuarter(QuarterKey);
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task DuploProgressUpdated(string quarterKey)
+    {
+        // Only UI re-render if the updated data belongs to THIS component's quarter
+        if (string.Equals(quarterKey, QuarterKey, StringComparison.OrdinalIgnoreCase))
+        {
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     public void Dispose()

@@ -1,28 +1,54 @@
-﻿namespace ReachingOutDB.Data
+﻿using System.Collections.Concurrent;
+
+namespace ReachingOutDB.Data
 {
     public class OrderStateServices
     {
-        public int TotalOrders { get; private set; } = 0;
-        public int AssembledOrders { get; private set; } = 0; 
-        public int DuploProgressPercentage { get; set; } = 0;
+        // Thread-safe dictionary to hold progress per quarter (e.g., "2026Q3")
+        private readonly ConcurrentDictionary<string, QuarterlyProgress> _quarterlyStats = new();
 
-        public event Func<Task>? OnDuploProgressUpdated;
+        // Event now passes the specific quarter key that was updated
+        public event Func<string, Task>? OnDuploProgressUpdated;
 
-        public async Task UpdateDuploProgress(IEnumerable<Order> orders)
+        public QuarterlyProgress GetProgressForQuarter(string quarterKey)
+        {
+            // Returns existing data, or initializes a blank one if it doesn't exist yet
+            return _quarterlyStats.GetOrAdd(quarterKey, _ => new QuarterlyProgress());
+        }
+
+        public async Task UpdateDuploProgress(string quarterKey, IEnumerable<Order> orders)
         {
             if (orders == null || !orders.Any()) return;
 
-            TotalOrders = orders.Sum(o => o.Qty);
-            AssembledOrders = orders.Where(o => o.JobStatus >= JobStatus.ReadyToShip).Sum(o => o.Qty);
-            DuploProgressPercentage = TotalOrders > 0 ? (AssembledOrders * 100) / TotalOrders : 0;
+            // Get or create the specific quarter container
+            var progress = GetProgressForQuarter(quarterKey);
 
+            // Update the stats for this quarter safely
+            lock (progress)
+            {
+                progress.TotalOrders = orders.Sum(o => o.Qty);
+                progress.AssembledOrders = orders.Where(o => o.JobStatus >= JobStatus.ReadyToShip).Sum(o => o.Qty);
+                progress.DuploProgressPercentage = progress.TotalOrders > 0
+                    ? (progress.AssembledOrders * 100) / progress.TotalOrders
+                    : 0;
+            }
+
+            // Notify listeners, passing along which quarter changed
             if (OnDuploProgressUpdated != null)
             {
                 var tasks = OnDuploProgressUpdated.GetInvocationList()
-                    .Cast<Func<Task>>()
-                    .Select(del => del());
+                    .Cast<Func<string, Task>>()
+                    .Select(del => del(quarterKey));
                 await Task.WhenAll(tasks);
             }
         }
+    }
+
+    // Model class to hold data per quarter
+    public class QuarterlyProgress
+    {
+        public int TotalOrders { get; internal set; } = 0;
+        public int AssembledOrders { get; internal set; } = 0;
+        public int DuploProgressPercentage { get; internal set; } = 0;
     }
 }
