@@ -311,17 +311,26 @@ else
 
 @code {
     public SfGrid<Order> Grid { get; set; }
-    public IEnumerable<Order> orders { get; set; }
-    public IEnumerable<Order> filteredOrders { get; set; }
-    public IEnumerable<Customer> customers { get; set; }
+    public IEnumerable<Order> orders { get; set; } = new List<Order>();
+    public IEnumerable<Order> filteredOrders { get; set; } = new List<Order>();
+    public IEnumerable<Customer> customers { get; set; } = new List<Customer>();
 
     protected override async Task OnInitializedAsync()
     {
-        customers = await customerService.GetCustomersAsync();
         userService.OnUserChanged += OnUserChanged;
         yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
-        RefreshOrders();
+        //RefreshOrders();
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            customers = await customerService.GetCustomersAsync();
+            RefreshOrders();
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task RefreshOrders()
