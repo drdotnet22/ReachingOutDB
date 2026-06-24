@@ -328,7 +328,7 @@ else
         if (firstRender)
         {
             customers = await customerService.GetCustomersAsync();
-            RefreshOrders();
+            await RefreshOrders();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -339,6 +339,11 @@ else
         ApplyShipMethodFilter();
         await ApplyJobStatusFilter();
         StateHasChanged();
+        
+        if (!orderStateServices.EnsureQuarterProgressAsync(yearQuarterService.YearQuarterKey))
+        {
+            orderStateServices.UpdateDuploProgress(yearQuarterService.YearQuarterKey, orders);
+        }
     }
 
     #region Job Status filter

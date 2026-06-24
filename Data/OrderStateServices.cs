@@ -42,6 +42,29 @@ namespace ReachingOutDB.Data
                 await Task.WhenAll(tasks);
             }
         }
+
+        // Checks if the given quarter exists in the dictionary.
+        public bool EnsureQuarterProgressAsync(string quarterKey)
+        {
+            if (_quarterlyStats.TryGetValue(quarterKey, out var progress))
+            {
+                if (progress.TotalOrders > 0)
+                {
+                    // If there are orders, we can consider it as having progress.
+                    return true;
+                }
+                else
+                {
+                    // If there are no orders, we can consider it as not having progress.
+                    return false;
+                }
+            }
+            else
+            {
+                // If the quarter does not exist, we can consider it as not having progress.
+                return false;
+            }
+        }
     }
 
     // Model class to hold data per quarter
