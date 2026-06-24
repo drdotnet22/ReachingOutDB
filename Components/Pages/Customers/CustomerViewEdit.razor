@@ -143,20 +143,32 @@
                         <MailingNotesEditor SelectedCustomer="ThisCustomer" Editable="@(Editable)" />
                     </ContentTemplate>
                 </AccordionItem>
+
+                <AccordionItem Expanded="false">
+                    <HeaderTemplate>Customer change logs</HeaderTemplate>
+                    <ContentTemplate>
+                        <CustomerChangesLogList ThisCustomer="ThisCustomer" />
+                    </ContentTemplate>
+                </AccordionItem>
             </AccordionItems>
         </SfAccordion>
     }
     else
     {
         <SfButton OnClick="AddMailingNotes" Disabled="@(!Editable)">Add Mailing Notes</SfButton>
+
+        <SfAccordion>
+            <AccordionItems>
+                <AccordionItem Expanded="false">
+                    <HeaderTemplate>Customer change logs</HeaderTemplate>
+                    <ContentTemplate>
+                        <CustomerChangesLogList ThisCustomer="ThisCustomer" />
+                    </ContentTemplate>
+                </AccordionItem>
+            </AccordionItems>
+        </SfAccordion>
     }
 
-    <SfCard>
-        <CardHeader Title="Customer change logs" />
-        <CardContent>
-            <CustomerChangesLogList ThisCustomer="ThisCustomer" />
-        </CardContent>
-    </SfCard>
 
 </div>
 
