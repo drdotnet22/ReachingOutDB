@@ -117,9 +117,16 @@
     <div class="myflexrow">
         <SfNumericTextBox @bind-Value="ThisOrder.PpOrderNumber" Readonly="@(!Editable)" Placeholder="Printers Plan Order Number" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always" Format="#####" ShowSpinButton="false" ShowClearButton="true" Width="200px" />
     </div>
-    <SfCheckBox @bind-Checked="ThisOrder.Archived" Label="Archived" Disabled="@(!Editable)" />
-
-    <OrderLogView ThisOrder="ThisOrder" />
+    <SfAccordion>
+        <AccordionItems>
+            <AccordionItem Expanded="false">
+                <HeaderTemplate>Order edit logs</HeaderTemplate>
+                <ContentTemplate>
+                    <OrderLogView ThisOrder="ThisOrder" />
+                </ContentTemplate>
+            </AccordionItem>
+        </AccordionItems>
+    </SfAccordion>
 </div>
 
 @code {
