@@ -124,6 +124,9 @@
                     <SfNumericTextBox ID="PostalQty" @bind-Value="@(ThisCustomer.PostalQty)" Placeholder="Quantity by Postal" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Readonly="@(!Editable)" />
                 </div>
                 <div class="myflexrow">
+                    <SfNumericTextBox ID="LtlQty" @bind-Value="@(ThisCustomer.LtlQty)" Placeholder="Quantity by LTL" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Readonly="@(!Editable)" />
+                </div>
+                <div class="myflexrow">
                     <SfNumericTextBox ID="IntlQty" @bind-Value="@(ThisCustomer.IntlQty)" Placeholder="Quantity by INTL" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Readonly="@(!Editable)" />
                 </div>
             </CardContent>
