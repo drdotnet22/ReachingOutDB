@@ -1,6 +1,6 @@
 ﻿@using ReachingOutDB.Data
 @inject UserServices userService
-
+@implements IDisposable
 
 <SfDropDownList TItem="UserProfile" TValue="int" DataSource="@userProfiles" Value="@ActiveUserId" Width="150px">
     <DropDownListFieldSettings Text="Name" Value="UserProfileId" />
