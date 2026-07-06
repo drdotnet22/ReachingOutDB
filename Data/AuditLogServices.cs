@@ -43,7 +43,7 @@ namespace ReachingOutDB.Data
                     dbContext.OrderAuditLogs.Add(auditLog);
                 }
             }
-            dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<OrderAuditLog>> GetLogsOfOrder(Order order)
