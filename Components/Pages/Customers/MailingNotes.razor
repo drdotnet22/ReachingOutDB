@@ -167,7 +167,7 @@
     private async Task EditMailingNotesDialogClosedHandler(Syncfusion.Blazor.Popups.CloseEventArgs args)
     {
         await customerService.UpdateCustomerAsync(selectedCustomer);
-        RefreshCustomers();
+        await RefreshCustomers();
     }
     #endregion
 }

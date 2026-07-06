@@ -340,9 +340,9 @@ else
         await ApplyJobStatusFilter();
         StateHasChanged();
         
-        if (!orderStateServices.EnsureQuarterProgressAsync(yearQuarterService.YearQuarterKey))
+        if (!orderStateServices.EnsureQuarterProgress(yearQuarterService.YearQuarterKey))
         {
-            orderStateServices.UpdateDuploProgress(yearQuarterService.YearQuarterKey, orders);
+            await orderStateServices.UpdateDuploProgress(yearQuarterService.YearQuarterKey, orders);
         }
     }
 

@@ -14,9 +14,9 @@
     [Parameter] public Customer SelectedCustomer { get; set; }
     [Parameter] public bool Editable { get; set; } = true;
 
-    private void UpdateMailingNotes(Syncfusion.Blazor.RichTextEditor.ChangeEventArgs args)
+    private async Task UpdateMailingNotes(Syncfusion.Blazor.RichTextEditor.ChangeEventArgs args)
     {
-        customerService.UpdateCustomerAsync(SelectedCustomer);
+        await customerService.UpdateCustomerAsync(SelectedCustomer);
     }
 
     private List<ToolbarItemModel> RichTextTools = new List<ToolbarItemModel>()

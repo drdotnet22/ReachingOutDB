@@ -173,19 +173,19 @@
             args.Cancel = true;
             if (args.Action == "Add")
             {
-                customerService.AddCustomerAsync(args.Data);
+                await customerService.AddCustomerAsync(args.Data);
                 await RefreshCustomers();
             }
             else if (args.Action == "Edit")
             {
-                customerService.UpdateCustomerAsync(args.Data);
+                await customerService.UpdateCustomerAsync(args.Data);
                 await RefreshCustomers();
             }
         }
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
             args.Cancel = true;
-            customerService.ArchiveCustomerAsync(args.Data);
+            await customerService.ArchiveCustomerAsync(args.Data);
             await RefreshCustomers();
         }
     }

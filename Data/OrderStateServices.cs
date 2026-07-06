@@ -44,7 +44,7 @@ namespace ReachingOutDB.Data
         }
 
         // Checks if the given quarter exists in the dictionary.
-        public bool EnsureQuarterProgressAsync(string quarterKey)
+        public bool EnsureQuarterProgress(string quarterKey)
         {
             if (_quarterlyStats.TryGetValue(quarterKey, out var progress))
             {

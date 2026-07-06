@@ -227,6 +227,6 @@
     private async Task ClosePackageEditDialog()
     {
         await packageEditDialog.HideAsync();
-        RefreshPackages();
+        await RefreshPackages();
     }
 }
