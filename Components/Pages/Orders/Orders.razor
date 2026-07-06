@@ -547,19 +547,19 @@ else
         await RefreshOrders();
     }
 
-    public async void CommandClickedHandler(CommandClickEventArgs<Order> args)
+    public async Task CommandClickedHandler(CommandClickEventArgs<Order> args)
     {
         if (args.CommandColumn.Type == CommandButtonType.Edit)
         {
             ActionEventArgs<Order> actionEventArgs = new ActionEventArgs<Order>();
             actionEventArgs.Data = args.RowData;
-            ActionBeginHandler(actionEventArgs);
+            await ActionBeginHandler(actionEventArgs);
         }
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
             ActionEventArgs<Order> actionEventArgs = new ActionEventArgs<Order>();
             actionEventArgs.Data = args.RowData;
-            ActionBeginHandler(actionEventArgs);
+            await ActionBeginHandler(actionEventArgs);
         }
         else if (args.CommandColumn.Type == CommandButtonType.None)
         {
@@ -568,7 +568,7 @@ else
             {
                 orderViewDialogRecord = args.RowData;
                 orderViewDialogHeader = "Order details of " + orderViewDialogRecord.Customer.CustomerName;
-                orderViewDialog.ShowAsync();
+                await orderViewDialog.ShowAsync();
             }
             else if (args.CommandColumn.ID == "advance-status")
             {
@@ -744,12 +744,26 @@ else
 
     private async void OnUserChanged()
     {
-        StateHasChanged();
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     private async void YearQuarterChanged()
     {
-        await RefreshOrders();
+        try
+        {
+            await InvokeAsync(RefreshOrders);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()

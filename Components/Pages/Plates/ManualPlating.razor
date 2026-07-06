@@ -375,8 +375,18 @@
 
     private async void YearQuarterChanged()
     {
-        await RefreshPlatesAndOrders();
-        StateHasChanged();
+        try
+        {
+            await InvokeAsync(async () =>
+            {
+                await RefreshPlatesAndOrders();
+                StateHasChanged();
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()

@@ -39,11 +39,21 @@
 
     private async void OnUserChanged()
     {
-        if (userService.CurrentUser != null)
+        try
         {
-            ActiveUserId = userService.CurrentUser.UserProfileId;
+            await InvokeAsync(() =>
+            {
+                if (userService.CurrentUser != null)
+                {
+                    ActiveUserId = userService.CurrentUser.UserProfileId;
+                }
+                StateHasChanged();
+            });
         }
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()

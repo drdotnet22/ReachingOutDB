@@ -79,7 +79,14 @@
 
     private async void YearQuarterChanged()
     {
-        await RefreshOrders();
+        try
+        {
+            await InvokeAsync(RefreshOrders);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()

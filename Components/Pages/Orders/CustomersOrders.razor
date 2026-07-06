@@ -140,13 +140,13 @@
         await base.OnInitializedAsync();
     }
 
-    public async void CommandClickedHandler(CommandClickEventArgs<Order> args)
+    public async Task CommandClickedHandler(CommandClickEventArgs<Order> args)
     {
         if (args.CommandColumn.ID == "view-order")
         {
             orderViewDialogRecord = args.RowData;
             orderViewDialogHeader = "Order details of " + orderViewDialogRecord.Year.ToString() + " " + orderViewDialogRecord.Quarter;
-            orderViewDialog.ShowAsync();
+            await orderViewDialog.ShowAsync();
         }
     }
 

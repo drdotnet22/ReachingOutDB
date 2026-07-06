@@ -28,7 +28,7 @@
         fileExists = File.Exists(path);
     }
 
-    private async void ProcessCsv()
+    private async Task ProcessCsv()
     {
         responseMessage = await orderService.ImportEndiciaPrintLogCsvAsync(path, ThisYear, ThisQuarter);
         StateHasChanged();

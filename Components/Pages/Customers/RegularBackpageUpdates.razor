@@ -93,19 +93,19 @@
         StateHasChanged();
     }
 
-    public async void CommandClickedHandler(CommandClickEventArgs<RegularBackpageUpdate> args)
+    public async Task CommandClickedHandler(CommandClickEventArgs<RegularBackpageUpdate> args)
     {
         if (args.CommandColumn.Type == CommandButtonType.None)
         {
             if (args.CommandColumn.ID == "list-orders")
             {
                 ordersListDialogCustomerId = args.RowData.CustomerId.ToString();
-                ordersListDialog.ShowAsync();
+                await ordersListDialog.ShowAsync();
             }
             else if (args.CommandColumn.ID == "view-order")
             {
                 selectedCustomer = args.RowData.Customer;
-                customerViewDialog.ShowAsync();
+                await customerViewDialog.ShowAsync();
             }
         }
     }
@@ -118,7 +118,14 @@
 
     private async void YearQuarterChanged()
     {
-        await RefreshOrders();
+        try
+        {
+            await InvokeAsync(RefreshOrders);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()

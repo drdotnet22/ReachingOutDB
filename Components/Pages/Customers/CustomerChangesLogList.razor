@@ -51,12 +51,12 @@
         await base.OnInitializedAsync();
     }
 
-    private async void CommandClickedHandler(CommandClickEventArgs<CustomerChangesLog> args)
+    private async Task CommandClickedHandler(CommandClickEventArgs<CustomerChangesLog> args)
     {
         if (args.CommandColumn.ID == "view-order")
         {
             selectedChangeLog = args.RowData;
-            customerChangeLogViewDialog.ShowAsync();
+            await customerChangeLogViewDialog.ShowAsync();
         }
     }
 

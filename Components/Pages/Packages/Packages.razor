@@ -156,19 +156,19 @@
         }
     }
 
-    public async void CommandClickedHandler(CommandClickEventArgs<Package> args)
+    public async Task CommandClickedHandler(CommandClickEventArgs<Package> args)
     {
         if (args.CommandColumn.Type == CommandButtonType.Edit)
         {
             selectedPackage = args.RowData;
-            packageEditDialog.ShowAsync();
+            await packageEditDialog.ShowAsync();
             args.Cancel = true;
         }
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
             ActionEventArgs<Package> actionEventArgs = new ActionEventArgs<Package>();
             actionEventArgs.Data = args.RowData;
-            ActionBeginHandler(actionEventArgs);
+            await ActionBeginHandler(actionEventArgs);
         }
     }
 

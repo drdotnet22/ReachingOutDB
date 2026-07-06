@@ -190,13 +190,13 @@
         }
     }
 
-    private async void ViewEditCustomer(Customer customer)
+    private async Task ViewEditCustomer(Customer customer)
     {
         selectedCustomer = customer;
-        customerViewEditDialog.ShowAsync();
+        await customerViewEditDialog.ShowAsync();
     }
 
-    private async void ArchiveCustomerAsync(Customer customer)
+    private async Task ArchiveCustomerAsync(Customer customer)
     {
         await customerService.ArchiveCustomerAsync(customer);
         await RefreshCustomers();
@@ -222,7 +222,7 @@
     private SfDialog ordersListDialog;
     private string ordersListDialogCustomerId = string.Empty;
 
-    private async void SaveEditedCustomer()
+    private async Task SaveEditedCustomer()
     {
         await customerService.UpdateCustomerAsync(selectedCustomer);
         await customerViewEditDialog.HideAsync();
@@ -231,7 +231,7 @@
         await addCustomerChangeLogDialog.ShowAsync();
     }
 
-    private async void CustomerViewEditDialogClosed()
+    private async Task CustomerViewEditDialogClosed()
     {
         selectedCustomer = null;
         if (userService.CurrentUser.Role == UserRole.Admin)
@@ -242,7 +242,7 @@
 
     private CustomerChangesLog customerChanges = new();
 
-    private async void SaveCustomerChangeLog()
+    private async Task SaveCustomerChangeLog()
     {
         await addCustomerChangeLogDialog.HideAsync();
         await customerChangesServices.AddCustomerChangesLogAsync(customerChanges);
@@ -254,7 +254,14 @@
 
     private async void OnUserChanged()
     {
-        StateHasChanged();
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()

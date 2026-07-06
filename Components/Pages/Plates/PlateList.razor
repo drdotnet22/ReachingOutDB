@@ -104,7 +104,14 @@ else
 
     private async void YearQuarterChanged()
     {
-        await RefreshPlates();
+        try
+        {
+            await InvokeAsync(RefreshPlates);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     private async Task Print()

@@ -24,7 +24,7 @@
         fileExists = File.Exists(path);
     }
 
-    private async void ProcessCSV()
+    private async Task ProcessCSV()
     {
         await customerService.InitialImportFromCSV(path);
     }

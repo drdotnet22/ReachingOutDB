@@ -108,7 +108,7 @@
     }
 
     #region Datagrid Handlers
-    public async void CommandClickedHandler(CommandClickEventArgs<Customer> args)
+    public async Task CommandClickedHandler(CommandClickEventArgs<Customer> args)
     {
         if (args.CommandColumn.Type == CommandButtonType.Edit)
         {
@@ -120,7 +120,7 @@
             selectedCustomer = args.RowData;
             selectedCustomer.MailingNotes = null;
             await customerService.UpdateCustomerAsync(selectedCustomer);
-            RefreshCustomers();
+            await RefreshCustomers();
         }
     }
     #endregion

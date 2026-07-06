@@ -50,7 +50,14 @@
 
     private async void OnUserChanged()
     {
-        StateHasChanged();
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void Dispose()
