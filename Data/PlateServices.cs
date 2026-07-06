@@ -23,7 +23,7 @@ namespace ReachingOutDB.Data
 
         public async Task<List<Plate>> GetFilteredPlatesAsync(int year, Quarter quarter)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 return await dbContext.Plates
@@ -44,7 +44,7 @@ namespace ReachingOutDB.Data
 
         public async Task SavePlateAsync(Plate plate)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
 
             // Detach orders to prevent duplicate key constraint errors
             foreach (var assignment in plate.PlateAssignments)
@@ -77,7 +77,7 @@ namespace ReachingOutDB.Data
 
         public async Task MarkPlatedAsync(Plate plate)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 plate.IsPlated = true;
@@ -101,7 +101,7 @@ namespace ReachingOutDB.Data
         }
         public async Task AutoAssignJobsToPlatesAsync(List<Order> unplatedOrders, int blanksUnplated, int year, Quarter quarter)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
 
             List<List<PlateAssignment>> plateAssignmentLists = new();
             unplatedOrders = unplatedOrders
@@ -346,7 +346,7 @@ namespace ReachingOutDB.Data
 
         public async Task DeletePlateAsync(Plate plate)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 foreach (var assignment in plate.PlateAssignments)

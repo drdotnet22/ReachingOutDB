@@ -20,7 +20,7 @@ namespace ReachingOutDB.Data
 
         public async Task LogOrderChangesAsync(Order originalOrder, Order updatedOrder)
         {
-            var dbContext = contextFactory.CreateDbContext();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             var properties = typeof(Order).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var prop in properties)
@@ -48,7 +48,7 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<OrderAuditLog>> GetLogsOfOrder(Order order)
         {
-            var dbContext = contextFactory.CreateDbContext();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 return await dbContext.OrderAuditLogs

@@ -20,59 +20,30 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<Customer>> GetCustomersAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
-            try
-            {
-                return await dbContext.Customers.OrderBy(c => c.CustomerName).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            return await dbContext.Customers.OrderBy(c => c.CustomerName).ToListAsync();
         }
 
         public async Task<Customer> GetCustomerByIdAsync(int id)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
-            try
-            {
-                return await dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            return await dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
         }
 
         public async Task AddCustomerAsync(Customer customer)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
-            try
-            {
-                await CalculateQty(customer);
-                dbContext.Customers.Add(customer);
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            await CalculateQty(customer);
+            dbContext.Customers.Add(customer);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateCustomerAsync(Customer customer)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
-            try
-            {
-                await CalculateQty(customer);
-                dbContext.Update(customer);
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            await CalculateQty(customer);
+            dbContext.Update(customer);
+            await dbContext.SaveChangesAsync();
         }
 
         private async Task CalculateQty(Customer customer)
@@ -100,7 +71,6 @@ namespace ReachingOutDB.Data
 
         public async Task<bool> ArchiveCustomerAsync(Customer customer)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
             if (customer.Active)
             {
                 customer.Active = false;
@@ -115,7 +85,7 @@ namespace ReachingOutDB.Data
 
         public async Task InitialImportFromCSV(string path)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
 
             CsvDataReader reader = CsvDataReader.Create(path, new CsvDataReaderOptions
             {
@@ -177,7 +147,7 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<Customer>> GetMailingNotesAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.Customers
                 .Where(c => c.MailingNotes != null)
                 .ToListAsync();

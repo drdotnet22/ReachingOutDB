@@ -17,7 +17,7 @@ namespace ReachingOutDB.Data
 
         public async Task<MiscSetting> GetMiscSettingsAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             var settingsList = await dbContext.MiscSettings.ToListAsync();
             return settingsList.FirstOrDefault();
         }
@@ -25,7 +25,7 @@ namespace ReachingOutDB.Data
 
         public async Task UpdateMiscSettingsAsync(MiscSetting miscSetting)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.Update(miscSetting);

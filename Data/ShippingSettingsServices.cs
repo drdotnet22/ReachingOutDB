@@ -17,13 +17,13 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<ShippingSetting>> GetShippingSettingsAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.ShippingSettings.OrderBy(s => s.Name).ToListAsync();
         }
 
         public async Task AddShippingSettingAsync(ShippingSetting shippingSetting)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 shippingSetting.UpdatedAt = DateTime.UtcNow;
@@ -38,7 +38,7 @@ namespace ReachingOutDB.Data
 
         public async Task UpdateShippingSettingAsync(ShippingSetting shippingSetting)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 shippingSetting.UpdatedAt = DateTime.UtcNow;
@@ -53,7 +53,7 @@ namespace ReachingOutDB.Data
 
         public async Task DeleteShippingSettingAsync(ShippingSetting shippingSetting)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.ShippingSettings.Remove(shippingSetting);

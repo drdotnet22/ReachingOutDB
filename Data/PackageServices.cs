@@ -17,13 +17,13 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<PackageOption>> GetPackageOptionsAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.PackageOptions.OrderBy(p => p.PackageDescription).ToListAsync();
         }
 
         public async Task AddPackageOptionAsync(PackageOption packageOption)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.PackageOptions.Add(packageOption);
@@ -37,7 +37,7 @@ namespace ReachingOutDB.Data
 
         public async Task UpdatePackageOptionAsync(PackageOption packageOption)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.Update(packageOption);
@@ -51,7 +51,7 @@ namespace ReachingOutDB.Data
 
         public async Task DeletePackageOptionAsync(PackageOption packageOption)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.PackageOptions.Remove(packageOption);
@@ -65,7 +65,7 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<Package>> GetPackagesAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.Packages
                 .Include(p => p.Customer)
                 .Include(p => p.PackageOption)
@@ -75,7 +75,7 @@ namespace ReachingOutDB.Data
 
         public async Task AddPackageAsync(Package package)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.Packages.Add(package);
@@ -89,7 +89,7 @@ namespace ReachingOutDB.Data
 
         public async Task UpdatePackageAsync(Package package)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 var exists = await dbContext.Packages
@@ -113,7 +113,7 @@ namespace ReachingOutDB.Data
 
         public async Task DeletePackageAsync(Package package)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.Packages.Remove(package);

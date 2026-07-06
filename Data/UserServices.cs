@@ -34,7 +34,7 @@ namespace ReachingOutDB.Data
 
         public async Task<List<UserProfile>> GetUserListAsync()
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.UserProfiles.ToListAsync();
         }
 
@@ -50,7 +50,7 @@ namespace ReachingOutDB.Data
         }
         public async Task SelectUserAsync(int userId)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             var user = await dbContext.UserProfiles.FirstOrDefaultAsync(u => u.UserProfileId == userId);
             CurrentUser = user;
             OnUserChanged?.Invoke();
@@ -63,14 +63,14 @@ namespace ReachingOutDB.Data
 
         public async Task AddUserAsync(UserProfile user)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             dbContext.UserProfiles.Add(user);
             await dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateUserAsync(UserProfile user)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.Update(user);
@@ -84,7 +84,7 @@ namespace ReachingOutDB.Data
 
         public async Task DeleteUserAsync(UserProfile user)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 dbContext.Remove(user);

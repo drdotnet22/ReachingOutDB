@@ -17,7 +17,7 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<CustomerChangesLog>> GetCustomerChangesLogsAsync(int customerId)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 return await dbContext.CustomerChangesLogs
@@ -34,7 +34,7 @@ namespace ReachingOutDB.Data
 
         public async Task AddCustomerChangesLogAsync(CustomerChangesLog log)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 // Ensure the timestamp is UTC before saving

@@ -23,7 +23,7 @@ namespace ReachingOutDB.Data
 
         public async Task<ICollection<Order>> GetOrdersAsync(int? year, Quarter? quarter)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             if (year != null &&  quarter != null)
             {
                 return await dbContext.Orders
@@ -54,7 +54,7 @@ namespace ReachingOutDB.Data
 
         public async Task<ICollection<Order>> GetOrdersIncludePlateAssignmentsAsync(int year, Quarter quarter)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.Orders
                     .Include(o => o.Customer)
                     .Include(o => o.PlateAssignments)
@@ -66,7 +66,7 @@ namespace ReachingOutDB.Data
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             return await dbContext.Orders
                 .Include(o => o.Customer)
                 .Where(o => o.CustomerId == customerId)
@@ -77,7 +77,7 @@ namespace ReachingOutDB.Data
         {
             try
             {
-                var dbContext = await contextFactory.CreateDbContextAsync();
+                await using var dbContext = await contextFactory.CreateDbContextAsync();
                 List<Customer> customers;
                 if (customerId == null)
                 {
@@ -179,7 +179,7 @@ namespace ReachingOutDB.Data
 
         public async Task UpdateOrderAsync(Order updatedOrder)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 var originalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == updatedOrder.OrderId);
@@ -229,7 +229,7 @@ namespace ReachingOutDB.Data
 
         public async Task DeleteOrderAsync(Order order)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 var auditLogs = await dbContext.OrderAuditLogs.Where(l => l.Order == order).ToListAsync();
@@ -251,7 +251,7 @@ namespace ReachingOutDB.Data
 
         public async Task<Order> CalculatePublishedPostageAsync(Order order)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
             try
             {
                 if (!order.DmCost.HasValue)
@@ -276,7 +276,7 @@ namespace ReachingOutDB.Data
 
         public async Task<Order> CalculatePublishedShippingAsync(Order order)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
 
             try
             {
@@ -334,7 +334,6 @@ namespace ReachingOutDB.Data
 
         public async Task<string> ImportEndiciaPrintLogCsvAsync(string path, int year, Quarter quarter)
         {
-            var dbContext = await contextFactory.CreateDbContextAsync();
             string successMessage = "";
             string errorMessage = "";
             int successCt = 0;
