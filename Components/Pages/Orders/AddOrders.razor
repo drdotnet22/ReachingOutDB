@@ -2,6 +2,7 @@
 @using Syncfusion.Blazor.MultiColumnComboBox
 @inject OrderServices orderService
 @inject YearQuarterService yearQuarterService
+@inject SfDialogService DialogService
 
 <div class="myflexcolumn">
     <div class="myflexrow">
@@ -49,13 +50,21 @@
 
     private async Task SubmitOrder()
     {
-        if (selectedCustomer != null)
+        try
         {
-            await orderService.GenerateOrders(selectedCustomer.CustomerId, year, quarter);
+            if (selectedCustomer != null)
+            {
+                await orderService.GenerateOrders(selectedCustomer.CustomerId, year, quarter);
+            }
+            else
+            {
+                await orderService.GenerateOrders(null, year, quarter);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await orderService.GenerateOrders(null, year, quarter);
+            await DialogService.AlertAsync($"Could not generate orders: {ex.Message}", "Generate failed");
+            return;
         }
         await OnOrdersGenerated.InvokeAsync();
     }

@@ -1,6 +1,7 @@
 ﻿@page "/users"
 @using ReachingOutDB.Data
 @inject UserServices userService
+@inject SfDialogService DialogService
 
 <PageTitle>Users - Reaching Out</PageTitle>
 
@@ -56,12 +57,26 @@
             if (args.Action == "Add")
             {
                 args.Cancel = true;
-                await userService.AddUserAsync(args.Data);
+                try
+                {
+                    await userService.AddUserAsync(args.Data);
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.AlertAsync($"Could not save user: {ex.Message}", "Save failed");
+                }
             }
             else if (args.Action == "Edit")
             {
                 args.Cancel = true;
-                await userService.UpdateUserAsync(args.Data);
+                try
+                {
+                    await userService.UpdateUserAsync(args.Data);
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.AlertAsync($"Could not save user: {ex.Message}", "Save failed");
+                }
                 StateHasChanged();
             }
         }
@@ -69,7 +84,14 @@
         {
 
             args.Cancel = true;
-            await userService.DeleteUserAsync(args.Data);
+            try
+            {
+                await userService.DeleteUserAsync(args.Data);
+            }
+            catch (Exception ex)
+            {
+                await DialogService.AlertAsync($"Could not delete user: {ex.Message}", "Delete failed");
+            }
             StateHasChanged();
         }
     }

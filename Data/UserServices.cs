@@ -71,29 +71,15 @@ namespace ReachingOutDB.Data
         public async Task UpdateUserAsync(UserProfile user)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
-            try
-            {
-                dbContext.Update(user);
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            dbContext.Update(user);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteUserAsync(UserProfile user)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
-            try
-            {
-                dbContext.Remove(user);
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            dbContext.Remove(user);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

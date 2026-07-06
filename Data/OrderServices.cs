@@ -75,178 +75,155 @@ namespace ReachingOutDB.Data
 
         public async Task<int> GenerateOrders(int? customerId, int year, Quarter quarter)
         {
-            try
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            List<Customer> customers;
+            if (customerId == null)
             {
-                await using var dbContext = await contextFactory.CreateDbContextAsync();
-                List<Customer> customers;
-                if (customerId == null)
+                customers = await dbContext.Customers.Where(c => c.Active == true).ToListAsync();
+            }
+            else
+            {
+                customers = await dbContext.Customers.Where(c => c.CustomerId == customerId).ToListAsync();
+            }
+
+            foreach (var customer in customers)
+            {
+                Order order = new Order();
+                order.OrderId = Guid.NewGuid();
+                order.Year = year;
+                order.Customer = customer;
+                order.Quarter = quarter;
+                order.JobStatus = JobStatus.ReadyToPlate;
+
+                if (customer.YearlyBillingQuarter != null)
                 {
-                    customers = await dbContext.Customers.Where(c => c.Active == true).ToListAsync();
+                    order.YearlyBilling = (customer.YearlyBillingQuarter == quarter) ? true : null;
                 }
                 else
                 {
-                    customers = await dbContext.Customers.Where(c => c.CustomerId == customerId).ToListAsync();
+                    order.YearlyBilling = false;
                 }
-
-                foreach (var customer in customers)
+                order.BpUpdate = false;
+                order.CustomBP = customer.CustomBP;
+                order.Archived = false;
+                if (customer.VariableOrders)
                 {
-                    Order order = new Order();
-                    order.OrderId = Guid.NewGuid();
-                    order.Year = year;
-                    order.Customer = customer;
-                    order.Quarter = quarter;
-                    order.JobStatus = JobStatus.ReadyToPlate;
-                    
-                    if (customer.YearlyBillingQuarter != null)
+                    if (quarter == Quarter.Q1)
                     {
-                        order.YearlyBilling = (customer.YearlyBillingQuarter == quarter) ? true : null;
+                        order.Qty = (int)customer.QtyQ1;
+                        order.SpecialNotes = customer.NotesQ1;
+                        order.DmQty = customer.DmQtyQ1;
+                        order.UpsQty = customer.UpsQtyQ1;
+                        order.PostalQty = customer.PostalQtyQ1;
+                        order.LtlQty = customer.LtlQtyQ1;
+                        order.IntlQty = customer.IntlQtyQ1;
                     }
-                    else
+                    else if (quarter == Quarter.Q2)
                     {
-                        order.YearlyBilling = false;
+                        order.Qty = (int)customer.QtyQ2;
+                        order.SpecialNotes = customer.NotesQ2;
+                        order.DmQty = customer.DmQtyQ2;
+                        order.UpsQty = customer.UpsQtyQ2;
+                        order.PostalQty = customer.PostalQtyQ2;
+                        order.LtlQty = customer.LtlQtyQ2;
+                        order.IntlQty = customer.IntlQtyQ2;
                     }
-                    order.BpUpdate = false;
-                    order.CustomBP = customer.CustomBP;
-                    order.Archived = false;
-                    if (customer.VariableOrders)
+                    else if (quarter == Quarter.Q3)
                     {
-                        if (quarter == Quarter.Q1)
-                        {
-                            order.Qty = (int)customer.QtyQ1;
-                            order.SpecialNotes = customer.NotesQ1;
-                            order.DmQty = customer.DmQtyQ1;
-                            order.UpsQty = customer.UpsQtyQ1;
-                            order.PostalQty = customer.PostalQtyQ1;
-                            order.LtlQty = customer.LtlQtyQ1;
-                            order.IntlQty = customer.IntlQtyQ1;
-                        }
-                        else if (quarter == Quarter.Q2)
-                        {
-                            order.Qty = (int)customer.QtyQ2;
-                            order.SpecialNotes = customer.NotesQ2;
-                            order.DmQty = customer.DmQtyQ2;
-                            order.UpsQty = customer.UpsQtyQ2;
-                            order.PostalQty = customer.PostalQtyQ2;
-                            order.LtlQty = customer.LtlQtyQ2;
-                            order.IntlQty = customer.IntlQtyQ2;
-                        }
-                        else if (quarter == Quarter.Q3)
-                        {
-                            order.Qty = (int)customer.QtyQ3;
-                            order.SpecialNotes = customer.NotesQ3;
-                            order.DmQty = customer.DmQtyQ3;
-                            order.UpsQty = customer.UpsQtyQ3;
-                            order.PostalQty = customer.PostalQtyQ3;
-                            order.LtlQty = customer.LtlQtyQ3;
-                            order.IntlQty = customer.IntlQtyQ3;
-                        }
-                        else if (quarter == Quarter.Q4)
-                        {
-                            order.Qty = (int)customer.QtyQ4;
-                            order.SpecialNotes = customer.NotesQ4;
-                            order.DmQty = customer.DmQtyQ4;
-                            order.UpsQty = customer.UpsQtyQ4;
-                            order.PostalQty = customer.PostalQtyQ4;
-                            order.LtlQty = customer.LtlQtyQ4;
-                            order.IntlQty = customer.IntlQtyQ4;
-                        }
+                        order.Qty = (int)customer.QtyQ3;
+                        order.SpecialNotes = customer.NotesQ3;
+                        order.DmQty = customer.DmQtyQ3;
+                        order.UpsQty = customer.UpsQtyQ3;
+                        order.PostalQty = customer.PostalQtyQ3;
+                        order.LtlQty = customer.LtlQtyQ3;
+                        order.IntlQty = customer.IntlQtyQ3;
                     }
-                    else
+                    else if (quarter == Quarter.Q4)
                     {
-                        order.Qty = (int)customer.Qty;
-                        order.SpecialNotes = customer.Notes;
-                        order.DmQty = customer.DmQty;
-                        order.UpsQty = customer.UpsQty;
-                        order.PostalQty = customer.PostalQty;
-                        order.LtlQty = customer.LtlQty;
-                        order.IntlQty = customer.IntlQty;
-                    }
-                    if (order.Qty > 0)
-                    {
-                        dbContext.Orders.Add(order);
+                        order.Qty = (int)customer.QtyQ4;
+                        order.SpecialNotes = customer.NotesQ4;
+                        order.DmQty = customer.DmQtyQ4;
+                        order.UpsQty = customer.UpsQtyQ4;
+                        order.PostalQty = customer.PostalQtyQ4;
+                        order.LtlQty = customer.LtlQtyQ4;
+                        order.IntlQty = customer.IntlQtyQ4;
                     }
                 }
-                //await auditLogServices.LogOrderChangesAsync(dbContext);
-                return await dbContext.SaveChangesAsync();
-
+                else
+                {
+                    order.Qty = (int)customer.Qty;
+                    order.SpecialNotes = customer.Notes;
+                    order.DmQty = customer.DmQty;
+                    order.UpsQty = customer.UpsQty;
+                    order.PostalQty = customer.PostalQty;
+                    order.LtlQty = customer.LtlQty;
+                    order.IntlQty = customer.IntlQty;
+                }
+                if (order.Qty > 0)
+                {
+                    dbContext.Orders.Add(order);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return 0;
-            }
+            //await auditLogServices.LogOrderChangesAsync(dbContext);
+            return await dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateOrderAsync(Order updatedOrder)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
-            try
+            var originalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == updatedOrder.OrderId);
+
+            if (originalOrder == null)
             {
-                var originalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == updatedOrder.OrderId);
-
-                if (originalOrder == null)
-                {
-                    throw new InvalidOperationException($"Order with ID {updatedOrder.OrderId} not found.");
-                }
-
-                //Calculate quantity
-                updatedOrder.Qty = (updatedOrder.UpsQty ?? 0) + (updatedOrder.PostalQty ?? 0) + 
-                    (updatedOrder.LtlQty ?? 0) + (updatedOrder.IntlQty ?? 0) + (updatedOrder.DmQty ?? 0);
-
-                // Check if any shipping cost fields changed
-                if (originalOrder.UpsCost != updatedOrder.UpsCost ||
-                    originalOrder.IntlCost != updatedOrder.IntlCost ||
-                    originalOrder.LTLCost != updatedOrder.LTLCost)
-                {
-                    // Recalculate shipping (this now only updates the order object, doesn't save)
-                    updatedOrder = await CalculatePublishedShippingAsync(updatedOrder);
-                }
-
-                if (originalOrder.PostalCost != updatedOrder.PostalCost ||
-                    originalOrder.DmCost != updatedOrder.DmCost)
-                {
-                    updatedOrder = await CalculatePublishedPostageAsync(updatedOrder);
-                }
-
-                if (originalOrder.DmQty != updatedOrder.DmQty)
-                {
-                    if (!updatedOrder.Customer.VariableOrders)
-                    {
-                        Customer customer = updatedOrder.Customer;
-                        customer.DmQty = updatedOrder.DmQty;
-                        await customerServices.UpdateCustomerAsync(customer);
-                    }
-                }
-                await auditLogServices.LogOrderChangesAsync(originalOrder, updatedOrder);
-                dbContext.Orders.Update(updatedOrder);
-                await dbContext.SaveChangesAsync();
+                throw new InvalidOperationException($"Order with ID {updatedOrder.OrderId} not found.");
             }
-            catch (Exception ex)
+
+            //Calculate quantity
+            updatedOrder.Qty = (updatedOrder.UpsQty ?? 0) + (updatedOrder.PostalQty ?? 0) +
+                (updatedOrder.LtlQty ?? 0) + (updatedOrder.IntlQty ?? 0) + (updatedOrder.DmQty ?? 0);
+
+            // Check if any shipping cost fields changed
+            if (originalOrder.UpsCost != updatedOrder.UpsCost ||
+                originalOrder.IntlCost != updatedOrder.IntlCost ||
+                originalOrder.LTLCost != updatedOrder.LTLCost)
             {
-                Console.WriteLine(ex.ToString());
+                // Recalculate shipping (this now only updates the order object, doesn't save)
+                updatedOrder = await CalculatePublishedShippingAsync(updatedOrder);
             }
+
+            if (originalOrder.PostalCost != updatedOrder.PostalCost ||
+                originalOrder.DmCost != updatedOrder.DmCost)
+            {
+                updatedOrder = await CalculatePublishedPostageAsync(updatedOrder);
+            }
+
+            if (originalOrder.DmQty != updatedOrder.DmQty)
+            {
+                if (!updatedOrder.Customer.VariableOrders)
+                {
+                    Customer customer = updatedOrder.Customer;
+                    customer.DmQty = updatedOrder.DmQty;
+                    await customerServices.UpdateCustomerAsync(customer);
+                }
+            }
+            await auditLogServices.LogOrderChangesAsync(originalOrder, updatedOrder);
+            dbContext.Orders.Update(updatedOrder);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteOrderAsync(Order order)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
-            try
+            var auditLogs = await dbContext.OrderAuditLogs.Where(l => l.Order == order).ToListAsync();
+            if (auditLogs.Any())
             {
-                var auditLogs = await dbContext.OrderAuditLogs.Where(l => l.Order == order).ToListAsync();
-                if (auditLogs.Any())
+                foreach (var log in auditLogs)
                 {
-                    foreach (var log in auditLogs)
-                    {
-                        dbContext.OrderAuditLogs.Remove(log);
-                    }
+                    dbContext.OrderAuditLogs.Remove(log);
                 }
-                dbContext.Orders.Remove(order);
-                await dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            dbContext.Orders.Remove(order);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<Order> CalculatePublishedPostageAsync(Order order)

@@ -507,14 +507,21 @@ else
             if (args.Action == "Edit")
             {
                 args.Cancel = true;
-                await orderService.UpdateOrderAsync(args.Data);
-                RefreshOrders();
+                try
+                {
+                    await orderService.UpdateOrderAsync(args.Data);
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.AlertAsync($"Could not save order: {ex.Message}", "Save failed");
+                }
+                await RefreshOrders();
             }
         }
         else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
         {
             args.Cancel = true;
-            DeleteOrderAsync(args.Data);
+            await DeleteOrderAsync(args.Data);
         }
     }
 
@@ -523,8 +530,15 @@ else
         bool isConfirm = await DialogService.ConfirmAsync("Are you sure you want to permanently delete this order? This action cannot be undone", "Delete");
         if (isConfirm)
         {
-            await orderService.DeleteOrderAsync(order);
-            RefreshOrders();
+            try
+            {
+                await orderService.DeleteOrderAsync(order);
+            }
+            catch (Exception ex)
+            {
+                await DialogService.AlertAsync($"Could not delete order: {ex.Message}", "Delete failed");
+            }
+            await RefreshOrders();
         }
     }
 
@@ -559,7 +573,14 @@ else
             else if (args.CommandColumn.ID == "advance-status")
             {
                 args.RowData.JobStatus = (JobStatus)((int)args.RowData.JobStatus + 1);
-                await orderService.UpdateOrderAsync(args.RowData);
+                try
+                {
+                    await orderService.UpdateOrderAsync(args.RowData);
+                }
+                catch (Exception ex)
+                {
+                    await DialogService.AlertAsync($"Could not update order status: {ex.Message}", "Update failed");
+                }
                 await RefreshOrders();
             }
         }
@@ -670,10 +691,24 @@ else
             if (userService.CurrentUser.Role == UserRole.Duplo)
             {
                 var selectedOrders = await Grid.GetSelectedRecordsAsync();
+                var failedCustomers = new List<string>();
                 foreach (var order in selectedOrders)
                 {
                     order.JobStatus = JobStatus.ReadyToShip;
-                    await orderService.UpdateOrderAsync(order);
+                    try
+                    {
+                        await orderService.UpdateOrderAsync(order);
+                    }
+                    catch (Exception ex)
+                    {
+                        failedCustomers.Add($"{order.Customer?.CustomerName ?? order.CustomerId.ToString()}: {ex.Message}");
+                    }
+                }
+                if (failedCustomers.Any())
+                {
+                    await DialogService.AlertAsync(
+                        $"The following orders could not be updated:{Environment.NewLine}{string.Join(Environment.NewLine, failedCustomers)}",
+                        "Some updates failed");
                 }
                 await RefreshOrders();
                 await orderStateServices.UpdateDuploProgress(yearQuarterService.YearQuarterKey, orders);

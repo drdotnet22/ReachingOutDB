@@ -1,5 +1,6 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
+@inject SfDialogService DialogService
 
 
 <SfNumericTextBox @bind-Value="year" Placeholder="Year" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Auto" Format="####" ShowSpinButton="false" />
@@ -17,6 +18,13 @@
 
     public async Task CreateBulkOrders()
     {
-        orderService.GenerateOrders(null, year, quarter);
+        try
+        {
+            await orderService.GenerateOrders(null, year, quarter);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.AlertAsync($"Could not generate orders: {ex.Message}", "Generate failed");
+        }
     }
 }

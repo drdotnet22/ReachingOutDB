@@ -1,5 +1,6 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
+@inject SfDialogService DialogService
 
 
 
@@ -82,8 +83,15 @@
 
     private async Task SaveOrderUpdates()
     {
-        //await orderService.UpdateOrderAsync(order); This is being called and the end of the published shipping calculations.
-        await orderService.UpdateOrderAsync(order);
+        try
+        {
+            await orderService.UpdateOrderAsync(order);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.AlertAsync($"Could not save order: {ex.Message}", "Save failed");
+            return;
+        }
         order = new Order();
         customerIdSearch = null;
         orderSet = false;

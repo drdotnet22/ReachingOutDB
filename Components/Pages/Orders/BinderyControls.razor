@@ -1,5 +1,6 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
+@inject SfDialogService DialogService
 
 @code {
     [Parameter] public SfGrid<Order> DataGrid { get; set; }
@@ -10,7 +11,14 @@
         foreach (var order in selectedOrders)
         {
             order.JobStatus = JobStatus.ReadyToShip;
-            await orderService.UpdateOrderAsync(order);
+            try
+            {
+                await orderService.UpdateOrderAsync(order);
+            }
+            catch (Exception ex)
+            {
+                await DialogService.AlertAsync($"Could not update order: {ex.Message}", "Update failed");
+            }
         }
     }
 }
