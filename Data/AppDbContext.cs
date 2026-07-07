@@ -20,6 +20,8 @@ namespace ReachingOutDB.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Single seed row per table below is only used to give each migration
+            // deterministic starting data; it isn't representative production data.
             modelBuilder.Entity<Customer>().HasData(GetCustomers());
             modelBuilder.Entity<Order>().HasData(GetOrders());
             modelBuilder.Entity<OrderAuditLog>().HasData(GetOrderAuditLogs());

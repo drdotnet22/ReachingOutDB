@@ -86,6 +86,8 @@ else
 
         int platedQty = filteredPlates.Sum(p => p.Quantity);
 
+        // Efficiency = estimated copies printed (unplated + a fixed allowance for orders not
+        // yet in the system + already-plated) vs. total press capacity (each plate has 4 slots).
         efficiency = ((double)(blanksNeeded + 2000 + platedOrderTotal)) / (platedQty * 4);
         StateHasChanged();
     }

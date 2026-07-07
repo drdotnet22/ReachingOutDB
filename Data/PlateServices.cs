@@ -99,6 +99,12 @@ namespace ReachingOutDB.Data
                 throw ex;
             }
         }
+        // A press plate holds up to 4 jobs (positions) printed together at one quantity, so jobs
+        // with similar order quantities get grouped onto the same plate; any gap between a job's
+        // quantity and the plate's quantity becomes "blanks" (wasted/unassigned print copies).
+        // This tries the packing heuristic below across a range of thresholds (how much quantity
+        // gap is tolerated before treating a slot as a blank) and keeps whichever run used the
+        // fewest plates (tie-broken by lowest total printed quantity).
         public async Task AutoAssignJobsToPlatesAsync(List<Order> unplatedOrders, int blanksUnplated, int year, Quarter quarter)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
@@ -126,6 +132,11 @@ namespace ReachingOutDB.Data
             await dbContext.SaveChangesAsync();
         }
 
+        // Greedily fills plates from the largest remaining order downward. Each pass through the
+        // loop handles one plate and picks a branch based on how urgently "blanks" (leftover print
+        // capacity still owed from earlier plates) need to be used up before deciding whether a
+        // candidate job fits the plate's quantity (within `threshold`) or becomes another blank.
+        // Returns null if too many blanks (>200) are left unplaced at the end.
         private async Task<List<PlateAssignment>> AssignJobsToPlatesHelperRandomAsync(List<Order> unplatedOrders, int blanksUnplated, int year, Quarter quarter, int threshold)
         {
             Random random = new();

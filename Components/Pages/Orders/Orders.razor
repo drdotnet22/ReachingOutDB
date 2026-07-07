@@ -572,6 +572,7 @@ else
             }
             else if (args.CommandColumn.ID == "advance-status")
             {
+                // Relies on JobStatus enum values being sequential (OnHold=1...Invoiced=6).
                 args.RowData.JobStatus = (JobStatus)((int)args.RowData.JobStatus + 1);
                 try
                 {

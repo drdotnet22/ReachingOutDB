@@ -49,6 +49,8 @@ namespace ReachingOutDB.Data
             OnYearQuarterChanged?.Invoke();
         }
 
+        // Business quarters are offset from calendar quarters by one month, and Q1 spans the
+        // year boundary (Nov-Jan): Q1 = Nov-Jan, Q2 = Feb-Apr, Q3 = May-Jul, Q4 = Aug-Oct.
         public async Task CalculateYearQuarterAsync()
         {
             int year = DateTime.UtcNow.Year;

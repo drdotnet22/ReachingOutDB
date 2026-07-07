@@ -18,6 +18,8 @@ namespace ReachingOutDB.Data
         }
         #endregion
 
+        // Diffs every public property on Order via reflection so new fields are
+        // audited automatically without updating this method.
         public async Task LogOrderChangesAsync(Order originalOrder, Order updatedOrder)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();

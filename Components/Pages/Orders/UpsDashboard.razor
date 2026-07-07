@@ -58,6 +58,7 @@
     private async Task RefreshOrders()
     {
         orders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        // Only orders that ship via UPS and haven't been invoiced yet.
         upsOrders = orders.Where(o => o.UpsQty.HasValue && o.UpsQty > 0 && (JobStatus)((int)o.JobStatus) <= (JobStatus)((int)JobStatus.Shipped));
         StateHasChanged();
     }

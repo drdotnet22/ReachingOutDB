@@ -16,6 +16,8 @@ namespace ReachingOutDB.Data
         public int? QtyQ2 { get; set; }
         public int? QtyQ3 { get; set; }
         public int? QtyQ4 { get; set; }
+        // If true, order quantities/notes differ per quarter (QtyQ1-4/NotesQ1-4);
+        // if false, the flat Qty/Notes fields apply to every quarter.
         public bool VariableOrders { get; set; }
         public bool BackpageUpdates { get; set; } = false;
         public string? Notes { get; set; }
@@ -23,7 +25,9 @@ namespace ReachingOutDB.Data
         public string? NotesQ2 { get; set; }
         public string? NotesQ3 { get; set; }
         public string? NotesQ4 { get; set; }
+        // Customer uses a custom backpage layout instead of the standard one.
         public bool CustomBP { get; set; }
+        // Quarter in which this customer is billed for the whole year, if applicable.
         public Quarter? YearlyBillingQuarter { get; set; }
         public string? MailingNotes {  get; set; }
         //DM
@@ -74,9 +78,12 @@ namespace ReachingOutDB.Data
         public int Qty { get; set; }
         public string? SpecialNotes { get; set; }
         public string? NotesForInvoicing { get; set; }
+        // null = customer isn't on yearly billing; true = this is the order billed for the
+        // year; false = customer is on yearly billing but it's charged in a different quarter.
         public bool? YearlyBilling { get; set; }
         public string? HoldNote { get; set; }
         public int? PlateId { get; set; }
+        // Whether this order's backpage still needs updating for the new quarter.
         public bool BpUpdate { get; set; }
         public bool CustomBP {  get; set; }
         //DM

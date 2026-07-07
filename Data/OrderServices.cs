@@ -73,6 +73,8 @@ namespace ReachingOutDB.Data
                 .ToListAsync();
         }
 
+        // Creates one order per active customer for the given year/quarter, seeded from
+        // that customer's per-quarter (or flat) quantities/notes. Orders with 0 qty are skipped.
         public async Task<int> GenerateOrders(int? customerId, int year, Quarter quarter)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
@@ -226,6 +228,9 @@ namespace ReachingOutDB.Data
             await dbContext.SaveChangesAsync();
         }
 
+        // PubUsps is the customer-facing (published) postage price: actual cost plus markup
+        // and a per-box fee, boxes being ceil(qty / QuantityPerBox). If a direct-mail (DM) cost
+        // is set, that vendor cost is used as-is since it already includes markup.
         public async Task<Order> CalculatePublishedPostageAsync(Order order)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
@@ -251,6 +256,9 @@ namespace ReachingOutDB.Data
             }
         }
 
+        // PubShipping sums the published (marked-up) price across whichever of UPS/INTL/LTL
+        // costs are set on the order. Each adds its own markup, handling fee, and per-box fee;
+        // UPS additionally gets a discount once box count passes BoxDiscountThreshold.
         public async Task<Order> CalculatePublishedShippingAsync(Order order)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
@@ -330,6 +338,7 @@ namespace ReachingOutDB.Data
                 {
                     try
                     {
+                        // Endicia's "Order Number" column is actually the customer ID, not an order ID.
                         var customerId = int.Parse(row["Order Number"].ToString());
                         var order = orders.FirstOrDefault(o => o.CustomerId == customerId);
                         order.PostalCost = (order.PostalCost ?? 0) + Convert.ToDecimal(row["Cost"].ToString());

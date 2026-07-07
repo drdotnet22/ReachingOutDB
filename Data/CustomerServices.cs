@@ -46,6 +46,8 @@ namespace ReachingOutDB.Data
             await dbContext.SaveChangesAsync();
         }
 
+        // VariableOrders customers get different quantities each quarter, so totals
+        // are tracked per-quarter (QtyQ1-Q4); others use a single flat Qty for all quarters.
         private async Task CalculateQty(Customer customer)
         {
             if (customer.VariableOrders)

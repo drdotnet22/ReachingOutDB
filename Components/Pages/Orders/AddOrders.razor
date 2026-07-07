@@ -37,7 +37,7 @@
 @code {
     [Parameter] public IEnumerable<Customer> CustomerList { get; set; }
     [Parameter] public EventCallback OnOrdersGenerated { get; set; }
-    private Customer selectedCustomer { get; set; } = new Customer();
+    private Customer? selectedCustomer { get; set; }
     private int year;
     private Quarter quarter;
     private string[] quarterValues = Quarter.GetNames(typeof(Quarter));
@@ -50,16 +50,10 @@
 
     private async Task SubmitOrder()
     {
+        int? customerId = (selectedCustomer?.CustomerId > 0) ? selectedCustomer.CustomerId : null;
         try
         {
-            if (selectedCustomer != null)
-            {
-                await orderService.GenerateOrders(selectedCustomer.CustomerId, year, quarter);
-            }
-            else
-            {
-                await orderService.GenerateOrders(null, year, quarter);
-            }
+            await orderService.GenerateOrders(customerId, year, quarter);
         }
         catch (Exception ex)
         {

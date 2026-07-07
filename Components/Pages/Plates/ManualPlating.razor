@@ -167,6 +167,8 @@
             .Where(pa => pa.IsBlank == true)
             .Sum(pa => pa.Plate.Quantity);
 
+        // +1000 buffers for orders currently under the 1000-qty "needs a full plate" cutoff
+        // used elsewhere, so they aren't counted as blanks needed until they actually are.
         blanksUnplated = totalBlanksNeeded - blankSheets + 1000;
 
         // If max unplated order qty is under 1000, then we can consider plating complete. Introduce check in case there are no unplated orders.
@@ -209,12 +211,16 @@
         }
     }
 
+    // Manual counterpart to PlateServices' auto-assign heuristic: groups the operator's
+    // selected orders onto one plate at a shared quantity, using leftover slots as blanks.
     private async Task CreatePlateWithSelectedOrders(List<Order> selectedOrders)
     {
         selectedOrders = selectedOrders.OrderByDescending(o => o.Qty).ToList();
 
         if (selectedOrders.Count <= 2)
         {
+            // Ambiguous how to fill 2+ empty slots automatically, so let the operator
+            // choose how many slots each order takes via the customization dialog.
             await CreateCustomizedPlate(selectedOrders);
             return; // No orders selected, do nothing
         }
