@@ -25,7 +25,7 @@ namespace ReachingOutDB.Data
                 _currentUser = value;
                 if (_currentUser != null)
                 {
-                    SaveUserToBrowserAsync();
+                    _ = SaveUserToBrowserAsync(); // No await here, fire and forget
                 }
             }
         }
@@ -52,7 +52,14 @@ namespace ReachingOutDB.Data
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
             var user = await dbContext.UserProfiles.FirstOrDefaultAsync(u => u.UserProfileId == userId);
-            CurrentUser = user;
+            // In case the user is not found, we can set a default user profile
+            CurrentUser = user ?? new UserProfile
+            {
+                UserProfileId = 0,
+                Name = "Select User",
+                Role = UserRole.UnAssigned,
+                Active = false
+            };
             OnUserChanged?.Invoke();
         }
 
