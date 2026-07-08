@@ -3,11 +3,40 @@
 @inject PackageServices packageService
 @inject CustomerServices customerService
 @inject MiscSettingsServices miscSettingsService
+@inject YearQuarterService yearQuarterService
+@inject OrderServices orderService
+@inject UserServices userService
+@inject SfDialogService DialogService
+@implements IDisposable
 
 
 <PageTitle>Packages</PageTitle>
 
 <h3>Package Management</h3>
+
+@if (packageIssues.Any())
+{
+    <div style="border: 1px solid #e0a800; background: #fff3cd; color: #664d03; border-radius: 4px; padding: 10px 14px; margin-bottom: 16px;">
+        <strong>⚠️ @packageIssues.Count USPS order(s) need attention for @yearQuarterService.SelectedYear @yearQuarterService.SelectedQuarter:</strong>
+        <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+            @foreach (var issue in packageIssues)
+            {
+                <li>
+                    <strong>@issue.Order.Customer.CustomerName (@issue.Order.CustomerId)</strong> —
+                    @if (issue.IssueType == UspsPackageIssueType.MissingPackage)
+                    {
+                        <span>USPS order for @issue.PostalQty but no shipping package on file.</span>
+                    }
+                    else
+                    {
+                        <span>packages total @issue.PackagedQty, but the USPS order is for @issue.PostalQty.</span>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}
+
 <div class="myflexrow" style="margin-bottom: 20px;">
     <h4>Filter by Package Type:</h4>
     @foreach (PackageType type in Enum.GetValues(typeof(PackageType)))
@@ -19,6 +48,12 @@
             </SfCheckBox>
         </div>
     }
+    <div style="display: inline-block; margin-left: 25px; border-left: 1px solid #ccc; padding-left: 25px;">
+        <SfCheckBox Label="Only ready-to-ship (this quarter)"
+            @bind-Checked="@readyToShipOnly"
+            @onchange="OnReadyToShipFilterChanged">
+        </SfCheckBox>
+    </div>
 </div>
 
 <SfGrid @ref="Grid" DataSource="@filteredPackages" AllowSorting="true" AllowResizing="true" RowHeight="30" Toolbar="@ToolbarItems" AllowExcelExport="true" AllowSelection="true">
@@ -89,6 +124,8 @@
     public MiscSetting miscSetting;
     public Package selectedPackage = new Package();
     private Dictionary<PackageType, bool> SelectedPackageTypes { get; set; } = new();
+    private bool readyToShipOnly = false;
+    private List<UspsPackageIssue> packageIssues { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,6 +135,7 @@
         }
         SelectedPackageTypes[PackageType.INTL] = false; // Deselect INTL by default
 
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
         customers = await customerService.GetCustomersAsync();
         packageOptions = await packageService.GetPackageOptionsAsync();
         miscSetting = await miscSettingsService.GetMiscSettingsAsync();
@@ -105,11 +143,29 @@
         await base.OnInitializedAsync();
     }
 
+    private async void YearQuarterChanged()
+    {
+        await RefreshPackages();
+    }
+
     private async Task RefreshPackages()
     {
-        packages = await packageService.GetPackagesAsync();
+        packages = readyToShipOnly
+            ? await packageService.GetReadyToShipPackagesAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter)
+            : await packageService.GetPackagesAsync();
+        packageIssues = await packageService.GetUspsPackageIssuesAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
         ApplyPackageTypeFilter();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnReadyToShipFilterChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await RefreshPackages();
+    }
+
+    public void Dispose()
+    {
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
     }
 
     private string GetPackageTypeDisplayName(PackageType packageType)
