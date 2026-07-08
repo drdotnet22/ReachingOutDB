@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace ReachingOutDB.Data
 {
     public class CustomerStateServices
@@ -11,5 +13,16 @@ namespace ReachingOutDB.Data
                     .Cast<Func<int, Task>>()
                     .Select(d => d(customerId)));
         }
+
+        private readonly ConcurrentDictionary<int, string> _mailingNotesLocks = new();
+
+        public bool TryAquireMailingNotesLock(int customerId, string userName)
+            => _mailingNotesLocks.TryAdd(customerId, userName);
+
+        public string? GetMailingNotesLockHolder(int customerId)
+            => _mailingNotesLocks.TryGetValue(customerId, out var holder) ? holder : null;
+
+        public void ReleaseMailingNotesLock(int customerId, string userName)
+            => _mailingNotesLocks.TryRemove(new KeyValuePair<int, string>(customerId, userName));
     }
 }

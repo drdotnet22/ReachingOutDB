@@ -49,6 +49,19 @@ namespace ReachingOutDB.Data
             await customerStateServices.NotifyCustomerUpdated(customer.CustomerId);
         }
 
+        public async Task<uint> UpdateMailingNotesAsync(int customerId, string? mailingNotes)
+        {
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            await dbContext.Customers
+                .Where(c => c.CustomerId == customerId)
+                .ExecuteUpdateAsync(s => s.SetProperty(c => c.MailingNotes, mailingNotes));
+
+            return await dbContext.Customers
+                .Where(c => c.CustomerId == customerId)
+                .Select(c => c.Version)
+                .FirstAsync();
+        }
+
         // VariableOrders customers get different quantities each quarter, so totals
         // are tracked per-quarter (QtyQ1-Q4); others use a single flat Qty for all quarters.
         private async Task CalculateQty(Customer customer)

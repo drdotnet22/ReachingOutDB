@@ -4,6 +4,8 @@
 @using Syncfusion.Blazor.MultiColumnComboBox
 
 @inject CustomerServices customerService
+@inject CustomerStateServices customerStateService
+@implements IDisposable
 
 <PageTitle>Mailing Notes</PageTitle>
 <h3>MailingNotes</h3>
@@ -82,7 +84,7 @@
             </div>
         </Header>
         <Content>
-            <MailingNotesEditor SelectedCustomer="selectedCustomer" />
+            <MailingNotesEditor @ref="mailingNotesEditor" SelectedCustomer="selectedCustomer" />
         </Content>
     </DialogTemplates>
     <DialogPositionData X="center" Y="150" />
@@ -97,6 +99,7 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshCustomers();
+        customerStateService.OnCustomerUpdated += HandleCustomerUpdatedElsewhere;
         await base.OnInitializedAsync();
     }
 
@@ -105,6 +108,18 @@
         customers = await customerService.GetCustomersAsync();
         customersWithMailingNotes = customers.Where(c => c.MailingNotes != null);
         StateHasChanged();
+    }
+
+    private async Task HandleCustomerUpdatedElsewhere(int customerId)
+    {
+        try
+        {
+            await InvokeAsync(RefreshCustomers);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     #region Datagrid Handlers
@@ -145,6 +160,7 @@
     #region Dialog Handlers
     private SfDialog addMailingNotesDialog;
     private SfDialog editMailingNotesDialog;
+    private MailingNotesEditor mailingNotesEditor;
 
     private void OpenAddMailingNotesDialog()
     {
@@ -166,8 +182,14 @@
     }
     private async Task EditMailingNotesDialogClosedHandler(Syncfusion.Blazor.Popups.CloseEventArgs args)
     {
-        await customerService.UpdateCustomerAsync(selectedCustomer);
+        selectedCustomer.Version = await customerService.UpdateMailingNotesAsync(selectedCustomer.CustomerId, selectedCustomer.MailingNotes); // prevent any future saves from overwriting the latest version of the mailing notes
+        mailingNotesEditor?.ReleaseLock();
         await RefreshCustomers();
     }
     #endregion
+
+    public void Dispose()
+    {
+        customerStateService.OnCustomerUpdated -= HandleCustomerUpdatedElsewhere;        
+    }
 }

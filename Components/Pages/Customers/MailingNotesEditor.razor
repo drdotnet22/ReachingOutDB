@@ -1,22 +1,79 @@
 ﻿@using ReachingOutDB.Data
 @using Syncfusion.Blazor.MultiColumnComboBox
+@using Syncfusion.Blazor.Notifications
 
 @inject CustomerServices customerService
+@inject UserServices userServices
+@inject CustomerStateServices customerStateService
+@implements IDisposable
 
+<div class="myflexcolumn">
+    @if (lockedByOther)
+    {
+        <SfMessage>Editing mailing notes is locked by @lockHolder</SfMessage>
+    }
 
-
-<SfRichTextEditor @bind-Value="SelectedCustomer.MailingNotes" SaveInterval="5000" AutoSaveOnIdle="true" Readonly="@(!Editable)">
-    <RichTextEditorToolbarSettings Items="@RichTextTools" />
-    <RichTextEditorEvents ValueChange="UpdateMailingNotes" />
-</SfRichTextEditor>
+    <SfRichTextEditor @bind-Value="SelectedCustomer.MailingNotes" SaveInterval="5000" AutoSaveOnIdle="true" Readonly="@(!Editable || lockedByOther)">
+        <RichTextEditorToolbarSettings Items="@RichTextTools" Enable="@(Editable && !lockedByOther)" />
+        <RichTextEditorEvents ValueChange="UpdateMailingNotes" />
+    </SfRichTextEditor>
+</div>
 
 @code {
     [Parameter] public Customer SelectedCustomer { get; set; }
     [Parameter] public bool Editable { get; set; } = true;
 
+    private int? lockedCustomerId;
+    private bool lockedByOther;
+    private string? lockHolder;
+
+    protected override void OnParametersSet()
+    {
+        if (SelectedCustomer?.CustomerId != lockedCustomerId)
+        {
+            ReleaseLock();
+
+            if (Editable && SelectedCustomer != null)
+            {
+                var userName = userServices.CurrentUser.Name;
+                if (customerStateService.TryAquireMailingNotesLock(SelectedCustomer.CustomerId, userName))
+                {
+                    lockedCustomerId = SelectedCustomer.CustomerId;
+                    lockedByOther = false;
+                }
+                else
+                {
+                    lockedByOther = true;
+                    lockHolder = customerStateService.GetMailingNotesLockHolder(SelectedCustomer.CustomerId);
+                }
+            }
+        }
+        base.OnParametersSet();
+    }
+
+    public void ReleaseLock()
+    {
+        if (lockedCustomerId.HasValue)
+        {
+            customerStateService.ReleaseMailingNotesLock(lockedCustomerId.Value, userServices.CurrentUser.Name);
+        }
+        lockedByOther = false;
+        lockHolder = null;
+    }
+
+    public void Dispose()
+    {
+        if (!lockedByOther)
+        {
+            customerService.UpdateMailingNotesAsync(SelectedCustomer.CustomerId, SelectedCustomer.MailingNotes); // save any changes to the mailing notes before releasing the lock
+            ReleaseLock();
+            customerStateService.NotifyCustomerUpdated(SelectedCustomer.CustomerId);
+        }
+    }
+
     private async Task UpdateMailingNotes(Syncfusion.Blazor.RichTextEditor.ChangeEventArgs args)
     {
-        await customerService.UpdateCustomerAsync(SelectedCustomer);
+        SelectedCustomer.Version = await customerService.UpdateMailingNotesAsync(SelectedCustomer.CustomerId, args.Value); // prevent any future saves from overwriting the latest version of the mailing notes
     }
 
     private List<ToolbarItemModel> RichTextTools = new List<ToolbarItemModel>()
@@ -53,4 +110,6 @@
         new ToolbarItemModel() { Command = ToolbarCommand.Print },
         new ToolbarItemModel() { Command = ToolbarCommand.SourceCode },
     };
+
+
 }
