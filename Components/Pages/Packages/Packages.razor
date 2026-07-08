@@ -113,13 +113,25 @@
     </DialogTemplates>
 </SfDialog>
 
+<Syncfusion.Blazor.Popups.SfDialogProvider />
+
 @code {
     private SfGrid<Package> Grid;
     private IEnumerable<Package> packages { get; set; }
     private IEnumerable<Package> filteredPackages { get; set; }
     private IEnumerable<Customer> customers { get; set; }
     private IEnumerable<PackageOption> packageOptions { get; set; }
-    private List<Object> ToolbarItems = new List<Object>() { "Add", "CsvExport", "Search" };
+    private List<Object> ToolbarItems = new List<Object>()
+    {
+        "Add", "CsvExport", "Search",
+        new Syncfusion.Blazor.Navigations.ItemModel
+        {
+            Text = "Mark Shipped",
+            Id = "MarkShipped",
+            TooltipText = "Mark the ready-to-ship USPS orders for the selected packages as shipped",
+            PrefixIcon = "e-icons e-check"
+        }
+    };
     private bool exportColumnsVisible = false;
     public MiscSetting miscSetting;
     public Package selectedPackage = new Package();
@@ -255,6 +267,64 @@
             };
             await Grid.ExportToCsvAsync(ExportProperties);
         }
+        else if (args.Item.Id == "MarkShipped")
+        {
+            args.Cancel = true;
+            await MarkSelectedPackagesShipped();
+        }
+    }
+
+    // Marks the ready-to-ship USPS orders belonging to the selected packages' customers (in the
+    // currently selected period) as shipped. A package maps to an order via customer + period.
+    private async Task MarkSelectedPackagesShipped()
+    {
+        var selectedPackages = await Grid.GetSelectedRecordsAsync();
+        if (selectedPackages == null || !selectedPackages.Any())
+        {
+            await DialogService.AlertAsync("Select one or more packages first.", "No packages selected");
+            return;
+        }
+
+        var customerIds = selectedPackages.Select(p => p.CustomerId).Distinct().ToHashSet();
+        var periodOrders = await orderService.GetOrdersAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        var ordersToShip = periodOrders
+            .Where(o => customerIds.Contains(o.CustomerId)
+                     && o.PostalQty > 0
+                     && o.JobStatus == JobStatus.ReadyToShip)
+            .ToList();
+
+        if (!ordersToShip.Any())
+        {
+            await DialogService.AlertAsync(
+                "None of the selected packages have a ready-to-ship USPS order this quarter.",
+                "Nothing to mark");
+            return;
+        }
+
+        bool confirmed = await DialogService.ConfirmAsync(
+            $"Mark {ordersToShip.Count} USPS order(s) as shipped for {yearQuarterService.SelectedYear} {yearQuarterService.SelectedQuarter}?",
+            "Confirm mark shipped");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        foreach (var order in ordersToShip)
+        {
+            order.JobStatus = JobStatus.Shipped;
+            try
+            {
+                await orderService.UpdateOrderAsync(order, userService.CurrentUser.Name);
+            }
+            catch (Exception ex)
+            {
+                await DialogService.AlertAsync(
+                    $"Could not update order for {order.Customer?.CustomerName}: {ex.Message}",
+                    "Update failed");
+            }
+        }
+
+        await RefreshPackages();
     }
 
     public void ExcelQueryCellInfoHandler(ExcelQueryCellInfoEventArgs<Package> args)
