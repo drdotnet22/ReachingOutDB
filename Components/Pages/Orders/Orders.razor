@@ -1,5 +1,7 @@
-﻿@using ReachingOutDB.Data
+﻿@using Microsoft.EntityFrameworkCore
+@using ReachingOutDB.Data
 @using ReachingOutDB.Components.Shared
+@using Syncfusion.Blazor.Notifications
 
 @inject OrderServices orderService
 @inject CustomerServices customerService
@@ -264,6 +266,10 @@ else
 
 <Syncfusion.Blazor.Popups.SfDialogProvider />
 
+<SfToast @ref="toastObj" ID="toastObj" Timeout="3000" Title="Information" CssClass="e-toast-info" Icon="e-info toast-icons" >
+    <ToastPosition X="Right" Y="Top" />
+</SfToast>
+
 <style>
     .chip-shipping {
         display: inline-flex;
@@ -319,6 +325,7 @@ else
     {
         userService.OnUserChanged += OnUserChanged;
         yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
+        orderStateServices.OnOrderUpdated += HandleOrderUpdateElsewhere;
         //RefreshOrders();
         await base.OnInitializedAsync();
     }
@@ -339,7 +346,7 @@ else
         ApplyShipMethodFilter();
         await ApplyJobStatusFilter();
         StateHasChanged();
-        
+
         if (!orderStateServices.EnsureQuarterProgress(yearQuarterService.YearQuarterKey))
         {
             await orderStateServices.UpdateDuploProgress(yearQuarterService.YearQuarterKey, orders);
@@ -509,7 +516,13 @@ else
                 args.Cancel = true;
                 try
                 {
-                    await orderService.UpdateOrderAsync(args.Data);
+                    await orderService.UpdateOrderAsync(args.Data, userService.CurrentUser.Name);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    await DialogService.AlertAsync(
+                        "This order was changed by someone else while you were editing. The grid has been refreshed with the latest data — please reapply your changes.",
+                        "Save failed");
                 }
                 catch (Exception ex)
                 {
@@ -576,7 +589,7 @@ else
                 args.RowData.JobStatus = (JobStatus)((int)args.RowData.JobStatus + 1);
                 try
                 {
-                    await orderService.UpdateOrderAsync(args.RowData);
+                    await orderService.UpdateOrderAsync(args.RowData, userService.CurrentUser.Name);
                 }
                 catch (Exception ex)
                 {
@@ -698,7 +711,7 @@ else
                     order.JobStatus = JobStatus.ReadyToShip;
                     try
                     {
-                        await orderService.UpdateOrderAsync(order);
+                        await orderService.UpdateOrderAsync(order, userService.CurrentUser.Name);
                     }
                     catch (Exception ex)
                     {
@@ -767,10 +780,32 @@ else
         }
     }
 
+    SfToast toastObj;
+    private async Task HandleOrderUpdateElsewhere(Guid orderId, string? orderCustomerName, string? userName)
+    {
+        try
+        {
+            await InvokeAsync(RefreshOrders);
+            if (!string.IsNullOrEmpty(userName))
+            {
+                if (userName != userService.CurrentUser.Name)
+                {
+                    toastObj.Content = $"Order for {orderCustomerName} was updated by {userName}.";
+                    await toastObj.ShowAsync();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
     public void Dispose()
     {
         userService.OnUserChanged -= OnUserChanged;
         yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
+        orderStateServices.OnOrderUpdated -= HandleOrderUpdateElsewhere;
     }
 
 }

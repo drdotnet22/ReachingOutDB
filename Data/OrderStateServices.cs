@@ -4,6 +4,16 @@ namespace ReachingOutDB.Data
 {
     public class OrderStateServices
     {
+        public event Func<Guid, string?, string?, Task>? OnOrderUpdated;
+
+        public async Task NotifyOrderUpdated(Guid orderId, string? orderCustomerName, string? userName)
+        {
+            if (OnOrderUpdated != null)
+                await Task.WhenAll(OnOrderUpdated.GetInvocationList()
+                    .Cast<Func<Guid, string?, string?, Task>>()
+                    .Select(d => d(orderId, orderCustomerName, userName)));
+        }
+
         // Thread-safe dictionary to hold progress per quarter (e.g., "2026Q3")
         private readonly ConcurrentDictionary<string, QuarterlyProgress> _quarterlyStats = new();
 

@@ -9,12 +9,14 @@ namespace ReachingOutDB.Data
     {
         #region Private members
         private IDbContextFactory<AppDbContext> contextFactory;
+        private CustomerStateServices customerStateServices;
         #endregion
 
         #region Constructor
-        public CustomerServices(IDbContextFactory<AppDbContext> contextFactory)
+        public CustomerServices(IDbContextFactory<AppDbContext> contextFactory, CustomerStateServices customerStateServices)
         {
             this.contextFactory = contextFactory;
+            this.customerStateServices = customerStateServices;
         }
         #endregion
 
@@ -44,6 +46,7 @@ namespace ReachingOutDB.Data
             await CalculateQty(customer);
             dbContext.Update(customer);
             await dbContext.SaveChangesAsync();
+            await customerStateServices.NotifyCustomerUpdated(customer.CustomerId);
         }
 
         // VariableOrders customers get different quantities each quarter, so totals

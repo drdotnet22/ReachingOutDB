@@ -1,6 +1,7 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
 @inject SfDialogService DialogService
+@inject UserServices userService
 
 
 
@@ -85,7 +86,7 @@
     {
         try
         {
-            await orderService.UpdateOrderAsync(order);
+            await orderService.UpdateOrderAsync(order, userService.CurrentUser.Name);
         }
         catch (Exception ex)
         {

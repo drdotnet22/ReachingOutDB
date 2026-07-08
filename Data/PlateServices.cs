@@ -87,7 +87,7 @@ namespace ReachingOutDB.Data
                     {
                         var order = assignment.Order;
                         order.JobStatus = JobStatus.Plated;
-                        await orderService.UpdateOrderAsync(order);
+                        await orderService.UpdateOrderAsync(order, null);
                     }
                 }
                 dbContext.Update(plate);
@@ -365,7 +365,7 @@ namespace ReachingOutDB.Data
                     if (assignment.Order?.JobStatus == JobStatus.Plated)
                     {
                         assignment.Order.JobStatus = JobStatus.ReadyToPlate;
-                        await orderService.UpdateOrderAsync(assignment.Order);
+                        await orderService.UpdateOrderAsync(assignment.Order, null);
                     }
                     dbContext.Remove(assignment);
                 }

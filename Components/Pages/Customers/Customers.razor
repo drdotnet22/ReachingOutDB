@@ -7,6 +7,8 @@
 @inject UserServices userService
 @inject CustomerChangesServices customerChangesServices
 @inject NavigationManager navigationManager
+@inject SfDialogService DialogService
+@inject CustomerStateServices customerStateServices
 @implements IDisposable
 
 <PageTitle>Customers - Reaching Out</PageTitle>
@@ -19,7 +21,6 @@
     </div>
 </div>
 <SfGrid @ref="Grid" DataSource="@filteredCustomers" Toolbar="@ToolbarItems" AllowSorting="true" AllowResizing="true" RowHeight="30">
-    <GridEvents OnActionBegin="ActionBeginHandler" TValue="Customer" />
     <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Dialog" >
         <HeaderTemplate>
             @{
@@ -138,14 +139,28 @@
     protected override async Task OnInitializedAsync()
     {
         userService.OnUserChanged += OnUserChanged;
+        customerStateServices.OnCustomerUpdated += HandleCustomerUpdatedElsewhere;
         await RefreshCustomers();
         await base.OnInitializedAsync();
+    }
+
+    private async Task HandleCustomerUpdatedElsewhere(int customerId)
+    {
+        try
+        {
+            await InvokeAsync(RefreshCustomers);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     private async Task RefreshCustomers()
     {
         allCustomers = await customerService.GetCustomersAsync();
         await RefreshCustomerFilter();
+        StateHasChanged();
     }
 
     private async Task RefreshCustomerFilter()
@@ -166,29 +181,6 @@
     }
 
     #region Datagrid handlers
-    private async Task ActionBeginHandler(ActionEventArgs<Customer> args)
-    {
-        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
-        {
-            args.Cancel = true;
-            if (args.Action == "Add")
-            {
-                await customerService.AddCustomerAsync(args.Data);
-                await RefreshCustomers();
-            }
-            else if (args.Action == "Edit")
-            {
-                await customerService.UpdateCustomerAsync(args.Data);
-                await RefreshCustomers();
-            }
-        }
-        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
-        {
-            args.Cancel = true;
-            await customerService.ArchiveCustomerAsync(args.Data);
-            await RefreshCustomers();
-        }
-    }
 
     private async Task ViewEditCustomer(Customer customer)
     {
@@ -224,7 +216,23 @@
 
     private async Task SaveEditedCustomer()
     {
-        await customerService.UpdateCustomerAsync(selectedCustomer);
+        try
+        {
+            await customerService.UpdateCustomerAsync(selectedCustomer);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await DialogService.AlertAsync(
+                "This customer was changed by someone else while you were editing. The grid has been refreshed with the latest data — please reapply your changes.",
+                "Save failed");
+        }
+        catch (Exception ex)
+        {
+            await DialogService.AlertAsync(
+                "An error occurred while saving the customer: " + ex.Message,
+                "Save failed");
+        }
+        
         await customerViewEditDialog.HideAsync();
         customerChanges.CustomerId = selectedCustomer.CustomerId;
         customerChanges.Customer = selectedCustomer;
@@ -267,6 +275,7 @@
     public void Dispose()
     {
         userService.OnUserChanged -= OnUserChanged;
+        customerStateServices.OnCustomerUpdated -= HandleCustomerUpdatedElsewhere;
     }
 }
 

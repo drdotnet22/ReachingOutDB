@@ -8,6 +8,7 @@ namespace ReachingOutDB.Data
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CustomerId { get; set; }
+        public uint Version { get; set; } // For concurrency control
         public string CustomerName { get; set; }
         public string Location { get; set; }
         public bool Active { get; set; }
@@ -68,6 +69,7 @@ namespace ReachingOutDB.Data
     public class Order
     {
         public Guid OrderId { get; set; }
+        public uint Version { get; set; } // For concurrency control
         public int Year { get; set; }
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }

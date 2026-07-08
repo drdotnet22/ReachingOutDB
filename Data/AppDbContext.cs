@@ -39,6 +39,18 @@ namespace ReachingOutDB.Data
                 .HasForeignKey(o => o.CustomerId)
                 .IsRequired();
 
+            modelBuilder.Entity<Order>() // Configure the Version property for concurrency control
+                .Property(o => o.Version)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .IsRowVersion();
+
+            modelBuilder.Entity<Customer>() // Configure the Version property for concurrency control
+                .Property(c => c.Version)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .IsRowVersion();
+
             modelBuilder.Entity<CustomerChangesLog>()
                 .HasOne(c => c.Customer)
                 .WithMany()

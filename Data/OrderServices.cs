@@ -10,14 +10,16 @@ namespace ReachingOutDB.Data
         private IDbContextFactory<AppDbContext> contextFactory;
         private AuditLogServices auditLogServices;
         private CustomerServices customerServices;
+        private OrderStateServices orderStateServices;
         #endregion
 
         #region Constructor
-        public OrderServices(IDbContextFactory<AppDbContext> contextFactory, AuditLogServices auditLogServices, CustomerServices customerServices)
+        public OrderServices(IDbContextFactory<AppDbContext> contextFactory, AuditLogServices auditLogServices, CustomerServices customerServices, OrderStateServices orderStateServices)
         {
             this.contextFactory = contextFactory;
             this.auditLogServices = auditLogServices;
             this.customerServices = customerServices;
+            this.orderStateServices = orderStateServices;
         }
         #endregion
 
@@ -170,7 +172,7 @@ namespace ReachingOutDB.Data
             return await dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateOrderAsync(Order updatedOrder)
+        public async Task UpdateOrderAsync(Order updatedOrder, string? userName)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
             var originalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == updatedOrder.OrderId);
@@ -211,6 +213,7 @@ namespace ReachingOutDB.Data
             await auditLogServices.LogOrderChangesAsync(originalOrder, updatedOrder);
             dbContext.Orders.Update(updatedOrder);
             await dbContext.SaveChangesAsync();
+            await orderStateServices.NotifyOrderUpdated(updatedOrder.OrderId, updatedOrder.Customer?.CustomerName, userName);
         }
 
         public async Task DeleteOrderAsync(Order order)
@@ -342,7 +345,7 @@ namespace ReachingOutDB.Data
                         var customerId = int.Parse(row["Order Number"].ToString());
                         var order = orders.FirstOrDefault(o => o.CustomerId == customerId);
                         order.PostalCost = (order.PostalCost ?? 0) + Convert.ToDecimal(row["Cost"].ToString());
-                        await UpdateOrderAsync(order);
+                        await UpdateOrderAsync(order, null);
                         successMessage += $"Added postage cost for {order.Customer.CustomerName} - {customerId}{Environment.NewLine}";
                         successCt++;
                     }

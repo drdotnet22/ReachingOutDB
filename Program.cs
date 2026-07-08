@@ -51,6 +51,7 @@ builder.Services.AddScoped<SfDialogService>();
 builder.Services.AddScoped<DateTimeUtilities>();
 
 builder.Services.AddSingleton<OrderStateServices>();
+builder.Services.AddSingleton<CustomerStateServices>();
 
 // Set default culture
 var defaultCulture = new CultureInfo("en-US");

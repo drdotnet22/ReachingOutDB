@@ -1,6 +1,7 @@
 ﻿@using ReachingOutDB.Data
 @inject OrderServices orderService
 @inject SfDialogService DialogService
+@inject UserServices userService
 
 @code {
     [Parameter] public SfGrid<Order> DataGrid { get; set; }
@@ -13,7 +14,7 @@
             order.JobStatus = JobStatus.ReadyToShip;
             try
             {
-                await orderService.UpdateOrderAsync(order);
+                await orderService.UpdateOrderAsync(order, userService.CurrentUser.Name);
             }
             catch (Exception ex)
             {
