@@ -12,6 +12,7 @@ namespace ReachingOutDB.Data
         public DbSet<CustomerChangesLog> CustomerChangesLogs { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Package> Packages { get; set; }
+        public DbSet<IntlPackage> IntlPackages { get; set; }
         public DbSet<PackageOption> PackageOptions { get; set; }
         public DbSet<ShippingSetting> ShippingSettings { get; set; }
         public DbSet<MiscSetting> MiscSettings { get; set; }
@@ -27,6 +28,7 @@ namespace ReachingOutDB.Data
             modelBuilder.Entity<OrderAuditLog>().HasData(GetOrderAuditLogs());
             modelBuilder.Entity<UserProfile>().HasData(GetUserProfiles());
             modelBuilder.Entity<Package>().HasData(GetPackages());
+            // modelBuilder.Entity<IntlPackage>().HasData(GetIntlPackages());
             modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
             modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
             modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
@@ -66,6 +68,12 @@ namespace ReachingOutDB.Data
             modelBuilder.Entity<Package>()
                 .HasOne(p => p.PackageOption)
                 .WithMany()
+                .IsRequired();
+
+            modelBuilder.Entity<IntlPackage>()
+                .HasOne(p => p.Customer)
+                .WithMany()
+                .HasForeignKey(p => p.CustomerId)
                 .IsRequired();
 
             modelBuilder.Entity<PlateAssignment>()
@@ -120,6 +128,14 @@ namespace ReachingOutDB.Data
             return new List<Package>
             {
                 new Package { PackageId = new Guid("07dd94e4-a0c8-43c8-babc-200a8864d02c"), ContactName = "Contact name", Address = "123 Main", City = "Ripley", State = "NY", ZipCode = "14775", MailClass = "FCF", PackageOptionId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"), CustomerId = 2000 }
+            };
+        }
+
+        private List<IntlPackage> GetIntlPackages()
+        {
+            return new List<IntlPackage>
+            {
+                new IntlPackage { IntlPackageId = new Guid("1c2e6b8a-4f5d-4a3b-9c1e-2d7f8a9b0c3d"), Company = "Mennonite Church", ContactName = "Contact name", Qty = 1, BoxNote = "Box 1 of 1", Address1 = "123 Main", City = "Ripley", State = "NY", ZipCode = "14775", Country = "Canada", CustomerId = 2777 }
             };
         }
 

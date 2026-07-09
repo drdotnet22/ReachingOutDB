@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReachingOutDB.Data;
@@ -11,9 +12,11 @@ using ReachingOutDB.Data;
 namespace ReachingOutDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260709142922_AddIntlPackage")]
+    partial class AddIntlPackage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,10 +250,6 @@ namespace ReachingOutDB.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ContactName")
                         .HasColumnType("text");
 
@@ -277,6 +276,21 @@ namespace ReachingOutDB.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("IntlPackages");
+
+                    b.HasData(
+                        new
+                        {
+                            IntlPackageId = new Guid("1c2e6b8a-4f5d-4a3b-9c1e-2d7f8a9b0c3d"),
+                            Address1 = "123 Main",
+                            BoxNote = "Box 1 of 1",
+                            City = "Ripley",
+                            ContactName = "Contact name",
+                            Country = "Canada",
+                            CustomerId = 2000,
+                            Qty = 1,
+                            State = "NY",
+                            ZipCode = "14775"
+                        });
                 });
 
             modelBuilder.Entity("ReachingOutDB.Data.MiscSetting", b =>

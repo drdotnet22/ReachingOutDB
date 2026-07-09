@@ -44,6 +44,7 @@ builder.Services.AddScoped<AuditLogServices>();
 builder.Services.AddScoped<CustomerChangesServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<PackageServices>();
+builder.Services.AddScoped<IntlPackageServices>();
 builder.Services.AddScoped<ShippingSettingsServices>();
 builder.Services.AddScoped<MiscSettingsServices>();
 builder.Services.AddScoped<PlateServices>();

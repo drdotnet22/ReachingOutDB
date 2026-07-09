@@ -160,7 +160,7 @@ namespace ReachingOutDB.Data
         [Required(ErrorMessage = "State is required")]
         public string State { get; set; }
 
-        [Required(ErrorMessage = "State is required")]
+        [Required(ErrorMessage = "Zip code is required")]
         public string ZipCode { get; set; }
 
         [Required(ErrorMessage = "A quantity is required")]
@@ -175,6 +175,44 @@ namespace ReachingOutDB.Data
 
         [Required(ErrorMessage = "Package type is required")]
         public PackageType PackageType { get; set; } = PackageType.LowBulk;
+
+        [Range(2000, 2999, ErrorMessage = "Please select a customer")]
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
+    }
+
+    public class IntlPackage
+    {
+        public Guid IntlPackageId { get; set; } = Guid.NewGuid();
+
+        // Defaults to the customer's name but can be overwritten when a different company
+        // name needs to appear on the shipping label.
+        [Required(ErrorMessage = "Company is required")]
+        public string Company { get; set; }
+        public string? ContactName { get; set; }
+
+        [Required(ErrorMessage = "A quantity is required")]
+        public int Qty { get; set; } = 1;
+
+        [Required(ErrorMessage = "A box note is required. eg. Box 1 of 3")]
+        public string BoxNote { get; set; }
+
+        [Required(ErrorMessage = "Address is required")]
+        [MinLength(4, ErrorMessage = "Address is too short")]
+        public string Address1 { get; set; }
+        public string? Address2 { get; set; }
+
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; }
+
+        [Required(ErrorMessage = "State is required")]
+        public string State { get; set; }
+
+        [Required(ErrorMessage = "Zip code is required")]
+        public string ZipCode { get; set; }
+
+        [Required(ErrorMessage = "Country is required")]
+        public string Country { get; set; }
 
         [Range(2000, 2999, ErrorMessage = "Please select a customer")]
         public int CustomerId { get; set; }
