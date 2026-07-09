@@ -38,21 +38,38 @@
 }
 
 <div class="myflexrow" style="margin-bottom: 20px;">
-    <h4>Filter by Package Type:</h4>
-    @foreach (PackageType type in Enum.GetValues(typeof(PackageType)))
-    {
-        <div style="display: inline-block; margin-right: 15px;">
-            <SfCheckBox Label="@GetPackageTypeDisplayName(type)"
-                @bind-Checked="@SelectedPackageTypes[type]"
-                @onchange="OnPackageTypeFilterChanged">
+    <div style="display: inline-block">
+        <span style="margin-right: 12px; font-weight:bold;">Package type filter:</span>
+        @foreach (PackageType type in Enum.GetValues(typeof(PackageType)))
+        {
+            <span style="margin-right: 15px;">
+                <SfCheckBox Label="@GetPackageTypeDisplayName(type)"
+                            @bind-Checked="@SelectedPackageTypes[type]"
+                            @onchange="OnPackageTypeFilterChanged">
+                </SfCheckBox>
+            </span>
+        }
+    </div>
+    <div style="display: inline-block; border-left: 1px solid #ccc; padding-left: 25px;">
+        <span style="margin-right: 12px; font-weight:bold;">Shipping status (this quarter):</span>
+        <span style="margin-right: 15px;">
+            <SfCheckBox TChecked="bool" Label="All"
+                Checked="@FilterAll"
+                ValueChange="@((Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> e) => OnAllFilterChanged(e.Checked))">
             </SfCheckBox>
-        </div>
-    }
-    <div style="display: inline-block; margin-left: 25px; border-left: 1px solid #ccc; padding-left: 25px;">
-        <SfCheckBox Label="Only ready-to-ship (this quarter)"
-            @bind-Checked="@readyToShipOnly"
-            @onchange="OnReadyToShipFilterChanged">
-        </SfCheckBox>
+        </span>
+        <span style="margin-right: 15px;">
+            <SfCheckBox TChecked="bool" Label="Ready to ship"
+                Checked="@filterReadyToShip"
+                ValueChange="@((Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> e) => OnStatusFilterChanged(JobStatus.ReadyToShip, e.Checked))">
+            </SfCheckBox>
+        </span>
+        <span>
+            <SfCheckBox TChecked="bool" Label="Shipped"
+                Checked="@filterShipped"
+                ValueChange="@((Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> e) => OnStatusFilterChanged(JobStatus.Shipped, e.Checked))">
+            </SfCheckBox>
+        </span>
     </div>
 </div>
 
@@ -136,7 +153,11 @@
     public MiscSetting miscSetting;
     public Package selectedPackage = new Package();
     private Dictionary<PackageType, bool> SelectedPackageTypes { get; set; } = new();
-    private bool readyToShipOnly = false;
+    // "Ready to ship" and "Shipped" are independent, additive status filters. "All" is on whenever
+    // neither is selected, so unchecking the last status automatically falls back to showing all.
+    private bool filterReadyToShip = false;
+    private bool filterShipped = false;
+    private bool FilterAll => !filterReadyToShip && !filterShipped;
     private List<UspsPackageIssue> packageIssues { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
@@ -145,7 +166,6 @@
         {
             SelectedPackageTypes[packageType] = true; // Start with all selected
         }
-        SelectedPackageTypes[PackageType.INTL] = false; // Deselect INTL by default
 
         yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
         customers = await customerService.GetCustomersAsync();
@@ -162,16 +182,44 @@
 
     private async Task RefreshPackages()
     {
-        packages = readyToShipOnly
-            ? await packageService.GetReadyToShipPackagesAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter)
-            : await packageService.GetPackagesAsync();
-        packageIssues = await packageService.GetUspsPackageIssuesAsync(yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        var year = yearQuarterService.SelectedYear;
+        var quarter = yearQuarterService.SelectedQuarter;
+        if (FilterAll)
+        {
+            packages = await packageService.GetPackagesAsync();
+        }
+        else
+        {
+            var statuses = new List<JobStatus>();
+            if (filterReadyToShip) statuses.Add(JobStatus.ReadyToShip);
+            if (filterShipped) statuses.Add(JobStatus.Shipped);
+            packages = await packageService.GetPackagesByOrderStatusAsync(year, quarter, statuses);
+        }
+        packageIssues = await packageService.GetUspsPackageIssuesAsync(year, quarter);
         ApplyPackageTypeFilter();
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnReadyToShipFilterChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    private async Task OnAllFilterChanged(bool isChecked)
     {
+        if (isChecked)
+        {
+            // Selecting All clears the status filters. Re-clicking All when it's already the
+            // active state is a no-op, but re-render so the box stays checked.
+            filterReadyToShip = false;
+            filterShipped = false;
+            await RefreshPackages();
+        }
+        else
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task OnStatusFilterChanged(JobStatus status, bool isChecked)
+    {
+        if (status == JobStatus.ReadyToShip) filterReadyToShip = isChecked;
+        else if (status == JobStatus.Shipped) filterShipped = isChecked;
         await RefreshPackages();
     }
 

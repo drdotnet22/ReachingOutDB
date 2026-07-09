@@ -90,15 +90,15 @@ namespace ReachingOutDB.Data
                 .ToListAsync();
         }
 
-        // Packages for customers with a ready-to-ship USPS order in the given period. Because
-        // packages are a per-customer profile, this returns every package for those customers
+        // Packages for customers with a USPS order at any of the given statuses in the given period.
+        // Because packages are a per-customer profile, this returns every package for those customers
         // (covering the split-across-multiple-locations case).
-        public async Task<IEnumerable<Package>> GetReadyToShipPackagesAsync(int year, Quarter quarter)
+        public async Task<IEnumerable<Package>> GetPackagesByOrderStatusAsync(int year, Quarter quarter, IReadOnlyCollection<JobStatus> statuses)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
             var customerIds = dbContext.Orders
                 .Where(o => o.Year == year && o.Quarter == quarter
-                         && o.PostalQty > 0 && o.JobStatus == JobStatus.ReadyToShip)
+                         && o.PostalQty > 0 && statuses.Contains(o.JobStatus))
                 .Select(o => o.CustomerId);
 
             return await dbContext.Packages

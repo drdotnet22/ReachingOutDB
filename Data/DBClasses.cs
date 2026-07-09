@@ -272,10 +272,7 @@ namespace ReachingOutDB.Data
         ExtrasDM,
 
         [Display(Name = "UPS Extras")]
-        ExtrasUPS,
-
-        [Display(Name = "International")]
-        INTL
+        ExtrasUPS
     }
     #endregion
 

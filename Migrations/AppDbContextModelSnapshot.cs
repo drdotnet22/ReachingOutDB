@@ -172,7 +172,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasKey("CustomerId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
 
                     b.HasData(
                         new
@@ -223,7 +223,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("CustomerChangesLogs");
+                    b.ToTable("CustomerChangesLogs", (string)null);
                 });
 
             modelBuilder.Entity("ReachingOutDB.Data.MiscSetting", b =>
@@ -239,7 +239,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MiscSettings");
+                    b.ToTable("MiscSettings", (string)null);
 
                     b.HasData(
                         new
@@ -343,7 +343,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
 
                     b.HasData(
                         new
@@ -394,7 +394,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderAuditLogs");
+                    b.ToTable("OrderAuditLogs", (string)null);
 
                     b.HasData(
                         new
@@ -457,7 +457,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasIndex("PackageOptionId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
 
                     b.HasData(
                         new
@@ -500,7 +500,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasKey("PackageOptionId");
 
-                    b.ToTable("PackageOptions");
+                    b.ToTable("PackageOptions", (string)null);
 
                     b.HasData(
                         new
@@ -537,7 +537,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasKey("PlateId");
 
-                    b.ToTable("Plates");
+                    b.ToTable("Plates", (string)null);
 
                     b.HasData(
                         new
@@ -576,7 +576,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasIndex("PlateId");
 
-                    b.ToTable("PlateAssignments");
+                    b.ToTable("PlateAssignments", (string)null);
 
                     b.HasData(
                         new
@@ -624,7 +624,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShippingSettings");
+                    b.ToTable("ShippingSettings", (string)null);
 
                     b.HasData(
                         new
@@ -697,7 +697,7 @@ namespace ReachingOutDB.Migrations
 
                     b.HasKey("UserProfileId");
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("UserProfiles", (string)null);
 
                     b.HasData(
                         new
