@@ -23,7 +23,6 @@
             <ToolbarItems>
                 @if (userService.CurrentUser.Role == UserRole.Admin)
                 {
-                    <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" />
                     <ToolbarItem>
                         <Template>
                             <div class="myflexrow">
@@ -32,8 +31,11 @@
                             </div>
                         </Template>
                     </ToolbarItem>
+                    <ToolbarItem Type="@ItemType.Separator" Visible="@userService.AdminMode" />
+                    <ToolbarItem Text="Add" TooltipText="Add single or batch orders" PrefixIcon="e-duplicate icon" Visible="@userService.AdminMode" />
                     <ToolbarItem Text="CSV Export" TooltipText="Export filtered records to csv" PrefixIcon="e-export-csv icon" Visible="@userService.AdminMode" />
-                    <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" Visible="@userService.AdminMode" />
+                    <ToolbarItem Text="Import Endicia" TooltipText="Import print log export from Endicia" PrefixIcon="e-align-top icon" Visible="@userService.AdminMode" />
+                    <ToolbarItem Text="Bulk set job status" TooltipText="Bulk set job status for selected orders" PrefixIcon="e-chevron-right-double icon" Visible="@userService.AdminMode" />
                     <ToolbarItem Type="ItemType.Spacer" />
                     <ToolbarItem>
                         <Template>
@@ -260,6 +262,15 @@ else
     <DialogTemplates>
         <Content>
             <AddOrders CustomerList="customers" OnOrdersGenerated="HideAddOrdersDialog" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<SfDialog @ref="bulkSetJobStatusDialog" Visible="false" ShowCloseIcon="true" Width="25%">
+    <DialogEvents OnClose="RefreshOrders" />
+    <DialogTemplates>
+        <Content>
+            <BulkSetJobStatus Orders="@Grid.GetSelectedRecordsAsync().Result" OnJobStatusSet="HideBulkSetJobStatusDialog" />
         </Content>
     </DialogTemplates>
 </SfDialog>
@@ -733,6 +744,10 @@ else
         {
             endiciaImportDialog.ShowAsync();
         }
+        else if (args.Item.Text == "Bulk set job status")
+        {
+            bulkSetJobStatusDialog.ShowAsync();
+        }
     }
 
     public SfTextBox ToolbarSearchBox;
@@ -753,6 +768,13 @@ else
     private void HideAddOrdersDialog()
     {
         addOrdersDialog.HideAsync();
+    }
+
+    private SfDialog bulkSetJobStatusDialog;
+    private async Task HideBulkSetJobStatusDialog()
+    {
+        await bulkSetJobStatusDialog.HideAsync();
+        await RefreshOrders();
     }
     #endregion
 

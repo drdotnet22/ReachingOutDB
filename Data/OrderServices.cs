@@ -217,6 +217,25 @@ namespace ReachingOutDB.Data
             await orderStateServices.NotifyOrderUpdated(updatedOrder.OrderId, updatedOrder.Customer?.CustomerName, userName);
         }
 
+        public async Task SetJobStatusForOrdersAsync(IEnumerable<Order> orders, JobStatus jobStatus, string? userName)
+        {
+            await using var dbContext = await contextFactory.CreateDbContextAsync();
+            foreach (var order in orders)
+            {
+                var originalOrder = await dbContext.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
+                if (originalOrder == null || originalOrder.JobStatus == jobStatus)
+                {
+                    continue;
+                }
+
+                order.JobStatus = jobStatus;
+                await auditLogServices.LogOrderChangesAsync(originalOrder, order);
+                dbContext.Orders.Update(order);
+                await dbContext.SaveChangesAsync();
+                await orderStateServices.NotifyOrderUpdated(order.OrderId, order.Customer?.CustomerName, userName);
+            }
+        }
+
         public async Task DeleteOrderAsync(Order order)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();

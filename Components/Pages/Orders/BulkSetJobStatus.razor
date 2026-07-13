@@ -1,0 +1,81 @@
+@using ReachingOutDB.Data
+@inject OrderServices orderService
+@inject UserServices userService
+@inject SfDialogService DialogService
+
+<div class="myflexcolumn">
+    @if (Orders == null || !Orders.Any())
+    {
+        <p>No orders selected.</p>
+    }
+    else
+    {
+        <p>Set the job status for the following @Orders.Count() order(s):</p>
+        <ul class="bulk-order-list">
+            @foreach (var order in Orders)
+            {
+                <li>
+                    <span>@(order.Customer?.CustomerName ?? $"Order {order.OrderId}")</span>
+                    <span style="color:gray">@order.JobStatus</span>
+                </li>
+            }
+        </ul>
+
+        <SfDropDownList TItem="string" TValue="JobStatus"
+                        @bind-Value="selectedJobStatus"
+                        DataSource="jobStatusValues"
+                        Placeholder="Job Status" FloatLabelType="Syncfusion.Blazor.Inputs.FloatLabelType.Always">
+        </SfDropDownList>
+
+        <SfButton IsPrimary="true" OnClick="SubmitJobStatus" Disabled="@isSubmitting">Apply to all</SfButton>
+    }
+</div>
+
+<style>
+    .bulk-order-list {
+        max-height: 250px;
+        overflow-y: auto;
+        margin: 0;
+        padding-left: 1.2rem;
+    }
+
+    .bulk-order-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+</style>
+
+@code {
+    [Parameter] public IEnumerable<Order> Orders { get; set; }
+    [Parameter] public EventCallback OnJobStatusSet { get; set; }
+
+    JobStatus selectedJobStatus = JobStatus.Shipped;
+    private string[] jobStatusValues = JobStatus.GetNames(typeof(JobStatus));
+    private bool isSubmitting;
+
+    private async Task SubmitJobStatus()
+    {
+        if (Orders == null || !Orders.Any())
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        try
+        {
+            await orderService.SetJobStatusForOrdersAsync(Orders, selectedJobStatus, userService.CurrentUser.Name);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.AlertAsync($"Could not set job status: {ex.Message}", "Update failed");
+            return;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+
+        await OnJobStatusSet.InvokeAsync();
+    }
+}
