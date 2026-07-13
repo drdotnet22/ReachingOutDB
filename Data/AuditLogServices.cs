@@ -48,6 +48,16 @@ namespace ReachingOutDB.Data
             await dbContext.SaveChangesAsync();
         }
 
+        public async Task<OrderAuditLog> LogOrderCreation(Order order)
+        {
+            return new OrderAuditLog()
+            {
+                OrderId = order.OrderId,
+                Action = "Order created",
+                UserName = userService.CurrentUser.Name
+            };
+        }
+
         public async Task<IEnumerable<OrderAuditLog>> GetLogsOfOrder(Order order)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();

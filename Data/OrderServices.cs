@@ -166,6 +166,7 @@ namespace ReachingOutDB.Data
                 if (order.Qty > 0)
                 {
                     dbContext.Orders.Add(order);
+                    dbContext.OrderAuditLogs.Add(await auditLogServices.LogOrderCreation(order));
                 }
             }
             //await auditLogServices.LogOrderChangesAsync(dbContext);
