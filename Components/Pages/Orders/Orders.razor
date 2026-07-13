@@ -56,7 +56,7 @@
                 <ToolbarItem Type="ItemType.Spacer" />
                 <ToolbarItem TooltipText="Search grid contents" Type="ItemType.Input" Overflow="OverflowOption.Show">
                     <Template>
-                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" ShowClearButton="true" />
+                        <SfTextBox @ref="ToolbarSearchBox" Width="200px" Placeholder="Search" Type="InputType.Search" ValueChanged="SearchGrid" Created="OnToolbarSearchBoxCreated" ShowClearButton="true" />
                     </Template>
                 </ToolbarItem>
                 <ToolbarItem TooltipText="Clear all grid filters" PrefixIcon="e-close icon" Visible="gridFiltered" OnClick="ClearGridFiltering" />
@@ -754,6 +754,11 @@ else
     private async Task SearchGrid()
     {
         Grid.SearchAsync(ToolbarSearchBox.Value);
+    }
+
+    private void OnToolbarSearchBoxCreated()
+    {
+        this.ToolbarSearchBox?.AddIconAsync("append", "e-icons e-search");
     }
     #endregion
 
