@@ -580,7 +580,7 @@ else
             if (args.CommandColumn.ID == "view-order")
             {
                 orderViewDialogRecord = args.RowData;
-                orderViewDialogHeader = "Order details of " + orderViewDialogRecord.Customer.CustomerName;
+                orderViewDialogHeader = "Order details of " + orderViewDialogRecord.Customer.CustomerName + " - " + orderViewDialogRecord.CustomerId;
                 await orderViewDialog.ShowAsync();
             }
             else if (args.CommandColumn.ID == "advance-status")
@@ -661,7 +661,7 @@ else
     {
         return arg.OrderId == Guid.Empty
             ? "Add New Order"
-            : "Edit the " + arg.Year + " " + arg.Quarter + " order of " + arg.Customer.CustomerName;
+            : "Edit the " + arg.Year + " " + arg.Quarter + " order of " + arg.Customer.CustomerName + " - " + arg.CustomerId.ToString();
     }
 
     private bool gridFiltered = false;
