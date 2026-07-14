@@ -8,6 +8,13 @@ namespace ReachingOutDB.Data
     // button) don't have to repeat the connect/authenticate/send/disconnect dance.
     public class ReminderMailSender
     {
+        private readonly ILogger<ReminderMailSender> logger;
+
+        public ReminderMailSender(ILogger<ReminderMailSender> logger)
+        {
+            this.logger = logger;
+        }
+
         public async Task SendAsync(SmtpSetting settings, string recipientEmails, string subject, string body, CancellationToken ct = default)
         {
             // Distinct (case-insensitive) so a repeated or copy-pasted address in the
@@ -41,8 +48,21 @@ namespace ReachingOutDB.Data
                 await client.AuthenticateAsync(settings.Username, settings.Password, ct);
             }
 
+            // Once SendAsync returns without throwing, the SMTP server has accepted the message -
+            // it has genuinely been sent. A failure while disconnecting afterward doesn't change
+            // that, so it must not be allowed to look like the send itself failed: the caller
+            // treats an exception from this method as "nothing was sent, safe to retry," and
+            // retrying a message that already went out is exactly how duplicates happen.
             await client.SendAsync(message, ct);
-            await client.DisconnectAsync(true, ct);
+
+            try
+            {
+                await client.DisconnectAsync(true, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "SMTP disconnect failed after the message was already sent successfully - ignoring.");
+            }
         }
     }
 }

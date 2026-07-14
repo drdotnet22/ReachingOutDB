@@ -131,10 +131,11 @@ namespace ReachingOutDB.Data
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to send reminder '{RuleName}' for order {OrderId}.", rule.Name, order.OrderId);
-                    // Sending failed after we claimed it - undo the claim so it's retried next poll.
-                    db.ReminderLogs.Remove(logEntry);
-                    await db.SaveChangesAsync(ct);
+                    logger.LogError(ex, "Failed to send reminder '{RuleName}' for order {OrderId}. It will NOT be retried automatically - a duplicate send is worse than a missed one here. Fix the underlying problem (e.g. SMTP settings) and delete this order's ReminderLog row directly in the database if you need it to fire again.", rule.Name, order.OrderId);
+                    // Deliberately not rolling back the claim: we can't always tell "definitely
+                    // nothing was sent" apart from "sent, but something after that looked like
+                    // failure" (that ambiguity is exactly what caused duplicate emails before).
+                    // Leaving the claim in place guarantees at-most-once even if this guess is wrong.
                 }
             }
 
