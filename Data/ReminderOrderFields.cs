@@ -26,6 +26,13 @@ namespace ReachingOutDB.Data
             new() { Name = "JobStatus", DisplayName = "Job Status", Selector = o => (int)o.JobStatus },
             new() { Name = "Archived", DisplayName = "Archived", Selector = o => o.Archived ? 1 : 0 },
             new() { Name = "Year", DisplayName = "Year", Selector = o => o.Year },
+            new() { Name = "DmCost", DisplayName = "DM Cost", Selector = o => o.DmCost ?? 0 },
+            new() { Name = "UpsCost", DisplayName = "UPS Cost", Selector = o => o.UpsCost ?? 0 },
+            new() { Name = "PostalCost", DisplayName = "USPS Cost", Selector = o => o.PostalCost ?? 0 },
+            new() { Name = "IntlCost", DisplayName = "Intl Cost", Selector = o => o.IntlCost ?? 0 },
+            new() { Name = "LTLCost", DisplayName = "LTL Cost", Selector = o => o.LTLCost ?? 0 },
+            new() { Name = "PubUsps", DisplayName = "Published USPS Price", Selector = o => o.PubUsps ?? 0 },
+            new() { Name = "PubShipping", DisplayName = "Published Shipping Price", Selector = o => o.PubShipping ?? 0 },
         };
 
         public static FieldDefinition? Find(string name) => All.FirstOrDefault(f => f.Name == name);
