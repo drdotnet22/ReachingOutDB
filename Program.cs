@@ -50,9 +50,12 @@ builder.Services.AddScoped<MiscSettingsServices>();
 builder.Services.AddScoped<PlateServices>();
 builder.Services.AddScoped<SfDialogService>();
 builder.Services.AddScoped<DateTimeUtilities>();
+builder.Services.AddScoped<ReminderServices>();
 
 builder.Services.AddSingleton<OrderStateServices>();
 builder.Services.AddSingleton<CustomerStateServices>();
+builder.Services.AddSingleton<ReminderMailSender>();
+builder.Services.AddHostedService<ReminderBackgroundService>();
 
 // Set default culture
 var defaultCulture = new CultureInfo("en-US");

@@ -1,0 +1,82 @@
+@using ReachingOutDB.Data
+@inject ReminderServices reminderService
+@inject SfDialogService DialogService
+
+<h3>SMTP Settings</h3>
+<p class="hint">These credentials are used to send all reminder emails below.</p>
+
+<SfCard>
+    <CardContent>
+        <div class="flexcolumn">
+            <div class="flexrow">
+                <SfTextBox ID="Host" @bind-Value="@setting.Host" Placeholder="SMTP Host" FloatLabelType="FloatLabelType.Always" Width="250px" />
+                <SfNumericTextBox ID="Port" @bind-Value="@setting.Port" Placeholder="Port" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Width="100px" />
+                <SfCheckBox @bind-Checked="@setting.EnableSsl" Label="Use SSL/TLS" />
+            </div>
+            <div class="flexrow">
+                <SfTextBox ID="Username" @bind-Value="@setting.Username" Placeholder="Username" FloatLabelType="FloatLabelType.Always" Width="220px" />
+                <SfTextBox ID="Password" Type="InputType.Password" @bind-Value="@setting.Password" Placeholder="Password" FloatLabelType="FloatLabelType.Always" Width="220px" />
+            </div>
+            <div class="flexrow">
+                <SfTextBox ID="FromAddress" @bind-Value="@setting.FromAddress" Placeholder="From Address" FloatLabelType="FloatLabelType.Always" Width="220px" />
+                <SfTextBox ID="FromName" @bind-Value="@setting.FromName" Placeholder="From Name" FloatLabelType="FloatLabelType.Always" Width="220px" />
+            </div>
+            <SfButton IsPrimary="true" OnClick="Save" Disabled="@isSaving">Save SMTP Settings</SfButton>
+        </div>
+    </CardContent>
+</SfCard>
+
+<style>
+    .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .flexcolumn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .hint {
+        color: gray;
+        margin-top: -8px;
+    }
+</style>
+
+@code {
+    private SmtpSetting setting = new();
+    private bool isSaving;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await reminderService.GetSmtpSettingAsync();
+        if (existing != null)
+        {
+            setting = existing;
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Save()
+    {
+        isSaving = true;
+        try
+        {
+            await reminderService.SaveSmtpSettingAsync(setting);
+            await DialogService.AlertAsync("SMTP settings saved.", "Saved");
+        }
+        catch (Exception ex)
+        {
+            await DialogService.AlertAsync($"Could not save SMTP settings: {ex.Message}", "Save failed");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

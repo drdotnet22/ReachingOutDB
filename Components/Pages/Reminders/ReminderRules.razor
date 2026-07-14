@@ -1,0 +1,273 @@
+@using ReachingOutDB.Data
+@inject ReminderServices reminderService
+@inject SfDialogService DialogService
+
+<h3>Reminder Rules</h3>
+
+<SfGrid DataSource="@rules" AllowSorting="true" RowHeight="30" Width="900px">
+    <GridColumns>
+        <GridColumn HeaderText="Name" Field="Name" Type="ColumnType.String" Width="180" />
+        <GridColumn HeaderText="Kind" Field="Kind" Type="ColumnType.String" Width="130" />
+        <GridColumn HeaderText="Enabled" Field="IsEnabled" Type="ColumnType.Boolean" DisplayAsCheckBox="true" TextAlign="TextAlign.Center" Width="80" />
+        <GridColumn HeaderText="Recipients" Field="RecipientEmails" Type="ColumnType.String" Width="240" />
+        <GridColumn HeaderText="" Width="140">
+            <Template>
+                @{
+                    var rule = (context as ReminderRule);
+                }
+                <SfButton CssClass="e-flat" OnClick="@(() => StartEdit(rule))">Edit</SfButton>
+                <SfButton CssClass="e-flat" OnClick="@(() => Delete(rule))">Delete</SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<div style="margin-top:10px;">
+    <SfButton IsPrimary="true" OnClick="StartNew">New Reminder Rule</SfButton>
+</div>
+
+@if (editing != null)
+{
+    <SfCard>
+        <CardHeader Title="@(isNew ? "New Reminder Rule" : $"Edit Reminder Rule: {editing.Name}")" />
+        <CardContent>
+            <div class="flexcolumn">
+                <div class="flexrow">
+                    <SfTextBox ID="Name" @bind-Value="@editing.Name" Placeholder="Rule Name" FloatLabelType="FloatLabelType.Always" Width="250px" />
+                    <SfDropDownList TItem="string" TValue="ReminderKind"
+                                    @bind-Value="@editing.Kind"
+                                    DataSource="@reminderKindValues"
+                                    Placeholder="Kind" FloatLabelType="FloatLabelType.Always" Width="180px">
+                    </SfDropDownList>
+                    <SfCheckBox @bind-Checked="@editing.IsEnabled" Label="Enabled" />
+                </div>
+                <div class="flexrow">
+                    <SfTextBox ID="RecipientEmails" @bind-Value="@editing.RecipientEmails" Placeholder="Recipient Emails (comma-separated)" FloatLabelType="FloatLabelType.Always" Width="520px" />
+                </div>
+                <div class="flexrow">
+                    <SfTextBox ID="Subject" @bind-Value="@editing.Subject" Placeholder="Subject" FloatLabelType="FloatLabelType.Always" Width="520px" />
+                </div>
+                <div class="flexrow">
+                    <SfTextArea ID="Body" @bind-Value="@editing.Body" Placeholder="Body" RowCount="4" FloatLabelType="FloatLabelType.Always" Width="520px" />
+                </div>
+
+                @if (editing.Kind == ReminderKind.OrderCondition)
+                {
+                    <div class="flexrow">
+                        <SfNumericTextBox ID="CheckIntervalMinutes" @bind-Value="@editing.CheckIntervalMinutes" Placeholder="Check every (minutes)" FloatLabelType="FloatLabelType.Always" Min="1" ShowSpinButton="false" Width="200px" />
+                    </div>
+
+                    <h4>Conditions (an Order must match all of these)</h4>
+                    @foreach (var condition in editing.Conditions)
+                    {
+                        <div class="flexrow condition-row">
+                            <select @bind="condition.FieldName">
+                                @foreach (var field in ReminderOrderFields.All)
+                                {
+                                    <option value="@field.Name">@field.DisplayName</option>
+                                }
+                            </select>
+                            <select @bind="condition.Operator">
+                                <option value="@ReminderOperator.Equals">=</option>
+                                <option value="@ReminderOperator.NotEquals">!=</option>
+                                <option value="@ReminderOperator.GreaterThan">&gt;</option>
+                                <option value="@ReminderOperator.LessThan">&lt;</option>
+                            </select>
+                            @if (condition.FieldName == "JobStatus")
+                            {
+                                <select @bind="condition.Value">
+                                    @foreach (var name in jobStatusValues)
+                                    {
+                                        <option value="@name">@name</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <input type="text" @bind="condition.Value" placeholder="Value" style="width:100px;" />
+                            }
+                            <SfButton CssClass="e-flat" OnClick="@(() => RemoveCondition(condition))">Remove</SfButton>
+                        </div>
+                    }
+                    <SfButton CssClass="e-flat" OnClick="AddCondition">+ Add condition</SfButton>
+                }
+                else if (editing.Kind == ReminderKind.Scheduled)
+                {
+                    <div class="flexrow">
+                        <SfNumericTextBox ID="IntervalValue" @bind-Value="@editing.IntervalValue" Placeholder="Every" FloatLabelType="FloatLabelType.Always" Min="1" ShowSpinButton="false" Width="120px" />
+                        <SfDropDownList TItem="string" TValue="ReminderIntervalUnit?"
+                                        @bind-Value="@editing.IntervalUnit"
+                                        DataSource="@intervalUnitValues"
+                                        Placeholder="Unit" FloatLabelType="FloatLabelType.Always" Width="140px">
+                        </SfDropDownList>
+                    </div>
+                    <p class="hint">
+                        @if (editing.NextRunUtc != null)
+                        {
+                            <span>Next run: @editing.NextRunUtc.Value.ToLocalTime().ToString("g")</span>
+                        }
+                        else
+                        {
+                            <span>Next run time will be set when you save, based on the interval above.</span>
+                        }
+                    </p>
+                }
+
+                <div class="flexrow">
+                    <SfButton IsPrimary="true" OnClick="Save" Disabled="@isSaving">Save</SfButton>
+                    <SfButton OnClick="CancelEdit">Cancel</SfButton>
+                </div>
+            </div>
+        </CardContent>
+    </SfCard>
+}
+
+<style>
+    .flexrow {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .flexcolumn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .condition-row {
+        align-items: center;
+    }
+
+    .hint {
+        color: gray;
+    }
+</style>
+
+@code {
+    private List<ReminderRule> rules = new();
+    private ReminderRule? editing;
+    private bool isNew;
+    private bool isSaving;
+
+    private string[] reminderKindValues = Enum.GetNames(typeof(ReminderKind));
+    private string[] jobStatusValues = Enum.GetNames(typeof(JobStatus));
+    private string[] intervalUnitValues = Enum.GetNames(typeof(ReminderIntervalUnit));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshRules();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshRules()
+    {
+        rules = await reminderService.GetReminderRulesAsync();
+    }
+
+    private void StartNew()
+    {
+        editing = new ReminderRule { Kind = ReminderKind.OrderCondition };
+        isNew = true;
+    }
+
+    private void StartEdit(ReminderRule rule)
+    {
+        // Edit a copy of the conditions list so "Cancel" doesn't leave stray in-memory changes.
+        editing = new ReminderRule
+        {
+            ReminderRuleId = rule.ReminderRuleId,
+            Name = rule.Name,
+            Kind = rule.Kind,
+            IsEnabled = rule.IsEnabled,
+            RecipientEmails = rule.RecipientEmails,
+            Subject = rule.Subject,
+            Body = rule.Body,
+            CheckIntervalMinutes = rule.CheckIntervalMinutes,
+            IntervalValue = rule.IntervalValue,
+            IntervalUnit = rule.IntervalUnit,
+            NextRunUtc = rule.NextRunUtc,
+            LastRunUtc = rule.LastRunUtc,
+            Conditions = rule.Conditions.Select(c => new ReminderCondition
+            {
+                ReminderConditionId = c.ReminderConditionId,
+                ReminderRuleId = c.ReminderRuleId,
+                FieldName = c.FieldName,
+                Operator = c.Operator,
+                Value = c.Value
+            }).ToList()
+        };
+        isNew = false;
+    }
+
+    private void CancelEdit()
+    {
+        editing = null;
+    }
+
+    private void AddCondition()
+    {
+        editing!.Conditions.Add(new ReminderCondition
+        {
+            FieldName = ReminderOrderFields.All[0].Name,
+            Operator = ReminderOperator.GreaterThan,
+            Value = "0"
+        });
+    }
+
+    private void RemoveCondition(ReminderCondition condition)
+    {
+        editing!.Conditions.Remove(condition);
+    }
+
+    private async Task Save()
+    {
+        if (editing == null)
+        {
+            return;
+        }
+
+        isSaving = true;
+        try
+        {
+            if (isNew)
+            {
+                await reminderService.AddReminderRuleAsync(editing);
+            }
+            else
+            {
+                await reminderService.UpdateReminderRuleAsync(editing);
+            }
+
+            editing = null;
+            await RefreshRules();
+        }
+        catch (Exception ex)
+        {
+            await DialogService.AlertAsync($"Could not save reminder rule: {ex.Message}", "Save failed");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task Delete(ReminderRule rule)
+    {
+        var confirmed = await DialogService.ConfirmAsync($"Delete reminder rule '{rule.Name}'?", "Confirm delete");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        await reminderService.DeleteReminderRuleAsync(rule);
+        if (editing?.ReminderRuleId == rule.ReminderRuleId)
+        {
+            editing = null;
+        }
+        await RefreshRules();
+    }
+}
