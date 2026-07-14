@@ -10,8 +10,12 @@ namespace ReachingOutDB.Data
     {
         public async Task SendAsync(SmtpSetting settings, string recipientEmails, string subject, string body, CancellationToken ct = default)
         {
+            // Distinct (case-insensitive) so a repeated or copy-pasted address in the
+            // RecipientEmails field can't cause the same mailbox to receive several copies -
+            // some SMTP relays deliver once per RCPT TO rather than deduplicating themselves.
             var toAddresses = recipientEmails
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             if (toAddresses.Count == 0)
