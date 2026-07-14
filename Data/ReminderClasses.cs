@@ -35,6 +35,9 @@ namespace ReachingOutDB.Data
         // --- OrderCondition-only fields ---
         // How often (in minutes) the background service checks Orders against this rule's conditions.
         public int? CheckIntervalMinutes { get; set; } = 15;
+        // When this rule's conditions were last checked against Orders. Compared against
+        // CheckIntervalMinutes to decide whether it's due for another check yet.
+        public DateTime? LastCheckedUtc { get; set; }
         public ICollection<ReminderCondition> Conditions { get; set; } = new List<ReminderCondition>();
 
         // --- Scheduled-only fields ---

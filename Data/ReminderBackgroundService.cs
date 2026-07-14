@@ -2,9 +2,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ReachingOutDB.Data
 {
-    // Runs for the lifetime of the app. On a fixed poll interval it:
-    //   1. Checks every enabled OrderCondition rule against current Orders, sending (and logging)
-    //      one email per Order the first time it matches that rule.
+    // Runs for the lifetime of the app. On a fixed 5-minute poll interval it:
+    //   1. For each enabled OrderCondition rule that is due (per its own CheckIntervalMinutes),
+    //      checks current Orders and sends (and logs) one email per Order the first time it
+    //      matches that rule.
     //   2. Checks every enabled Scheduled rule's NextRunUtc, sending a fixed email and advancing
     //      NextRunUtc when it's due, regardless of any Order data.
     //
@@ -81,6 +82,13 @@ namespace ReachingOutDB.Data
                 return;
             }
 
+            var checkIntervalMinutes = Math.Max(1, rule.CheckIntervalMinutes ?? 15);
+            if (rule.LastCheckedUtc != null && rule.LastCheckedUtc.Value.AddMinutes(checkIntervalMinutes) > DateTime.UtcNow)
+            {
+                // Not due yet - this rule asked to be checked less often than the service's own poll tick.
+                return;
+            }
+
             var alreadySent = await db.ReminderLogs
                 .Where(l => l.ReminderRuleId == rule.ReminderRuleId)
                 .Select(l => l.OrderId)
@@ -128,6 +136,20 @@ namespace ReachingOutDB.Data
                     db.ReminderLogs.Remove(logEntry);
                     await db.SaveChangesAsync(ct);
                 }
+            }
+
+            // Record that this rule was checked, so the CheckIntervalMinutes gate above works.
+            // ReminderRule.Version is a concurrency token, so if another run already recorded a
+            // check for this same rule a moment ago, this just throws and we ignore it - harmless,
+            // it only means we skip re-recording a check time someone else already set.
+            rule.LastCheckedUtc = DateTime.UtcNow;
+            try
+            {
+                await db.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Fine - another run already recorded this rule's check time.
             }
         }
 
