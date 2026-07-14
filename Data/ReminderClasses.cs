@@ -19,6 +19,10 @@ namespace ReachingOutDB.Data
     public class ReminderRule
     {
         public Guid ReminderRuleId { get; set; } = Guid.NewGuid();
+        // Concurrency token (mapped to Postgres xmin), same pattern used on Order/Customer.
+        // Lets the background service "claim" a scheduled reminder before sending, so two
+        // overlapping runs (e.g. two app instances, or a restart mid-poll) can't both send it.
+        public uint Version { get; set; }
         public string Name { get; set; } = string.Empty;
         public ReminderKind Kind { get; set; }
         public bool IsEnabled { get; set; } = true;

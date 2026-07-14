@@ -97,6 +97,12 @@ namespace ReachingOutDB.Data
                 .HasForeignKey(c => c.ReminderRuleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ReminderRule>() // Configure the Version property for concurrency control
+                .Property(r => r.Version)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .IsRowVersion();
+
             modelBuilder.Entity<ReminderLog>()
                 .HasOne(l => l.ReminderRule)
                 .WithMany()
