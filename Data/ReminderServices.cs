@@ -90,7 +90,7 @@ namespace ReachingOutDB.Data
         public async Task DeleteReminderRuleAsync(ReminderRule rule)
         {
             await using var dbContext = await contextFactory.CreateDbContextAsync();
-            dbContext.ReminderRules.Remove(new ReminderRule { ReminderRuleId = rule.ReminderRuleId });
+            dbContext.ReminderRules.Remove(rule);
             await dbContext.SaveChangesAsync();
         }
 

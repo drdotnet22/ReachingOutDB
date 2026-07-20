@@ -15,7 +15,7 @@ namespace ReachingOutDB.Data
             this.logger = logger;
         }
 
-        public async Task SendAsync(SmtpSetting settings, string recipientEmails, string subject, string body, CancellationToken ct = default)
+        public async Task SendAsync(SmtpSetting settings, string recipientEmails, string subject, string body)
         {
             // Distinct (case-insensitive) so a repeated or copy-pasted address in the
             // RecipientEmails field can't cause the same mailbox to receive several copies -
@@ -39,29 +39,14 @@ namespace ReachingOutDB.Data
             message.Subject = subject;
             message.Body = new TextPart("plain") { Text = body };
 
-            using var client = new SmtpClient();
-            var socketOptions = settings.EnableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto;
-            await client.ConnectAsync(settings.Host, settings.Port, socketOptions, ct);
-
-            if (!string.IsNullOrWhiteSpace(settings.Username))
+            // switched away from async for smtpclient because it was sending 4 duplicate messages.
+            using (var client = new SmtpClient())
             {
-                await client.AuthenticateAsync(settings.Username, settings.Password, ct);
-            }
-
-            // Once SendAsync returns without throwing, the SMTP server has accepted the message -
-            // it has genuinely been sent. A failure while disconnecting afterward doesn't change
-            // that, so it must not be allowed to look like the send itself failed: the caller
-            // treats an exception from this method as "nothing was sent, safe to retry," and
-            // retrying a message that already went out is exactly how duplicates happen.
-            await client.SendAsync(message, ct);
-
-            try
-            {
-                await client.DisconnectAsync(true, ct);
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "SMTP disconnect failed after the message was already sent successfully - ignoring.");
+                var socketOptions = settings.EnableSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto;
+                client.Connect(settings.Host, settings.Port, socketOptions);
+                client.Authenticate(settings.Username, settings.Password);
+                client.Send(message);
+                client.Disconnect(true);
             }
         }
     }

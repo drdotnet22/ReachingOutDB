@@ -10,7 +10,7 @@
         <div class="flexcolumn">
             <div class="flexrow">
                 <SfTextBox ID="Host" @bind-Value="@setting.Host" Placeholder="SMTP Host" FloatLabelType="FloatLabelType.Always" Width="250px" />
-                <SfNumericTextBox ID="Port" @bind-Value="@setting.Port" Placeholder="Port" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Width="100px" />
+                <SfNumericTextBox ID="Port" @bind-Value="@setting.Port" Placeholder="Port" FloatLabelType="FloatLabelType.Always" ShowSpinButton="false" Width="100px" Format="####" />
                 <SfCheckBox @bind-Checked="@setting.EnableSsl" Label="Use SSL/TLS" />
             </div>
             <div class="flexrow">

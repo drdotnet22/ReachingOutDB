@@ -127,14 +127,14 @@ namespace ReachingOutDB.Data
 
                 try
                 {
-                    await mailSender.SendAsync(smtp, rule.RecipientEmails, rule.Subject, rule.Body, ct);
+                    await mailSender.SendAsync(smtp, rule.RecipientEmails, rule.Subject, rule.Body);
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "Failed to send reminder '{RuleName}' for order {OrderId}. It will NOT be retried automatically - a duplicate send is worse than a missed one here. Fix the underlying problem (e.g. SMTP settings) and delete this order's ReminderLog row directly in the database if you need it to fire again.", rule.Name, order.OrderId);
                     // Deliberately not rolling back the claim: we can't always tell "definitely
                     // nothing was sent" apart from "sent, but something after that looked like
-                    // failure" (that ambiguity is exactly what caused duplicate emails before).
+                    // failure".
                     // Leaving the claim in place guarantees at-most-once even if this guess is wrong.
                 }
             }
@@ -180,7 +180,7 @@ namespace ReachingOutDB.Data
 
             try
             {
-                await mailSender.SendAsync(smtp, rule.RecipientEmails, rule.Subject, rule.Body, ct);
+                await mailSender.SendAsync(smtp, rule.RecipientEmails, rule.Subject, rule.Body);
             }
             catch (Exception ex)
             {

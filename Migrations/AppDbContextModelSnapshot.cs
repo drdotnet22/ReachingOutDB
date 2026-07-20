@@ -642,6 +642,113 @@ namespace ReachingOutDB.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ReachingOutDB.Data.ReminderCondition", b =>
+                {
+                    b.Property<Guid>("ReminderConditionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FieldName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Operator")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ReminderRuleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ReminderConditionId");
+
+                    b.HasIndex("ReminderRuleId");
+
+                    b.ToTable("ReminderConditions");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.ReminderLog", b =>
+                {
+                    b.Property<Guid>("ReminderLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReminderRuleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("SentAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ReminderLogId");
+
+                    b.HasIndex("ReminderRuleId", "OrderId")
+                        .IsUnique();
+
+                    b.ToTable("ReminderLogs");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.ReminderRule", b =>
+                {
+                    b.Property<Guid>("ReminderRuleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("CheckIntervalMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IntervalUnit")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IntervalValue")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("LastCheckedUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastRunUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("NextRunUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RecipientEmails")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("ReminderRuleId");
+
+                    b.ToTable("ReminderRules");
+                });
+
             modelBuilder.Entity("ReachingOutDB.Data.ShippingSetting", b =>
                 {
                     b.Property<int>("Id")
@@ -728,6 +835,45 @@ namespace ReachingOutDB.Migrations
                             QuantityPerBox = 200,
                             UpdatedAt = new DateTime(2025, 6, 25, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.SmtpSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("EnableSsl")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FromAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FromName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Host")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Port")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SmtpSettings");
                 });
 
             modelBuilder.Entity("ReachingOutDB.Data.UserProfile", b =>
@@ -842,6 +988,28 @@ namespace ReachingOutDB.Migrations
                     b.Navigation("Plate");
                 });
 
+            modelBuilder.Entity("ReachingOutDB.Data.ReminderCondition", b =>
+                {
+                    b.HasOne("ReachingOutDB.Data.ReminderRule", "ReminderRule")
+                        .WithMany("Conditions")
+                        .HasForeignKey("ReminderRuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReminderRule");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.ReminderLog", b =>
+                {
+                    b.HasOne("ReachingOutDB.Data.ReminderRule", "ReminderRule")
+                        .WithMany()
+                        .HasForeignKey("ReminderRuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReminderRule");
+                });
+
             modelBuilder.Entity("ReachingOutDB.Data.Customer", b =>
                 {
                     b.Navigation("Packages");
@@ -855,6 +1023,11 @@ namespace ReachingOutDB.Migrations
             modelBuilder.Entity("ReachingOutDB.Data.Plate", b =>
                 {
                     b.Navigation("PlateAssignments");
+                });
+
+            modelBuilder.Entity("ReachingOutDB.Data.ReminderRule", b =>
+                {
+                    b.Navigation("Conditions");
                 });
 #pragma warning restore 612, 618
         }
