@@ -382,6 +382,14 @@
             var weight = (args.Data.Qty * miscSetting.MagazineWeight) + args.Data.PackageOption.PackagingWeight;
             args.Cell.Value = weight.ToString();
         }
+        // If mailclass is "FCF" set PackageLength, PackageWidth, and PackageHeight to null
+        if (args.Column.HeaderText == "PackageLength" || args.Column.HeaderText == "PackageWidth" || args.Column.HeaderText == "PackageHeight")
+        {
+            if (args.Data.MailClass == "FCF")
+            {
+                args.Cell.Value = null;
+            }
+        }
     }
 
     private string GetHeader(Package package)
