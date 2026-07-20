@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReachingOutDB.Data
 {
@@ -18,6 +18,10 @@ namespace ReachingOutDB.Data
         public DbSet<MiscSetting> MiscSettings { get; set; }
         public DbSet<Plate> Plates { get; set; }
         public DbSet<PlateAssignment> PlateAssignments { get; set; }
+        public DbSet<SmtpSetting> SmtpSettings { get; set; }
+        public DbSet<ReminderRule> ReminderRules { get; set; }
+        public DbSet<ReminderCondition> ReminderConditions { get; set; }
+        public DbSet<ReminderLog> ReminderLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -86,6 +90,28 @@ namespace ReachingOutDB.Data
                 .HasOne(pa => pa.Order)
                 .WithMany(o => o.PlateAssignments)
                 .HasForeignKey(pa => pa.OrderId);
+
+            modelBuilder.Entity<ReminderRule>()
+                .HasMany(r => r.Conditions)
+                .WithOne(c => c.ReminderRule)
+                .HasForeignKey(c => c.ReminderRuleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ReminderRule>() // Configure the Version property for concurrency control
+                .Property(r => r.Version)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .IsRowVersion();
+
+            modelBuilder.Entity<ReminderLog>()
+                .HasOne(l => l.ReminderRule)
+                .WithMany()
+                .HasForeignKey(l => l.ReminderRuleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ReminderLog>()
+                .HasIndex(l => new { l.ReminderRuleId, l.OrderId })
+                .IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }

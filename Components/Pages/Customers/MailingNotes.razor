@@ -5,6 +5,7 @@
 
 @inject CustomerServices customerService
 @inject CustomerStateServices customerStateService
+@inject SfDialogService DialogService
 @implements IDisposable
 
 <PageTitle>Mailing Notes</PageTitle>
@@ -90,6 +91,8 @@
     <DialogPositionData X="center" Y="150" />
 </SfDialog>
 
+<SfDialogProvider />
+
 @code {
     public SfGrid<Customer> Grid { get; set; }
     IEnumerable<Customer> customers;
@@ -133,9 +136,13 @@
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
             selectedCustomer = args.RowData;
-            selectedCustomer.MailingNotes = null;
-            await customerService.UpdateCustomerAsync(selectedCustomer);
-            await RefreshCustomers();
+            bool isConfirm = await DialogService.ConfirmAsync("Are you sure you want to permanently delete the mailing notes for this customer?", "Delete");
+            if (isConfirm)
+            {
+                selectedCustomer.MailingNotes = null;
+                await customerService.UpdateCustomerAsync(selectedCustomer);
+                await RefreshCustomers();
+            }
         }
     }
     #endregion

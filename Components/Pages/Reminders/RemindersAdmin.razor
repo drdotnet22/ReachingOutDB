@@ -1,0 +1,43 @@
+@page "/reminders"
+@using ReachingOutDB.Data
+@inject UserServices userService
+@implements IDisposable
+
+<PageTitle>Reminders - Reaching Out</PageTitle>
+
+@if (userService.CurrentUser.Role == UserRole.Admin)
+{
+    <div class="myflexcolumn">
+        <SmtpSettings />
+        <ReminderRules />
+    </div>
+}
+else
+{
+    <p>😢 Your role in the system doesn't allow you to see this page.</p>
+}
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        userService.OnUserChanged += OnUserChanged;
+        return base.OnInitializedAsync();
+    }
+
+    private async void OnUserChanged()
+    {
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    public void Dispose()
+    {
+        userService.OnUserChanged -= OnUserChanged;
+    }
+}
