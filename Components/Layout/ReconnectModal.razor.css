@@ -1,0 +1,97 @@
+/* Overlay is hidden by default and whenever the circuit is healthy. */
+#components-reconnect-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 24, 39, 0.45);
+    backdrop-filter: blur(2px);
+}
+
+/* The framework adds one of these classes when the connection is not healthy. */
+#components-reconnect-modal.components-reconnect-show,
+#components-reconnect-modal.components-reconnect-failed,
+#components-reconnect-modal.components-reconnect-rejected {
+    display: flex;
+}
+
+.reconnect-dialog {
+    max-width: 26rem;
+    width: calc(100% - 2rem);
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    padding: 1.5rem 1.75rem;
+    text-align: center;
+    font-family: inherit;
+    color: #1f2937;
+}
+
+.reconnect-dialog h3 {
+    margin: 0.25rem 0 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.reconnect-dialog p {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.reconnect-attempt {
+    color: #6b7280;
+}
+
+.reconnect-dialog button {
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: #2563eb;
+    cursor: pointer;
+}
+
+.reconnect-dialog button:hover {
+    background: #1d4ed8;
+}
+
+.reconnect-spinner {
+    width: 34px;
+    height: 34px;
+    margin: 0 auto 0.9rem;
+    border: 3px solid #dbeafe;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: reconnect-spin 0.9s linear infinite;
+}
+
+@keyframes reconnect-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Show only the message that matches the current reconnection state. */
+.reconnect-message {
+    display: none;
+}
+
+#components-reconnect-modal.components-reconnect-show .reconnect-show-message {
+    display: block;
+}
+
+#components-reconnect-modal.components-reconnect-failed .reconnect-failed-message {
+    display: block;
+}
+
+#components-reconnect-modal.components-reconnect-rejected .reconnect-rejected-message {
+    display: block;
+}
+
+/* The spinner is only meaningful while we're actively trying. */
+#components-reconnect-modal.components-reconnect-rejected .reconnect-spinner {
+    display: none;
+}

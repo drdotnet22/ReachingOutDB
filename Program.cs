@@ -11,11 +11,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddCircuitOptions(options =>
+    {
+        // How long the server keeps a disconnected circuit's state before discarding it.
+        // Default is 3 minutes; a longer window means idle/backgrounded tabs can reconnect
+        // without a full page reload.
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(15);
+        options.DisconnectedCircuitMaxRetained = 200;
+    });
 builder.Services.AddFluentUIComponents();
 
 //Custom code
-builder.Services.AddSignalR(o => { o.MaximumReceiveMessageSize = 102400000; });
+builder.Services.AddSignalR(o =>
+{
+    o.MaximumReceiveMessageSize = 102400000;
+    // Give the keep-alive more slack so background/throttled tabs aren't timed out too eagerly.
+    o.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
+    o.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    o.HandshakeTimeout = TimeSpan.FromSeconds(30);
+});
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSyncfusionBlazor();

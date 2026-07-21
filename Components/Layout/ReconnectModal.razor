@@ -1,0 +1,41 @@
+@* Blazor Server reconnection UI.
+
+   The framework watches for an element with id "components-reconnect-modal" and, when the
+   SignalR circuit drops, toggles one of these classes on it:
+
+     components-reconnect-show     – connection lost, actively retrying
+     components-reconnect-hide     – reconnected / normal
+     components-reconnect-failed   – automatic retries were exhausted
+     components-reconnect-rejected – the server already discarded the circuit (reload required)
+
+   The CSS in ReconnectModal.razor.css shows the matching message for each state.
+   wwwroot/reconnect.js adds auto-retry (on "failed") and auto-reload (on "rejected"). *@
+
+<div id="components-reconnect-modal" class="components-reconnect-hide">
+    <div class="reconnect-dialog">
+        <div class="reconnect-spinner" aria-hidden="true"></div>
+
+        <div class="reconnect-message reconnect-show-message">
+            <h3>Reconnecting&hellip;</h3>
+            <p>
+                The connection to the server was lost. Trying to reconnect
+                <span class="reconnect-attempt">
+                    (attempt <span id="components-reconnect-current-attempt"></span>
+                    of <span id="components-reconnect-max-retries"></span>)
+                </span>.
+            </p>
+        </div>
+
+        <div class="reconnect-message reconnect-failed-message">
+            <h3>Reconnecting&hellip;</h3>
+            <p>The connection dropped. Still trying to get you back&hellip;</p>
+            <button type="button" onclick="window.Blazor.reconnect()">Retry now</button>
+        </div>
+
+        <div class="reconnect-message reconnect-rejected-message">
+            <h3>Connection lost</h3>
+            <p>Couldn&rsquo;t reconnect to the server. Reloading the page&hellip;</p>
+            <button type="button" onclick="location.reload()">Reload now</button>
+        </div>
+    </div>
+</div>
