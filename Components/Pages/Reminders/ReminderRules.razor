@@ -172,7 +172,19 @@
 
     private void StartNew()
     {
-        editing = new ReminderRule { Kind = ReminderKind.OrderCondition };
+        editing = new ReminderRule 
+        { 
+            Kind = ReminderKind.OrderCondition,
+            Conditions = new List<ReminderCondition>
+            {
+                new ReminderCondition
+                {
+                    FieldName = "JobStatus",
+                    Operator = ReminderOperator.LessThan,
+                    Value = "Invoiced"
+                }
+            }
+        };
         isNew = true;
     }
 
