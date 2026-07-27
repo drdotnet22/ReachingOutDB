@@ -24,9 +24,13 @@
                     {
                         <span>international order for @issue.IntlQty but no international package on file.</span>
                     }
-                    else
+                    else if (issue.IssueType == IntlPackageIssueType.QuantityMismatch)
                     {
                         <span>packages total @issue.PackagedQty, but the international order is for @issue.IntlQty.</span>
+                    }
+                    else if (issue.IssueType == IntlPackageIssueType.ExtraPackage)
+                    {
+                        <span>international package on file, but no international order this quarter.</span>
                     }
                 </li>
             }

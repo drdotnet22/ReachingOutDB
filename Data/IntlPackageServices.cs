@@ -7,7 +7,9 @@ namespace ReachingOutDB.Data
         // Customer has an international order this period but no international package on file.
         MissingPackage,
         // Sum of the customer's international package quantities doesn't match the order's IntlQty.
-        QuantityMismatch
+        QuantityMismatch,
+        // Customer has a shipping package this quarter but no INTL order.
+        ExtraPackage
     }
 
     // A validation finding tying an international order to a problem with its customer's packages.
@@ -59,6 +61,7 @@ namespace ReachingOutDB.Data
             }
 
             var customerIds = intlOrders.Select(o => o.CustomerId).ToList();
+            var allPackages = await dbContext.IntlPackages.Include(p => p.Customer).ToListAsync();
             var packagedByCustomer = await dbContext.IntlPackages
                 .Where(p => customerIds.Contains(p.CustomerId))
                 .GroupBy(p => p.CustomerId)
@@ -87,6 +90,20 @@ namespace ReachingOutDB.Data
                         IssueType = IntlPackageIssueType.QuantityMismatch,
                         IntlQty = intlQty,
                         PackagedQty = packagedQty
+                    });
+                }
+            }
+
+            foreach (var package in allPackages)
+            {
+                if (!intlOrders.Any(o => o.CustomerId == package.CustomerId))
+                {
+                    issues.Add(new IntlPackageIssue
+                    {
+                        Order = new Order() { Customer = package.Customer, CustomerId = package.CustomerId },
+                        IssueType = IntlPackageIssueType.ExtraPackage,
+                        IntlQty = 0,
+                        PackagedQty = package.Qty
                     });
                 }
             }
