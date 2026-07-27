@@ -1,0 +1,193 @@
+@page "/intlpackages"
+@using ReachingOutDB.Data
+@inject IntlPackageServices intlPackageService
+@inject CustomerServices customerService
+@inject YearQuarterService yearQuarterService
+@inject SfDialogService DialogService
+@implements IDisposable
+
+
+<PageTitle>International Packages</PageTitle>
+
+<h3>International Package Management</h3>
+
+@if (packageIssues.Any())
+{
+    <div style="border: 1px solid #e0a800; background: #fff3cd; color: #664d03; border-radius: 4px; padding: 10px 14px; margin-bottom: 16px;">
+        <strong>⚠️ @packageIssues.Count international order(s) need attention for @yearQuarterService.SelectedYear @yearQuarterService.SelectedQuarter:</strong>
+        <ul style="margin: 6px 0 0 0; padding-left: 20px;">
+            @foreach (var issue in packageIssues)
+            {
+                <li>
+                    <strong>@issue.Order.Customer.CustomerName (@issue.Order.CustomerId)</strong> —
+                    @if (issue.IssueType == IntlPackageIssueType.MissingPackage)
+                    {
+                        <span>international order for @issue.IntlQty but no international package on file.</span>
+                    }
+                    else
+                    {
+                        <span>packages total @issue.PackagedQty, but the international order is for @issue.IntlQty.</span>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<SfGrid @ref="Grid" DataSource="@packages" AllowSorting="true" AllowResizing="true" RowHeight="30" Toolbar="@ToolbarItems" AllowExcelExport="true" AllowSelection="true">
+    <GridEvents TValue="IntlPackage" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" OnToolbarClick="ToolbarClickHandler" CommandClicked="CommandClickedHandler"></GridEvents>
+    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" Mode="Syncfusion.Blazor.Grids.SelectionMode.Row" />
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="Qty" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending" />
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridEditSettings AllowAdding="true" AllowEditing="false" AllowDeleting="true" />
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+        <GridForeignColumn Field="@nameof(IntlPackage.CustomerId)" ForeignKeyValue="CustomerName" ForeignDataSource="@customers" HeaderText="Customer Name" />
+        <GridColumn Field="@nameof(IntlPackage.CustomerId)" HeaderText="Customer ID" />
+        <GridColumn Field="@nameof(IntlPackage.Company)" HeaderText="Company" Width="180" />
+        <GridColumn Field="@nameof(IntlPackage.ContactName)" HeaderText="Contact Name" />
+        <GridColumn Field="@nameof(IntlPackage.Address1)" HeaderText="Address 1" Width="250" />
+        <GridColumn Field="@nameof(IntlPackage.Address2)" HeaderText="Address 2" Width="250" />
+        <GridColumn Field="@nameof(IntlPackage.City)" HeaderText="City" Width="150" />
+        <GridColumn Field="@nameof(IntlPackage.State)" HeaderText="State" Width="85" />
+        <GridColumn Field="@nameof(IntlPackage.ZipCode)" HeaderText="Zip Code" Width="100" />
+        <GridColumn Field="@nameof(IntlPackage.Country)" HeaderText="Country" Width="120" />
+        <GridColumn Field="@nameof(IntlPackage.Qty)" HeaderText="Quantity" TextAlign="TextAlign.Right" />
+        <GridColumn Field="@nameof(IntlPackage.BoxNote)" HeaderText="Box Note" Width="150" />
+        <GridColumn Width="110">
+            <GridCommandColumns>
+                <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })" />
+                <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })" />
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @ref="packageEditDialog" Width="900" Visible=false ShowCloseIcon="true" >
+    <DialogTemplates>
+        <Header>
+            <span>@GetHeader(selectedPackage)</span>
+        </Header>
+        <Content>
+            <IntlPackageViewEdit ThisPackage="selectedPackage" CloseDialog="ClosePackageEditDialog" />
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<Syncfusion.Blazor.Popups.SfDialogProvider />
+
+@code {
+    private SfGrid<IntlPackage> Grid;
+    private IEnumerable<IntlPackage> packages { get; set; }
+    private IEnumerable<Customer> customers { get; set; }
+    private List<Object> ToolbarItems = new List<Object>()
+    {
+        "Add", "CsvExport", "Search"
+    };
+    public IntlPackage selectedPackage = new IntlPackage();
+    private List<IntlPackageIssue> packageIssues { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        yearQuarterService.OnYearQuarterChanged += YearQuarterChanged;
+        customers = await customerService.GetCustomersAsync();
+        await RefreshPackages();
+        await base.OnInitializedAsync();
+    }
+
+    private async void YearQuarterChanged()
+    {
+        await RefreshPackages();
+    }
+
+    private async Task RefreshPackages()
+    {
+        packages = await intlPackageService.GetIntlPackagesAsync();
+        packageIssues = await intlPackageService.GetIntlPackageIssuesAsync(
+            yearQuarterService.SelectedYear, yearQuarterService.SelectedQuarter);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        yearQuarterService.OnYearQuarterChanged -= YearQuarterChanged;
+    }
+
+    private async Task ActionBeginHandler(ActionEventArgs<IntlPackage> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            args.Cancel = true;
+            await intlPackageService.DeleteIntlPackageAsync(args.Data);
+            await RefreshPackages();
+        }
+    }
+
+    public async Task CommandClickedHandler(CommandClickEventArgs<IntlPackage> args)
+    {
+        if (args.CommandColumn.Type == CommandButtonType.Edit)
+        {
+            selectedPackage = args.RowData;
+            await packageEditDialog.ShowAsync();
+            args.Cancel = true;
+        }
+        else if (args.CommandColumn.Type == CommandButtonType.Delete)
+        {
+            ActionEventArgs<IntlPackage> actionEventArgs = new ActionEventArgs<IntlPackage>();
+            actionEventArgs.Data = args.RowData;
+            await ActionBeginHandler(actionEventArgs);
+        }
+    }
+
+    private async Task ActionCompleteHandler(ActionEventArgs<IntlPackage> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save) || args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            await Grid.Refresh();
+        }
+    }
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Add")
+        {
+            selectedPackage = null;
+            packageEditDialog.ShowAsync();
+            args.Cancel = true;
+        }
+        else if (args.Item.Text == "CSV Export")
+        {
+            var selectedRecords = await Grid.GetSelectedRecordsAsync();
+            ExcelExportProperties ExportProperties = new ExcelExportProperties
+            {
+                IncludeTemplateColumn = true,
+                IncludeHiddenColumn = true,
+                DataSource = selectedRecords
+            };
+            await Grid.ExportToCsvAsync(ExportProperties);
+        }
+    }
+
+    private string GetHeader(IntlPackage package)
+    {
+        if (selectedPackage == null)
+        {
+            return "Add New International Package";
+        }
+        else
+        {
+            return $"Edit International Package - {package?.ContactName}";
+        }
+    }
+
+    SfDialog packageEditDialog;
+
+    private async Task ClosePackageEditDialog()
+    {
+        await packageEditDialog.HideAsync();
+        await RefreshPackages();
+    }
+}
