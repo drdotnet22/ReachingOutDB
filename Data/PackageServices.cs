@@ -7,7 +7,9 @@ namespace ReachingOutDB.Data
         // Customer has a USPS order this period but no shipping package on file.
         MissingPackage,
         // Sum of the customer's package quantities doesn't match the order's PostalQty.
-        QuantityMismatch
+        QuantityMismatch,
+        // Customer has a shipping package this quarter but no USPS order.
+        ExtraPackage
     }
 
     // A validation finding tying a USPS order to a problem with its customer's packages.
@@ -127,6 +129,7 @@ namespace ReachingOutDB.Data
             }
 
             var customerIds = uspsOrders.Select(o => o.CustomerId).ToList();
+            var allPackages = dbContext.Packages.Include(p => p.Customer).ToList();
             var packagedByCustomer = await dbContext.Packages
                 .Where(p => customerIds.Contains(p.CustomerId))
                 .GroupBy(p => p.CustomerId)
@@ -155,6 +158,20 @@ namespace ReachingOutDB.Data
                         IssueType = UspsPackageIssueType.QuantityMismatch,
                         PostalQty = postalQty,
                         PackagedQty = packagedQty
+                    });
+                }
+            }
+
+            foreach (var package in allPackages)
+            {
+                if (!customerIds.Contains(package.CustomerId))
+                {
+                    issues.Add(new UspsPackageIssue
+                    {
+                        Order = new Order() { Customer = package.Customer, CustomerId = package.CustomerId },
+                        IssueType = UspsPackageIssueType.ExtraPackage,
+                        PostalQty = 0,
+                        PackagedQty = package.Qty
                     });
                 }
             }

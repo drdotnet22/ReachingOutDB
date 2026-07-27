@@ -22,14 +22,18 @@
             @foreach (var issue in packageIssues)
             {
                 <li>
-                    <strong>@issue.Order.Customer.CustomerName (@issue.Order.CustomerId)</strong> —
+                    <strong>@issue.Order?.Customer.CustomerName (@issue.Order?.CustomerId)</strong> — 
                     @if (issue.IssueType == UspsPackageIssueType.MissingPackage)
                     {
                         <span>USPS order for @issue.PostalQty but no shipping package on file.</span>
                     }
-                    else
+                    else if (issue.IssueType == UspsPackageIssueType.QuantityMismatch)
                     {
                         <span>packages total @issue.PackagedQty, but the USPS order is for @issue.PostalQty.</span>
+                    }
+                    else if (issue.IssueType == UspsPackageIssueType.ExtraPackage)
+                    {
+                        <span>shipping package on file, but no USPS order this quarter.</span>
                     }
                 </li>
             }
