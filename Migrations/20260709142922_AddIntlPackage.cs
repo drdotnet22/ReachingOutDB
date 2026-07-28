@@ -38,11 +38,6 @@ namespace ReachingOutDB.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "IntlPackages",
-                columns: new[] { "IntlPackageId", "Address1", "Address2", "BoxNote", "City", "ContactName", "Country", "CustomerId", "Qty", "State", "ZipCode" },
-                values: new object[] { new Guid("1c2e6b8a-4f5d-4a3b-9c1e-2d7f8a9b0c3d"), "123 Main", null, "Box 1 of 1", "Ripley", "Contact name", "Canada", 2777, 1, "NY", "14775" });
-
             migrationBuilder.CreateIndex(
                 name: "IX_IntlPackages_CustomerId",
                 table: "IntlPackages",
