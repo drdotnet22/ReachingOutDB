@@ -27,17 +27,17 @@ namespace ReachingOutDB.Data
         {
             // Single seed row per table below is only used to give each migration
             // deterministic starting data; it isn't representative production data.
-            modelBuilder.Entity<Customer>().HasData(GetCustomers());
-            modelBuilder.Entity<Order>().HasData(GetOrders());
-            modelBuilder.Entity<OrderAuditLog>().HasData(GetOrderAuditLogs());
-            modelBuilder.Entity<UserProfile>().HasData(GetUserProfiles());
-            modelBuilder.Entity<Package>().HasData(GetPackages());
-            // modelBuilder.Entity<IntlPackage>().HasData(GetIntlPackages());
-            modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
-            modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
-            modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
-            modelBuilder.Entity<Plate>().HasData(GetPlates());
-            modelBuilder.Entity<PlateAssignment>().HasData(GetPlateAssignments());
+            //modelBuilder.Entity<Customer>().HasData(GetCustomers());
+            //modelBuilder.Entity<Order>().HasData(GetOrders());
+            //modelBuilder.Entity<OrderAuditLog>().HasData(GetOrderAuditLogs());
+            //modelBuilder.Entity<UserProfile>().HasData(GetUserProfiles());
+            //modelBuilder.Entity<Package>().HasData(GetPackages());
+            //modelBuilder.Entity<IntlPackage>().HasData(GetIntlPackages());
+            //modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
+            //modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
+            //modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
+            //modelBuilder.Entity<Plate>().HasData(GetPlates());
+            //modelBuilder.Entity<PlateAssignment>().HasData(GetPlateAssignments());
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
