@@ -30,12 +30,12 @@ namespace ReachingOutDB.Data
             //modelBuilder.Entity<Customer>().HasData(GetCustomers());
             //modelBuilder.Entity<Order>().HasData(GetOrders());
             //modelBuilder.Entity<OrderAuditLog>().HasData(GetOrderAuditLogs());
-            //modelBuilder.Entity<UserProfile>().HasData(GetUserProfiles());
+            modelBuilder.Entity<UserProfile>().HasData(GetUserProfiles());
             //modelBuilder.Entity<Package>().HasData(GetPackages());
             //modelBuilder.Entity<IntlPackage>().HasData(GetIntlPackages());
             //modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
-            //modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
-            //modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
+            modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
+            modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
             //modelBuilder.Entity<Plate>().HasData(GetPlates());
             //modelBuilder.Entity<PlateAssignment>().HasData(GetPlateAssignments());
 
