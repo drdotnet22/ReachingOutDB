@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>9647e4ab-be66-4205-a2a9-293031bb5318</UserSecretsId>
@@ -10,31 +10,31 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.9.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
+    <PackageReference Include="MailKit" Version="4.17.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.12.1" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.12.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    <PackageReference Include="Sylvan.Data.Csv" Version="1.4.2" />
-    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Cards" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.DataForm" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.LinearGauge" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.MultiColumnComboBox" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Popups" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.SfPdfViewer" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.SplitButtons" Version="33.2.4" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="33.2.4" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.3" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="Sylvan.Data.Csv" Version="1.4.4" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.DataForm" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.LinearGauge" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.MultiColumnComboBox" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.SfPdfViewer" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.SplitButtons" Version="34.1.33" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="34.1.33" />
   </ItemGroup>
 
   <ItemGroup>
