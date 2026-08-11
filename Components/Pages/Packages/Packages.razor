@@ -286,9 +286,13 @@
         }
         else if (args.CommandColumn.Type == CommandButtonType.Delete)
         {
-            ActionEventArgs<Package> actionEventArgs = new ActionEventArgs<Package>();
-            actionEventArgs.Data = args.RowData;
-            await ActionBeginHandler(actionEventArgs);
+            bool isConfirm = await DialogService.ConfirmAsync("Are you sure you want to permanently delete this package? This action cannot be undone", "Delete");
+            if (isConfirm)
+            {
+                ActionEventArgs<Package> actionEventArgs = new ActionEventArgs<Package>();
+                actionEventArgs.Data = args.RowData;
+                await ActionBeginHandler(actionEventArgs);
+            }
         }
     }
 
