@@ -25,19 +25,9 @@ namespace ReachingOutDB.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Single seed row per table below is only used to give each migration
-            // deterministic starting data; it isn't representative production data.
-            //modelBuilder.Entity<Customer>().HasData(GetCustomers());
-            //modelBuilder.Entity<Order>().HasData(GetOrders());
-            //modelBuilder.Entity<OrderAuditLog>().HasData(GetOrderAuditLogs());
             modelBuilder.Entity<UserProfile>().HasData(GetUserProfiles());
-            //modelBuilder.Entity<Package>().HasData(GetPackages());
-            //modelBuilder.Entity<IntlPackage>().HasData(GetIntlPackages());
-            //modelBuilder.Entity<PackageOption>().HasData(GetPackageOptions());
             modelBuilder.Entity<ShippingSetting>().HasData(GetShippingSettings());
             modelBuilder.Entity<MiscSetting>().HasData(GetMiscSettings());
-            //modelBuilder.Entity<Plate>().HasData(GetPlates());
-            //modelBuilder.Entity<PlateAssignment>().HasData(GetPlateAssignments());
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
@@ -116,60 +106,11 @@ namespace ReachingOutDB.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        private List<Customer> GetCustomers()
-        {
-            return new List<Customer>
-            {
-                new Customer { CustomerId = 2000, CustomerName = "Mennonite Church", Location = "PA", Active = true, QtyQ1 = 0, QtyQ2 = 0, QtyQ3 = 0, QtyQ4 = 0, VariableOrders = false, CustomBP = false, MailingNotes = "test" }
-            };
-        }
-
-        private List<Order> GetOrders()
-        {
-            return new List<Order>
-            {
-                new Order { OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), CustomerId = 2000, Year = 2025, Quarter = Quarter.Q3, JobStatus = JobStatus.OnHold, Qty = 0,  BpUpdate = false, Archived = false, CustomBP = false }
-            };
-        }
-
-        private List<OrderAuditLog> GetOrderAuditLogs()
-        {
-            var seedDate = new DateTime(2025, 06, 25, 0, 0, 0, DateTimeKind.Utc);
-            return new List<OrderAuditLog>
-            {
-                new OrderAuditLog { OrderAuditLogId = new Guid("02bbd91b-1be0-4640-b82f-66b38ba448b9"), Timestamp = seedDate, UserName = "Anonymous", OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), OldValue = "Old Value", NewValue = "New Value", PropertyName = "Some Property", Action = "Updated" }
-            };
-        }
-
         private List<UserProfile> GetUserProfiles()
         {
             return new List<UserProfile>
             {
                 new UserProfile { UserProfileId = 1, Name = "Ryan Stauffer", Role = UserRole.Admin, Active = true}
-            };
-        }
-
-        private List<Package> GetPackages()
-        {
-            return new List<Package>
-            {
-                new Package { PackageId = new Guid("07dd94e4-a0c8-43c8-babc-200a8864d02c"), ContactName = "Contact name", Address = "123 Main", City = "Ripley", State = "NY", ZipCode = "14775", MailClass = "FCF", PackageOptionId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"), CustomerId = 2000 }
-            };
-        }
-
-        private List<IntlPackage> GetIntlPackages()
-        {
-            return new List<IntlPackage>
-            {
-                new IntlPackage { IntlPackageId = new Guid("1c2e6b8a-4f5d-4a3b-9c1e-2d7f8a9b0c3d"), Company = "Mennonite Church", ContactName = "Contact name", Qty = 1, BoxNote = "Box 1 of 1", Address1 = "123 Main", City = "Ripley", State = "NY", ZipCode = "14775", Country = "Canada", CustomerId = 2777 }
-            };
-        }
-
-        private List<PackageOption> GetPackageOptions()
-        {
-            return new List<PackageOption>
-            {
-                new PackageOption { PackageOptionId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485c"), PackageDescription = "10x13 plastic sleeve", PackagingWeight = 0.1m }
             };
         }
 
@@ -190,22 +131,6 @@ namespace ReachingOutDB.Data
             return new List<MiscSetting>
             { 
                 new MiscSetting { Id = 1, MagazineWeight = 0.06m }
-            };
-        }
-
-        private List<Plate> GetPlates()
-        {
-            return new List<Plate>
-            {
-                new Plate { PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"), Number = 1, Quantity = 1, HasBlanks = false, Year = 1, Quarter = Quarter.Q1 }
-            };
-        }
-
-        private List<PlateAssignment> GetPlateAssignments()
-        {
-            return new List<PlateAssignment>
-            {
-                new PlateAssignment { PlateAssignmentId = new Guid("5ad5f77b-d3cc-4454-acbe-a5cbbc7f158e"), IsBlank = false, OrderId = new Guid("9b19ad13-0c8c-43dc-8c7d-9d4f3e1e485d"), PlateId = new Guid("6447999c-271d-4985-6275-08ddc619be12"), Position = 1 }
             };
         }
     }
